@@ -1,135 +1,121 @@
-# 🌐 Rede Social de Eventos – Projeto "Reuni" (codinome)
+# 🌐 Reuni - Rede Social de Eventos
 
-> Uma rede social moderna e emocionalmente conectada, inspirada na nostalgia do Orkut e na dinâmica social do Instagram – centrada em eventos reais.
+> Conecte-se através de eventos reais. Uma plataforma moderna que une pessoas através de experiências autênticas.
 
----
-
-## 📌 Visão Geral
-
-**Eventum** é uma plataforma web responsiva onde os usuários podem criar, explorar e participar de eventos de todos os tipos — como shows, missas, palestras, pedaladas, cultos, corridas, cursos e muito mais.  
-É também uma rede social: os usuários podem seguir organizadores, confirmar presença, interagir com outros participantes e participar de comunidades temáticas.
+**Status:** 🚧 Em desenvolvimento ativo  
+**Última atualização:** 21 de Julho de 2025
 
 ---
 
-## 🚀 Tecnologias Utilizadas
+## 🎯 O que é o Reuni?
 
-| Camada         | Stack Tecnológico                           |
-|----------------|----------------------------------------------|
-| Frontend       | Next.js 14, React, Tailwind CSS              |
-| Backend        | Supabase (PostgreSQL, Auth, Storage)         |
-| Autenticação   | Supabase Auth (Email, Google, Apple)         |
-| UI/UX          | Mobile-first, Lucide Icons, Heroicons        |
-| Mapa/Localização | Google Maps API (ou alternativa gratuita)  |
+Reuni é uma rede social focada em eventos reais onde você pode:
+- **Descobrir** eventos próximos baseados nos seus interesses
+- **Criar** e promover seus próprios eventos facilmente  
+- **Participar** de comunidades temáticas
+- **Conectar-se** com pessoas que compartilham suas paixões
 
 ---
 
-## 📁 Estrutura Inicial do Projeto
+## ✨ Status Atual
 
-```
-/eventum
-├── /app
-│   ├── /components
-│   │   ├── EventCard.tsx
-│   │   ├── Header.tsx
-│   │   └── ...
-│   ├── /pages
-│   │   ├── index.tsx
-│   │   ├── login.tsx
-│   │   ├── evento/[id].tsx
-│   │   └── perfil/[id].tsx
-│   ├── /lib
-│   │   └── supabase.ts
-│   └── /styles
-│       └── globals.css
-├── .env.local
-├── tailwind.config.js
-├── tsconfig.json
-└── README.md
-```
+### ✅ Implementado
+- Sistema de autenticação completo (email/senha + Google OAuth)
+- Interface integrada (landing page + aplicação principal)
+- Layout responsivo de 3 colunas
+- Componentes principais do feed de eventos
+- Identidade visual única e moderna
+
+### 🔄 Em Desenvolvimento
+- Sistema completo de eventos (CRUD)
+- Sistema de participação ("Eu Vou")
+- Busca e filtros avançados
+
+### 📋 Próximos Passos
+- Sistema de comunidades
+- Notificações em tempo real (web push)
+- PWA features (offline, install prompt)
+- Apps nativos Android/iOS (React Native)
 
 ---
 
-## 🧠 Funcionalidades do MVP
+## 🚀 Tecnologias
 
-- ✅ Autenticação (email/senha, Google, Apple)
-- ✅ Feed de eventos com filtros
-- ✅ Criação/edição de eventos com upload de imagem
-- ✅ Confirmação de presença + comentários
-- ✅ Perfil do usuário (eventos criados, confirmados)
-- ✅ Explorar eventos por localização, categoria, popularidade
-- ✅ Comunidades (estrutura inicial)
-- ✅ Design mobile-first com UX fluida
+**Web App (Fase 1):**
+- Frontend: Next.js 14, React 18, TypeScript, Tailwind CSS
+- Backend: Supabase (PostgreSQL, Auth, Storage, Real-time)
+- Deploy: Vercel
+- PWA: Service Workers, Web Push, Offline Support
 
----
-
-## 🗃️ Modelo de Dados (Schemas Supabase)
-
-### `usuarios`
-- `id`: UUID
-- `nome`, `email`, `avatar`, `bio`
-- `created_at`
-
-### `eventos`
-- `id`, `titulo`, `descricao`, `data`, `hora`, `local`, `categoria`, `imagem_url`, `organizador_id`
-
-### `presencas`
-- `id`, `evento_id`, `usuario_id`, `status` (ex: confirmado, interessado)
-
-### `comentarios`
-- `id`, `evento_id`, `usuario_id`, `conteudo`, `created_at`
-
-### `comunidades`
-- `id`, `nome`, `descricao`, `tipo`, `criador_id`
+**Apps Nativos (Fase 2):**
+- React Native para Android e iOS
+- Código compartilhado com web app
+- Features nativas: câmera, GPS, push notifications
 
 ---
 
-## 📦 Como Rodar Localmente
+## 🏃‍♂️ Como Executar
 
 ```bash
-# 1. Clone o repositório
-git clone https://github.com/seuusuario/eventum.git
-cd eventum
-
-# 2. Instale as dependências
+# 1. Clone e instale
+git clone https://github.com/seuusuario/reuni.git
+cd reuni
 npm install
 
-# 3. Configure variáveis do Supabase
+# 2. Configure o Supabase
 cp .env.example .env.local
-# Preencha com URL e chave pública do Supabase
+# Adicione suas credenciais do Supabase
 
-# 4. Rode o app
+# 3. Execute
 npm run dev
 ```
 
----
+**Acesse:** http://localhost:3000
+- Visitantes verão a landing page
+- Usuários logados verão o app principal
 
-## 💡 Funcionalidades Futuras
-
-- 🎫 Ingressos com pagamentos integrados
-- 🔔 Notificações em tempo real
-- 📍 Geolocalização de eventos ao vivo
-- 🏆 Gamificação (badges, rankings)
-- 📸 Álbum de fotos colaborativo
-- 💬 Chat entre participantes
-- 📣 Eventos patrocinados (ads)
+> 📖 **Configuração completa:** Veja [SETUP.md](./SETUP.md) para instruções detalhadas do Supabase
 
 ---
 
-## 🧪 Testes e Deploy
+## 📚 Documentação
 
-- Deploy recomendado via [Vercel](https://vercel.com)
-- CI/CD básico configurável via GitHub Actions
-- Testes unitários futuros com Vitest/Playwright
+- **[PRD.md](./PRD.md)** - Product Requirements Document completo
+- **[SETUP.md](./SETUP.md)** - Guia de configuração técnica
+- **[STATUS.md](./STATUS.md)** - Status detalhado do desenvolvimento
+- **[Specs](./.kiro/specs/reuni-social-platform/)** - Especificações técnicas detalhadas
 
 ---
 
-## 👨‍💻 Desenvolvedor Principal
+## 🎨 Identidade Visual
 
-Raphael Kvasne – CEO & Fundador da Evoinfo  
-🚀 Construindo o futuro das conexões reais por meio da tecnologia.
+**Cores principais:**
+- Azul vibrante (#2563EB) - Primária
+- Rosa nostálgico (#EC4899) - Secundária  
+- Verde limão (#10B981) - Destaque
+
+**Design:** Moderno com elementos nostálgicos, mobile-first, gradientes únicos
+
+---
+
+## 🤝 Contribuição
+
+Este é um projeto em desenvolvimento ativo. Para contribuir:
+
+1. Leia a documentação técnica em [SETUP.md](./SETUP.md)
+2. Verifique o status atual em [STATUS.md](./STATUS.md)
+3. Consulte os requisitos em [PRD.md](./PRD.md)
+
+---
+
+## 👨‍💻 Autor
+
+**Raphael Kvasne**  
+CEO & Fundador da Evoinfo  
+🚀 Construindo o futuro das conexões reais através da tecnologia
 
 ---
 
 ## 📄 Licença
 
-MIT — sinta-se livre para colaborar, adaptar ou expandir.
+MIT License - Sinta-se livre para colaborar, adaptar ou expandir.
