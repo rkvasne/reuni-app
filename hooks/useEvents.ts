@@ -16,7 +16,7 @@ export interface Event {
   organizador_id: string
   max_participantes?: number
   created_at: string
-  updated_at: string
+
   organizador?: {
     nome: string
     email: string
@@ -155,10 +155,7 @@ export function useEvents() {
 
       const { data, error } = await supabase
         .from('eventos')
-        .update({
-          ...eventData,
-          updated_at: new Date().toISOString(),
-        })
+        .update(eventData)
         .eq('id', eventId)
         .eq('organizador_id', user.id) // Só o organizador pode editar
         .select(`

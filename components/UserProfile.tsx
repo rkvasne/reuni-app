@@ -13,10 +13,11 @@ import QuickProfileEdit from './QuickProfileEdit'
 import ProfileSettings from './ProfileSettings'
 import AvatarUpload from './AvatarUpload'
 import LoadingSpinner from './LoadingSpinner'
+import RLSWarning from './RLSWarning'
 
 export default function UserProfile() {
   const { user } = useAuth()
-  const { userProfile } = useUserProfile()
+  const { userProfile, error: profileError, clearError } = useUserProfile()
   const { getUserEvents, events } = useEvents()
   const router = useRouter()
   const [activeTab, setActiveTab] = useState<'created' | 'participating' | 'settings'>('created')
@@ -47,8 +48,10 @@ export default function UserProfile() {
       }
     }
 
-    fetchUserData()
-  }, [user?.id, events])
+    if (user) {
+      fetchUserData()
+    }
+  }, [user?.id])
 
   if (!user || !userProfile) return null
 
@@ -78,6 +81,14 @@ export default function UserProfile() {
         Voltar ao Feed
       </button>
       
+      {/* Aviso de RLS */}
+      {profileError && (
+        <RLSWarning 
+          message={profileError} 
+          onDismiss={clearError}
+        />
+      )}
+
       {/* Header do Perfil */}
       <div className="card p-8 mb-8">
         <div className="flex flex-col md:flex-row items-start gap-6">

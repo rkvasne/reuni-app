@@ -158,7 +158,7 @@ export default function EventModal({ isOpen, onClose, event, mode = 'create' }: 
   }
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center" style={{ zIndex: 99999 }} >
       <div className="bg-white rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
         
         {/* Header */}

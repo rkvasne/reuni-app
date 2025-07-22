@@ -51,7 +51,9 @@ export default function Header() {
               <input
                 type="text"
                 placeholder="Buscar eventos, pessoas ou comunidades..."
-                className="w-full pl-10 pr-4 py-2 bg-neutral-100 rounded-xl border-0 focus:ring-2 focus:ring-primary-500 focus:bg-white transition-all"
+                className="w-full pl-10 pr-4 py-2 bg-neutral-100 rounded-xl border-0 focus:ring-2 focus:ring-primary-500 focus:bg-white transition-all cursor-pointer"
+                onClick={() => router.push('/search')}
+                readOnly
               />
             </div>
           </div>

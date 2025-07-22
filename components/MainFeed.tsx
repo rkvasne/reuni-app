@@ -5,6 +5,7 @@ import { Plus, Filter } from 'lucide-react'
 import EventCard from './EventCard'
 import FeaturedCarousel from './FeaturedCarousel'
 import EventModal from './EventModal'
+import QuickSearch from './QuickSearch'
 import { useEvents } from '@/hooks/useEvents'
 import { useAuth } from '@/hooks/useAuth'
 
@@ -25,6 +26,9 @@ export default function MainFeed() {
       
       {/* Carrossel de Destaques */}
       <FeaturedCarousel />
+      
+      {/* Busca Rápida */}
+      <QuickSearch />
       
       {/* Criar Evento + Filtros */}
       <div className="card p-4">

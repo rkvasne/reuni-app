@@ -2,6 +2,39 @@
 
 Todas as mudanças notáveis neste projeto serão documentadas neste arquivo.
 
+## [0.0.4] - 2025-07-22
+
+### ✅ Adicionado
+- **Sistema de Busca Avançada Completo:**
+  - Página de busca dedicada em `/search`
+  - Barra de busca inteligente com autocomplete
+  - Filtros avançados (categoria, data, local, status, ordenação)
+  - Busca por texto em título, descrição e local
+  - Histórico de buscas com armazenamento local
+  - Sugestões inteligentes em tempo real
+  - Resultados paginados com navegação
+  - Estatísticas de busca e métricas
+  - Integração no feed principal com busca rápida
+- **Componentes Novos:**
+  - `SearchBar.tsx` - Barra de busca principal
+  - `AdvancedFilters.tsx` - Modal de filtros avançados
+  - `SearchResults.tsx` - Exibição de resultados
+  - `SearchSuggestions.tsx` - Sugestões automáticas
+  - `SearchStats.tsx` - Estatísticas de busca
+  - `QuickSearch.tsx` - Busca rápida no feed
+  - `useSearch.ts` - Hook para lógica de busca
+
+### 🔧 Melhorado
+- Header com busca funcional redirecionando para `/search`
+- MainFeed com componente de busca rápida integrado
+- Z-index dos modais corrigido para evitar sobreposição
+- Performance de busca com debounce e paginação
+
+### 🐛 Corrigido
+- Problema de z-index do EventModal sobrepondo elementos
+- Erro de coluna `updated_at` inexistente no perfil do usuário
+- Compatibilidade TypeScript com operador spread em Set
+
 ## [0.0.3] - 2025-07-22
 
 ### ✅ Adicionado

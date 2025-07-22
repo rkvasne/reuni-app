@@ -84,7 +84,24 @@
 - **Configurações:** Alterar perfil, senha, logout, deletar conta
 - **UX Avançada:** Loading states, feedback visual, navegação intuitiva
 
-### ✅ 11. Documentação e Specs Completos
+### ✅ 11. Sistema de Busca Avançada Completo
+- **Página de Busca:** Rota `/search` com interface dedicada
+- **Barra de Busca Inteligente:** Autocomplete e sugestões em tempo real
+- **Filtros Avançados:** Categoria, data, local, status, ordenação
+- **Busca por Texto:** Busca em título, descrição e local dos eventos
+- **Histórico de Buscas:** Armazenamento local das buscas recentes
+- **Sugestões Inteligentes:** Eventos, locais, categorias similares
+- **Resultados Paginados:** Navegação eficiente com paginação
+- **Estatísticas de Busca:** Métricas e informações dos resultados
+- **Integração no Feed:** Busca rápida no feed principal
+
+### ✅ 12. Correções de Segurança RLS
+- **Diagnóstico de Políticas:** Identificação de conflitos RLS no Supabase
+- **Documentação Detalhada:** SUPABASE_RLS_FIX.md com soluções específicas
+- **Políticas Conflitantes:** Resolução de duplicatas português/inglês
+- **Guia de Correção:** Comandos SQL para resolver comportamento imprevisível
+
+### ✅ 13. Documentação e Specs Completos
 - `README.md` atualizado com visão geral do projeto
 - `PRD.md` - Product Requirements Document completo
 - `SETUP.md` com guia detalhado de configuração
@@ -150,8 +167,8 @@ npm run dev
 1. ✅ **CRUD de Eventos:** Criar, editar, deletar eventos - **CONCLUÍDO v0.0.2**
 2. ✅ **Sistema de Presenças:** Confirmar/cancelar participação - **CONCLUÍDO v0.0.2**
 3. ✅ **Perfil de Usuário:** Página de perfil com eventos do usuário - **CONCLUÍDO v0.0.3**
-4. **Comunidades:** Sistema completo de comunidades
-5. **Busca Avançada:** Filtros por localização, categoria, data
+4. ✅ **Busca Avançada:** Filtros por localização, categoria, data - **CONCLUÍDO v0.0.4**
+5. **Comunidades:** Sistema completo de comunidades
 
 ### Melhorias UX/UI
 1. **Loading States:** Skeletons e spinners
