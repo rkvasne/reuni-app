@@ -3,9 +3,11 @@
 import { Search, Bell, MessageCircle, User, LogOut, Settings } from 'lucide-react'
 import { useState, useEffect, useRef } from 'react'
 import { useAuth } from '@/hooks/useAuth'
+import { useRouter } from 'next/navigation'
 
 export default function Header() {
   const { user, signOut } = useAuth()
+  const router = useRouter()
   const [showUserMenu, setShowUserMenu] = useState(false)
   const menuRef = useRef<HTMLDivElement>(null)
 
@@ -82,11 +84,23 @@ export default function Header() {
                     <p className="font-medium text-neutral-800">{user?.user_metadata?.name || 'Usuário'}</p>
                     <p className="text-sm text-neutral-500">{user?.email}</p>
                   </div>
-                  <button className="w-full text-left px-4 py-2 hover:bg-neutral-50 flex items-center gap-2 text-neutral-700">
+                  <button 
+                    onClick={() => {
+                      router.push('/profile')
+                      setShowUserMenu(false)
+                    }}
+                    className="w-full text-left px-4 py-2 hover:bg-neutral-50 flex items-center gap-2 text-neutral-700"
+                  >
                     <User className="w-4 h-4" />
                     Meu Perfil
                   </button>
-                  <button className="w-full text-left px-4 py-2 hover:bg-neutral-50 flex items-center gap-2 text-neutral-700">
+                  <button 
+                    onClick={() => {
+                      router.push('/profile')
+                      setShowUserMenu(false)
+                    }}
+                    className="w-full text-left px-4 py-2 hover:bg-neutral-50 flex items-center gap-2 text-neutral-700"
+                  >
                     <Settings className="w-4 h-4" />
                     Configurações
                   </button>

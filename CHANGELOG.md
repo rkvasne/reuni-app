@@ -2,6 +2,33 @@
 
 Todas as mudanças notáveis neste projeto serão documentadas neste arquivo.
 
+## [0.0.3] - 2025-07-22
+
+### ✅ Adicionado
+- **Sistema de Perfil de Usuário Completo:**
+  - Página de perfil protegida em `/profile`
+  - Informações do usuário com avatar, nome, bio, email
+  - Edição inline de nome e bio com hover states
+  - Modal para upload/alteração de avatar
+  - Estatísticas detalhadas (6 métricas diferentes)
+  - Gestão de eventos em abas ("Meus Eventos" e "Vou Participar")
+  - Visualização flexível (grid/lista) para eventos
+  - Configurações completas (perfil, senha, conta)
+- **Componentes Novos:**
+  - `UserProfile.tsx` - Página principal do perfil
+  - `ProfileSettings.tsx` - Configurações da conta
+  - `QuickProfileEdit.tsx` - Edição inline de campos
+  - `EventGrid.tsx` - Visualização de eventos em grid/lista
+  - `UserStats.tsx` - Estatísticas do usuário
+  - `AvatarUpload.tsx` - Modal para alterar avatar
+  - `useUserProfile.ts` - Hook para gerenciar dados do perfil
+
+### 🔧 Melhorado
+- Hook `useAuth` integrado com dados completos do usuário
+- Navegação no Header com links para o perfil
+- UX/UI com loading states e feedback visual
+- Validações e tratamento de erros aprimorados
+
 ## [0.0.2] - 2025-07-22
 
 ### ✅ Adicionado
