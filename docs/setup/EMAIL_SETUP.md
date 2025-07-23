@@ -1,4 +1,4 @@
-# 📧 Guia de Configuração de Email Templates do Supabase
+# 📧 Configuração de Email Templates
 
 Este guia te ajudará a personalizar os emails de confirmação do Reuni para criar uma experiência mais profissional e acolhedora para novos usuários.
 
@@ -152,7 +152,7 @@ SMTP Admin Email: noreply@reuni.com
 1. Faça um teste de cadastro com um email real
 2. Verifique se o email chegou com o novo design
 3. Teste o link de confirmação
-4. Confirme se o redirecionamento para `/welcome` funciona
+4. Confirme se o redirecionamento funciona
 
 ## 🚨 Troubleshooting
 
@@ -176,7 +176,7 @@ SMTP Admin Email: noreply@reuni.com
 - [ ] Assunto do email personalizado
 - [ ] Teste de envio realizado
 - [ ] Link de confirmação funcionando
-- [ ] Redirecionamento para página de boas-vindas
+- [ ] Redirecionamento funcionando
 - [ ] Design responsivo em diferentes clientes de email
 - [ ] Teste em diferentes provedores (Gmail, Outlook, etc.)
 

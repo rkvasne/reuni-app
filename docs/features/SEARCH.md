@@ -1,4 +1,4 @@
-# 🔍 Sistema de Busca Avançada - Reuni v0.0.4
+# 🔍 Sistema de Busca Avançada
 
 ## 🎯 Visão Geral
 

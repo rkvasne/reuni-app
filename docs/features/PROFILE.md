@@ -1,4 +1,4 @@
-# 👤 Sistema de Perfil de Usuário - v0.0.3
+# 👤 Sistema de Perfil de Usuário
 
 ## 🎯 Visão Geral
 

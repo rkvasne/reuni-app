@@ -1,17 +1,18 @@
 'use client'
 
 import { useState } from 'react'
-import { Plus, Filter } from 'lucide-react'
+import { Plus, Filter, Search } from 'lucide-react'
+import { useRouter } from 'next/navigation'
 import EventCard from './EventCard'
 import FeaturedCarousel from './FeaturedCarousel'
 import EventModal from './EventModal'
-import QuickSearch from './QuickSearch'
 import { useEvents } from '@/hooks/useEvents'
 import { useAuth } from '@/hooks/useAuth'
 
 export default function MainFeed() {
   const { events, loading, error, fetchEvents } = useEvents()
   const { isAuthenticated } = useAuth()
+  const router = useRouter()
   const [showCreateModal, setShowCreateModal] = useState(false)
   const [activeFilter, setActiveFilter] = useState('Todos')
 
@@ -22,15 +23,31 @@ export default function MainFeed() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       
       {/* Carrossel de Destaques */}
       <FeaturedCarousel />
       
-      {/* Busca Rápida */}
-      <QuickSearch />
+      {/* Busca Avançada - Card Separado */}
+      <button
+        onClick={() => router.push('/search')}
+        className="card p-4 hover:shadow-md transition-all group w-full text-left bg-gradient-to-r from-blue-50 to-purple-50 border border-blue-100"
+      >
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-white rounded-lg group-hover:bg-blue-100 transition-colors">
+              <Search className="w-5 h-5 text-blue-600" />
+            </div>
+            <div>
+              <p className="font-medium text-gray-800">Buscar eventos específicos?</p>
+              <p className="text-sm text-gray-600">Filtros avançados, categorias e localização</p>
+            </div>
+          </div>
+          <div className="text-blue-600 font-medium">→</div>
+        </div>
+      </button>
       
-      {/* Criar Evento + Filtros */}
+      {/* Filtros + Criar Evento */}
       <div className="card p-4">
         <div className="flex items-center justify-between mb-4">
           <h3 className="font-semibold text-neutral-800 flex items-center gap-2">

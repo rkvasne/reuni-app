@@ -10,9 +10,10 @@ import EmptyState from './EmptyState'
 
 interface SearchResultsProps {
   onFiltersToggle?: () => void
+  viewMode?: 'grid' | 'list'
 }
 
-export default function SearchResults({ onFiltersToggle }: SearchResultsProps) {
+export default function SearchResults({ onFiltersToggle, viewMode: propViewMode }: SearchResultsProps) {
   const { 
     results, 
     loading, 

@@ -1,17 +1,19 @@
 'use client'
 
 import { useState } from 'react'
-import { Home, Calendar, User, Users, Plus, MapPin, Bookmark } from 'lucide-react'
+import { useRouter, usePathname } from 'next/navigation'
+import { Home, Calendar, User, Users, Plus, MapPin, Bookmark, Search } from 'lucide-react'
 import EventModal from './EventModal'
 import { useAuth } from '@/hooks/useAuth'
 
 const menuItems = [
-  { icon: Home, label: 'Início', active: true },
-  { icon: Calendar, label: 'Meus Eventos', count: 3 },
-  { icon: User, label: 'Perfil' },
-  { icon: Users, label: 'Comunidades', count: 12 },
-  { icon: MapPin, label: 'Eventos Próximos' },
-  { icon: Bookmark, label: 'Salvos' },
+  { icon: Home, label: 'Início', href: '/' },
+  { icon: Search, label: 'Buscar', href: '/search' },
+  { icon: Calendar, label: 'Meus Eventos', href: '/profile', count: 3 },
+  { icon: User, label: 'Perfil', href: '/profile' },
+  { icon: Users, label: 'Comunidades', href: '/communities', count: 12 },
+  { icon: MapPin, label: 'Eventos Próximos', href: '/search?filter=proximo' },
+  { icon: Bookmark, label: 'Salvos', href: '/profile?tab=salvos' },
 ]
 
 const communities = [
@@ -22,6 +24,8 @@ const communities = [
 
 export default function LeftSidebar() {
   const { isAuthenticated } = useAuth()
+  const router = useRouter()
+  const pathname = usePathname()
   const [showCreateModal, setShowCreateModal] = useState(false)
 
   return (
@@ -30,20 +34,24 @@ export default function LeftSidebar() {
       {/* Navegação Principal */}
       <div className="card p-4">
         <nav className="space-y-2">
-          {menuItems.map((item, index) => (
-            <div
-              key={index}
-              className={`sidebar-item ${item.active ? 'active' : ''}`}
-            >
-              <item.icon className="w-5 h-5" />
-              <span className="font-medium">{item.label}</span>
-              {item.count && (
-                <span className="ml-auto bg-accent-500 text-white text-xs px-2 py-1 rounded-full">
-                  {item.count}
-                </span>
-              )}
-            </div>
-          ))}
+          {menuItems.map((item, index) => {
+            const isActive = pathname === item.href || (item.href === '/' && pathname === '/');
+            return (
+              <button
+                key={index}
+                onClick={() => router.push(item.href)}
+                className={`sidebar-item w-full ${isActive ? 'active' : ''}`}
+              >
+                <item.icon className="w-5 h-5" />
+                <span className="font-medium">{item.label}</span>
+                {item.count && (
+                  <span className="ml-auto bg-accent-500 text-white text-xs px-2 py-1 rounded-full">
+                    {item.count}
+                  </span>
+                )}
+              </button>
+            );
+          })}
         </nav>
         
         {isAuthenticated && (
@@ -62,7 +70,11 @@ export default function LeftSidebar() {
         <h3 className="font-semibold text-neutral-800 mb-3">Suas Comunidades</h3>
         <div className="space-y-3">
           {communities.map((community, index) => (
-            <div key={index} className="flex items-center gap-3 p-2 hover:bg-neutral-50 rounded-lg cursor-pointer">
+            <button 
+              key={index} 
+              onClick={() => router.push('/communities')}
+              className="flex items-center gap-3 p-2 hover:bg-neutral-50 rounded-lg cursor-pointer w-full text-left"
+            >
               <div className={`w-10 h-10 ${community.color} rounded-lg flex items-center justify-center`}>
                 <Users className="w-5 h-5 text-white" />
               </div>
@@ -70,11 +82,14 @@ export default function LeftSidebar() {
                 <p className="font-medium text-sm">{community.name}</p>
                 <p className="text-xs text-neutral-500">{community.members} membros</p>
               </div>
-            </div>
+            </button>
           ))}
         </div>
         
-        <button className="text-primary-500 text-sm font-medium mt-3 hover:text-primary-600">
+        <button 
+          onClick={() => router.push('/communities')}
+          className="text-primary-500 text-sm font-medium mt-3 hover:text-primary-600"
+        >
           Ver todas
         </button>
       </div>

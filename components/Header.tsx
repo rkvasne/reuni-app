@@ -44,20 +44,71 @@ export default function Header() {
             </h1>
           </div>
           
-          {/* Barra de Pesquisa */}
-          <div className="flex-1 max-w-lg mx-8 hidden md:block">
-            <div className="relative">
+          {/* Barra de Pesquisa Inteligente */}
+          <div className="flex-1 max-w-2xl mx-8 hidden md:block">
+            <div className="relative group">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-neutral-400 w-5 h-5" />
               <input
                 type="text"
-                placeholder="Buscar eventos, pessoas ou comunidades..."
-                className="w-full pl-10 pr-4 py-2 bg-neutral-100 rounded-xl border-0 focus:ring-2 focus:ring-primary-500 focus:bg-white transition-all cursor-pointer"
-                onClick={() => router.push('/search')}
-                readOnly
+                placeholder="Buscar eventos, comunidades, organizadores..."
+                className="w-full pl-10 pr-4 py-2.5 bg-neutral-100 rounded-xl border-0 focus:ring-2 focus:ring-primary-500 focus:bg-white transition-all"
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    const query = (e.target as HTMLInputElement).value;
+                    if (query.trim()) {
+                      router.push(`/search?q=${encodeURIComponent(query.trim())}`);
+                    } else {
+                      router.push('/search');
+                    }
+                  }
+                }}
               />
+              
+              {/* Dropdown de Sugestões */}
+              <div className="absolute top-full left-0 right-0 bg-white rounded-xl shadow-lg border border-neutral-200 mt-1 py-2 opacity-0 invisible group-focus-within:opacity-100 group-focus-within:visible transition-all z-50">
+                
+                {/* Buscas Rápidas */}
+                <div className="px-3 py-2">
+                  <div className="text-xs text-neutral-500 font-medium mb-2">Buscas Rápidas</div>
+                  <div className="space-y-1">
+                    {[
+                      { name: 'Eventos hoje', query: 'hoje' },
+                      { name: 'Eventos gratuitos', query: 'gratuitos' },
+                      { name: 'Eventos online', query: 'online' },
+                      { name: 'Tecnologia', query: 'tecnologia' },
+                      { name: 'Música ao vivo', query: 'música' }
+                    ].map((item) => (
+                      <button
+                        key={item.name}
+                        onClick={() => router.push(`/search?q=${item.query}`)}
+                        className="block w-full text-left px-2 py-1 text-sm text-neutral-700 hover:bg-neutral-100 rounded transition-colors"
+                      >
+                        🔍 {item.name}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="border-t border-neutral-100 px-3 py-2">
+                  <button
+                    onClick={() => router.push('/search')}
+                    className="w-full text-left px-2 py-1 text-sm text-primary-600 hover:bg-primary-50 rounded transition-colors font-medium"
+                  >
+                    Ver busca avançada →
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
           
+          {/* Busca Mobile */}
+          <button 
+            onClick={() => router.push('/search')}
+            className="md:hidden p-2 hover:bg-neutral-100 rounded-xl transition-colors"
+          >
+            <Search className="w-6 h-6 text-neutral-600" />
+          </button>
+
           {/* Ações do usuário */}
           <div className="flex items-center gap-4">
             <button className="p-2 hover:bg-neutral-100 rounded-xl transition-colors relative">

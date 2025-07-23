@@ -101,7 +101,18 @@
 - **Políticas Conflitantes:** Resolução de duplicatas português/inglês
 - **Guia de Correção:** Comandos SQL para resolver comportamento imprevisível
 
-### ✅ 13. Documentação e Specs Completos
+### ✅ 13. Sistema de Comunidades Completo
+- **Estrutura de Dados:** Tabelas comunidades e membros_comunidade
+- **CRUD Completo:** Criar, listar, participar, sair de comunidades
+- **Sistema de Papéis:** Admin, moderador, membro com permissões
+- **Categorização:** 12 categorias com cores personalizadas
+- **Tipos de Comunidade:** Pública, privada, restrita
+- **Busca Inteligente:** Filtros por categoria e texto
+- **Interface Moderna:** Cards responsivos e modal de criação
+- **Integração com Eventos:** Eventos podem pertencer a comunidades
+- **Políticas RLS:** Segurança baseada em papéis e status
+
+### ✅ 14. Documentação e Specs Completos
 - `README.md` atualizado com visão geral do projeto
 - `PRD.md` - Product Requirements Document completo
 - `SETUP.md` com guia detalhado de configuração
@@ -168,7 +179,8 @@ npm run dev
 2. ✅ **Sistema de Presenças:** Confirmar/cancelar participação - **CONCLUÍDO v0.0.2**
 3. ✅ **Perfil de Usuário:** Página de perfil com eventos do usuário - **CONCLUÍDO v0.0.3**
 4. ✅ **Busca Avançada:** Filtros por localização, categoria, data - **CONCLUÍDO v0.0.4**
-5. **Comunidades:** Sistema completo de comunidades
+5. ✅ **Comunidades:** Sistema completo de comunidades - **CONCLUÍDO v0.0.5**
+6. **Notificações:** Sistema de notificações em tempo real
 
 ### Melhorias UX/UI
 1. **Loading States:** Skeletons e spinners

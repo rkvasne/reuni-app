@@ -10,13 +10,16 @@ import AdvancedFilters from '@/components/AdvancedFilters'
 import SearchResults from '@/components/SearchResults'
 import SearchStats from '@/components/SearchStats'
 import { useSearch } from '@/hooks/useSearch'
-import { ArrowLeft } from 'lucide-react'
+import { ArrowLeft, Filter, Grid, List, Clock, TrendingUp, MapPin, Calendar } from 'lucide-react'
 
 export default function SearchPage() {
   const { isAuthenticated, loading } = useAuth()
   const { searchStats } = useSearch()
   const router = useRouter()
   const [showFilters, setShowFilters] = useState(false)
+  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
+  const [activeCategory, setActiveCategory] = useState<string | null>(null)
+  const [activeTimeFilter, setActiveTimeFilter] = useState<string | null>(null)
 
   useEffect(() => {
     if (!loading && !isAuthenticated) {
@@ -40,60 +43,322 @@ export default function SearchPage() {
     <div className="min-h-screen bg-neutral-50">
       <Header />
       
-      <div className="pt-20 pb-8">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          
-          {/* Navegação */}
-          <div className="mb-6">
-            <button
-              onClick={() => router.push('/')}
-              className="flex items-center gap-2 text-neutral-600 hover:text-neutral-800 transition-colors"
-            >
-              <ArrowLeft className="w-4 h-4" />
-              Voltar ao Feed
-            </button>
+      {/* Layout IGUAL ao app principal */}
+      <div className="pt-16"> {/* Offset para header fixo */}
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 py-6">
+
+            {/* Sidebar Esquerda - IGUAL ao padrão */}
+            <div className="lg:col-span-3 hidden lg:block">
+              <div className="sticky top-20">
+                <div className="space-y-6">
+                  {/* Navegação */}
+                  <div className="card p-4">
+                    <button
+                      onClick={() => router.push('/')}
+                      className="flex items-center gap-2 text-neutral-600 hover:text-neutral-800 transition-colors"
+                    >
+                      <ArrowLeft className="w-4 h-4" />
+                      Voltar ao Feed
+                    </button>
+                  </div>
+
+                  {/* Filtros Rápidos */}
+                  <div className="card p-4">
+                    <h3 className="font-semibold text-neutral-800 mb-4 flex items-center gap-2">
+                      <Filter className="w-5 h-5" />
+                      Filtros Rápidos
+                    </h3>
+                    
+                    <div className="space-y-4">
+                      <div>
+                        <h4 className="text-sm font-medium text-neutral-700 mb-3">Categorias</h4>
+                        <div className="space-y-2">
+                          {[
+                            { name: 'Tecnologia', icon: '💻', color: 'text-blue-600' },
+                            { name: 'Esportes', icon: '⚽', color: 'text-green-600' },
+                            { name: 'Arte', icon: '🎨', color: 'text-purple-600' },
+                            { name: 'Música', icon: '🎵', color: 'text-pink-600' },
+                            { name: 'Culinária', icon: '🍳', color: 'text-orange-600' },
+                            { name: 'Negócios', icon: '💼', color: 'text-gray-600' }
+                          ].map((category) => (
+                            <button
+                              key={category.name}
+                              onClick={() => setActiveCategory(activeCategory === category.name ? null : category.name)}
+                              className={`w-full flex items-center px-3 py-2 text-sm rounded-lg transition-colors text-left ${
+                                activeCategory === category.name 
+                                  ? 'bg-primary-500 text-white' 
+                                  : 'bg-neutral-100 hover:bg-neutral-200 text-neutral-700'
+                              }`}
+                            >
+                              <span className="mr-3">{category.icon}</span>
+                              <span className="flex-1">{category.name}</span>
+                              <span className="text-xs opacity-60">12</span>
+                            </button>
+                          ))}
+                </div>
+              </div>
+
+                      <div>
+                        <h4 className="text-sm font-medium text-neutral-700 mb-3">Quando</h4>
+                        <div className="flex flex-wrap gap-2">
+                          {[
+                            { name: 'Hoje', count: 5 },
+                            { name: 'Esta Semana', count: 23 },
+                            { name: 'Este Mês', count: 87 },
+                            { name: 'Próximos', count: 156 }
+                          ].map((filter) => (
+                            <button
+                              key={filter.name}
+                              onClick={() => setActiveTimeFilter(activeTimeFilter === filter.name ? null : filter.name)}
+                              className={`px-3 py-2 rounded-full text-sm font-medium transition-colors ${
+                                activeTimeFilter === filter.name
+                                  ? 'bg-primary-500 text-white'
+                                  : 'bg-neutral-100 hover:bg-neutral-200 text-neutral-700'
+                              }`}
+                            >
+                              {filter.name} ({filter.count})
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+
+                      <div>
+                        <h4 className="text-sm font-medium text-neutral-700 mb-3">Local</h4>
+                        <div className="flex flex-wrap gap-2">
+                          <button className="px-3 py-2 rounded-full text-sm font-medium bg-neutral-100 hover:bg-neutral-200 text-neutral-700 transition-colors">
+                            <MapPin className="w-4 h-4 inline mr-1" />
+                            Próximo a mim
+                          </button>
+                          <button className="px-3 py-2 rounded-full text-sm font-medium bg-neutral-100 hover:bg-neutral-200 text-neutral-700 transition-colors">
+                            Online
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Feed Central - IGUAL ao padrão */}
+            <div className="lg:col-span-6">
+              <div className="space-y-6">
+                
+                {/* Busca Principal */}
+                <div className="card p-4">
+                  <h2 className="font-semibold text-neutral-800 mb-4 flex items-center gap-2">
+                    🔍 Buscar Eventos
+                  </h2>
+                  
+                  <SearchBar
+                    onFiltersToggle={() => setShowFilters(true)}
+                    showFiltersButton={true}
+                    placeholder="Buscar eventos, organizadores, locais..."
+                  />
+                  
+                  {/* Filtros Ativos */}
+                  {(activeCategory || activeTimeFilter) && (
+                    <div className="flex items-center gap-2 mt-4">
+                      <span className="text-sm text-neutral-600">Filtros ativos:</span>
+                      {activeCategory && (
+                        <span className="inline-flex items-center px-2 py-1 bg-primary-100 text-primary-700 text-xs rounded-full">
+                          {activeCategory}
+                          <button
+                            onClick={() => setActiveCategory(null)}
+                            className="ml-1 hover:text-primary-900"
+                          >
+                            ×
+                          </button>
+                        </span>
+                      )}
+                      {activeTimeFilter && (
+                        <span className="inline-flex items-center px-2 py-1 bg-primary-100 text-primary-700 text-xs rounded-full">
+                          {activeTimeFilter}
+                          <button
+                            onClick={() => setActiveTimeFilter(null)}
+                            className="ml-1 hover:text-primary-900"
+                          >
+                            ×
+                          </button>
+                        </span>
+                      )}
+                      <button
+                        onClick={() => {
+                          setActiveCategory(null);
+                          setActiveTimeFilter(null);
+                        }}
+                        className="text-xs text-neutral-500 hover:text-neutral-700 ml-2"
+                      >
+                        Limpar todos
+                      </button>
+                    </div>
+                  )}
+                </div>
+
+                {/* Controles e Estatísticas */}
+                <div className="card p-4">
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="flex items-center space-x-4">
+                      <div className="text-sm text-neutral-600">
+                        <span className="font-semibold text-neutral-800">156</span> eventos encontrados
+                      </div>
+                      <div className="text-sm text-neutral-600">
+                        Busca em <span className="font-semibold text-neutral-800">0.15s</span>
+                      </div>
+                    </div>
+                    
+                    <div className="flex items-center space-x-2">
+                      <button
+                        onClick={() => setShowFilters(!showFilters)}
+                        className={`flex items-center px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                          showFilters 
+                            ? 'bg-primary-500 text-white'
+                            : 'bg-neutral-100 hover:bg-neutral-200 text-neutral-700'
+                        }`}
+                      >
+                        <Filter className="w-4 h-4 mr-2" />
+                        Filtros
+                      </button>
+                      
+                      <div className="flex items-center border border-neutral-300 rounded-lg">
+                        <button
+                          onClick={() => setViewMode('grid')}
+                          className={`p-2 transition-colors ${
+                            viewMode === 'grid' 
+                              ? 'bg-primary-100 text-primary-600' 
+                              : 'text-neutral-400 hover:text-neutral-600'
+                          }`}
+                        >
+                          <Grid className="w-4 h-4" />
+                        </button>
+                        <button
+                          onClick={() => setViewMode('list')}
+                          className={`p-2 transition-colors ${
+                            viewMode === 'list' 
+                              ? 'bg-primary-100 text-primary-600' 
+                              : 'text-neutral-400 hover:text-neutral-600'
+                          }`}
+                        >
+                          <List className="w-4 h-4" />
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-center justify-between">
+                    <div className="flex flex-wrap gap-2">
+                      <select className="bg-neutral-100 border-0 rounded-lg px-3 py-2 text-sm">
+                        <option>Ordenar por Relevância</option>
+                        <option>Data</option>
+                        <option>Proximidade</option>
+                        <option>Popularidade</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Advanced Filters */}
+                {showFilters && (
+                  <div className="card p-4">
+                    <AdvancedFilters
+                      isOpen={true}
+                      onClose={() => setShowFilters(false)}
+                    />
+                  </div>
+                )}
+
+                {/* Search Results */}
+                <SearchResults
+                  onFiltersToggle={() => setShowFilters(true)}
+                  viewMode={viewMode}
+                />
+                
+              </div>
+            </div>
+
+            {/* Sidebar Direita - IGUAL ao padrão */}
+            <div className="lg:col-span-3 hidden lg:block">
+              <div className="sticky top-20">
+                <div className="space-y-6">
+                  
+                  {/* Buscas Populares */}
+                  <div className="card p-4">
+                    <h3 className="font-semibold text-neutral-800 mb-4 flex items-center gap-2">
+                      <TrendingUp className="w-5 h-5" />
+                      Buscas Populares
+                    </h3>
+                    <div className="space-y-2">
+                      {[
+                        'React Meetup',
+                        'Futebol Amador',
+                        'Workshop Fotografia',
+                        'Aula de Culinária',
+                        'Networking Tech'
+                      ].map((term) => (
+                        <button
+                          key={term}
+                          className="block w-full text-left px-3 py-2 text-sm text-neutral-600 hover:text-primary-600 hover:bg-neutral-50 rounded-lg transition-colors"
+                        >
+                          🔥 {term}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Eventos Próximos */}
+                  <div className="card p-4">
+                    <h3 className="font-semibold text-neutral-800 mb-4 flex items-center gap-2">
+                      <MapPin className="w-5 h-5" />
+                      Próximo a Você
+                    </h3>
+                    <div className="space-y-3">
+                      {[
+                        { name: 'Tech Talk React', distance: '2.5 km', time: 'Hoje 19h' },
+                        { name: 'Corrida no Parque', distance: '1.2 km', time: 'Amanhã 7h' },
+                        { name: 'Workshop Design', distance: '3.8 km', time: 'Sábado 14h' }
+                      ].map((event) => (
+                        <button
+                          key={event.name}
+                          className="w-full p-3 bg-neutral-50 hover:bg-neutral-100 rounded-lg transition-colors text-left"
+                        >
+                          <div className="font-medium text-sm text-neutral-800">{event.name}</div>
+                          <div className="text-xs text-neutral-600 mt-1">
+                            📍 {event.distance} • ⏰ {event.time}
+                          </div>
+                          <div className="flex items-center justify-between mt-2">
+                            <span className="text-xs text-green-600 font-medium">12 participantes</span>
+                            <span className="text-xs text-primary-600 hover:text-primary-800">Ver detalhes →</span>
+                          </div>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Dicas */}
+                  <div className="card p-4 bg-gradient-to-br from-blue-50 to-purple-50">
+                    <h4 className="font-semibold text-neutral-800 mb-3">💡 Dicas de Busca</h4>
+                    <ul className="text-sm text-neutral-600 space-y-2">
+                      <li>• Use aspas para busca exata: "React Native"</li>
+                      <li>• Combine filtros para resultados precisos</li>
+                      <li>• Busque por local para eventos próximos</li>
+                      <li>• Salve buscas frequentes nos favoritos</li>
+                    </ul>
+                  </div>
+                  
+                </div>
+              </div>
+            </div>
+
           </div>
-
-          {/* Header da Busca */}
-          <div className="mb-8">
-            <h1 className="text-3xl font-bold text-neutral-800 mb-2">
-              Buscar Eventos
-            </h1>
-            <p className="text-neutral-600">
-              Encontre eventos incríveis próximos a você
-            </p>
-          </div>
-
-          {/* Barra de Busca */}
-          <div className="mb-8">
-            <SearchBar
-              onFiltersToggle={() => setShowFilters(true)}
-              showFiltersButton={true}
-              className="max-w-2xl"
-            />
-          </div>
-
-          {/* Estatísticas */}
-          {searchStats.totalResults > 0 && (
-            <SearchStats
-              totalResults={searchStats.totalResults}
-              searchTime={0.15}
-              popularSearches={['Tecnologia', 'Música', 'Networking']}
-            />
-          )}
-
-          {/* Resultados */}
-          <SearchResults
-            onFiltersToggle={() => setShowFilters(true)}
-          />
-
-          {/* Modal de Filtros */}
-          <AdvancedFilters
-            isOpen={showFilters}
-            onClose={() => setShowFilters(false)}
-          />
         </div>
       </div>
+
+      {/* Modal de Filtros para Mobile */}
+      <AdvancedFilters
+        isOpen={showFilters}
+        onClose={() => setShowFilters(false)}
+      />
     </div>
   )
 }
