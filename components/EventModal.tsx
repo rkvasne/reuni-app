@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { X, Calendar, Clock, MapPin, Users, Image, Tag } from 'lucide-react'
 import { useEvents, type Event, type CreateEventData } from '@/hooks/useEvents'
 import ParticipantsList from './ParticipantsList'
+import ImageUpload from './ImageUpload'
 
 interface EventModalProps {
   isOpen: boolean
@@ -366,18 +367,19 @@ export default function EventModal({ isOpen, onClose, event, mode = 'create' }: 
             </select>
           </div>
 
-          {/* Imagem URL */}
+          {/* Upload de Imagem */}
           <div>
             <label className="block text-sm font-medium text-neutral-700 mb-2">
               <Image className="w-4 h-4 inline mr-1" />
-              URL da Imagem
+              Imagem do Evento
             </label>
-            <input
-              type="url"
+            <ImageUpload
               value={formData.imagem_url}
-              onChange={(e) => setFormData(prev => ({ ...prev, imagem_url: e.target.value }))}
-              className="w-full px-4 py-3 border border-neutral-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all"
-              placeholder="https://exemplo.com/imagem.jpg"
+              onChange={(url) => setFormData(prev => ({ ...prev, imagem_url: url }))}
+              onRemove={() => setFormData(prev => ({ ...prev, imagem_url: '' }))}
+              bucket="events"
+              folder="images"
+              placeholder="Clique para fazer upload ou arraste uma imagem do evento"
             />
           </div>
 

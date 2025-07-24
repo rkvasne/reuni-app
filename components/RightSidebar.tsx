@@ -41,11 +41,7 @@ const suggestions = [
   }
 ]
 
-const trendingCommunities = [
-  { name: 'Fotografia SP', members: '3.2k', growth: '+12%' },
-  { name: 'Empreendedores', members: '1.8k', growth: '+8%' },
-  { name: 'Yoga & Bem-estar', members: '2.1k', growth: '+15%' }
-]
+const trendingCommunities: any[] = []
 
 export default function RightSidebar() {
   return (

@@ -289,13 +289,7 @@ export default function SearchPage() {
                       Buscas Populares
                     </h3>
                     <div className="space-y-2">
-                      {[
-                        'React Meetup',
-                        'Futebol Amador',
-                        'Workshop Fotografia',
-                        'Aula de Culinária',
-                        'Networking Tech'
-                      ].map((term) => (
+                      {[].map((term: string) => (
                         <button
                           key={term}
                           className="block w-full text-left px-3 py-2 text-sm text-neutral-600 hover:text-primary-600 hover:bg-neutral-50 rounded-lg transition-colors"

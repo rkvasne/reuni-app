@@ -4,6 +4,7 @@ import { useState, useRef } from 'react'
 import { Camera, Upload, X, Check } from 'lucide-react'
 import Image from 'next/image'
 import { useUserProfile } from '@/hooks/useUserProfile'
+import ImageUpload from './ImageUpload'
 
 interface AvatarUploadProps {
   currentAvatar?: string

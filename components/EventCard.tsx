@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { Calendar, MapPin, Users, Heart, MessageCircle, Share2, Edit, Trash2, MoreHorizontal, Check } from 'lucide-react'
-import Image from 'next/image'
+import OptimizedImage from './OptimizedImage'
 import { useAuth } from '@/hooks/useAuth'
 import { useEvents, type Event } from '@/hooks/useEvents'
 import EventModal from './EventModal'
@@ -88,11 +88,17 @@ export default function EventCard({ event }: EventCardProps) {
       {/* Imagem do Evento */}
       <div className="relative h-48 bg-neutral-200">
         {event.imagem_url ? (
-          <Image
+          <OptimizedImage
             src={event.imagem_url}
             alt={event.titulo}
             fill
             className="object-cover"
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+            fallback={
+              <div className="w-full h-full bg-gradient-to-br from-primary-100 to-secondary-100 flex items-center justify-center">
+                <Calendar className="w-16 h-16 text-primary-400" />
+              </div>
+            }
           />
         ) : (
           <div className="w-full h-full bg-gradient-to-br from-primary-100 to-secondary-100 flex items-center justify-center">
@@ -128,12 +134,19 @@ export default function EventCard({ event }: EventCardProps) {
             </h3>
             <div className="flex items-center gap-2">
               {event.organizador?.avatar ? (
-                <Image
+                <OptimizedImage
                   src={event.organizador.avatar}
                   alt={event.organizador.nome}
                   width={20}
                   height={20}
-                  className="rounded-full"
+                  className="rounded-full object-cover flex-shrink-0"
+                  fallback={
+                    <div className="w-5 h-5 bg-primary-500 rounded-full flex items-center justify-center">
+                      <span className="text-xs text-white font-medium">
+                        {event.organizador?.nome?.charAt(0) || 'U'}
+                      </span>
+                    </div>
+                  }
                 />
               ) : (
                 <div className="w-5 h-5 bg-primary-500 rounded-full flex items-center justify-center">

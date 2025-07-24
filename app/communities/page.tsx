@@ -80,12 +80,12 @@ export default function CommunitiesPage() {
                     
                     <div className="space-y-2">
                       {[
-                        { name: 'Tecnologia', icon: '💻', count: 23 },
-                        { name: 'Esportes', icon: '⚽', count: 18 },
-                        { name: 'Arte', icon: '🎨', count: 15 },
-                        { name: 'Música', icon: '🎵', count: 12 },
-                        { name: 'Culinária', icon: '🍳', count: 9 },
-                        { name: 'Negócios', icon: '💼', count: 7 }
+                        { name: 'Tecnologia', icon: '💻' },
+                        { name: 'Esportes', icon: '⚽' },
+                        { name: 'Arte', icon: '🎨' },
+                        { name: 'Música', icon: '🎵' },
+                        { name: 'Culinária', icon: '🍳' },
+                        { name: 'Negócios', icon: '💼' }
                       ].map((category) => (
                         <button
                           key={category.name}
@@ -93,7 +93,6 @@ export default function CommunitiesPage() {
                         >
                           <span className="mr-3">{category.icon}</span>
                           <span className="flex-1">{category.name}</span>
-                          <span className="text-xs opacity-60">{category.count}</span>
                         </button>
                       ))}
                     </div>
@@ -105,15 +104,15 @@ export default function CommunitiesPage() {
                     <div className="space-y-3">
                       <div className="flex items-center justify-between">
                         <span className="text-sm text-neutral-600">Total de Comunidades</span>
-                        <span className="font-semibold text-neutral-800">84</span>
+                        <span className="font-semibold text-neutral-800">-</span>
                       </div>
                       <div className="flex items-center justify-between">
                         <span className="text-sm text-neutral-600">Membros Ativos</span>
-                        <span className="font-semibold text-neutral-800">1,234</span>
+                        <span className="font-semibold text-neutral-800">-</span>
                       </div>
                       <div className="flex items-center justify-between">
                         <span className="text-sm text-neutral-600">Eventos Criados</span>
-                        <span className="font-semibold text-neutral-800">456</span>
+                        <span className="font-semibold text-neutral-800">-</span>
                       </div>
                     </div>
                   </div>
@@ -215,25 +214,10 @@ export default function CommunitiesPage() {
                       <Star className="w-5 h-5" />
                       Em Destaque
                     </h3>
-                    <div className="space-y-3">
-                      {[
-                        { name: 'React Developers', members: 1234, category: '💻' },
-                        { name: 'Futebol Amador SP', members: 856, category: '⚽' },
-                        { name: 'Fotografia Urbana', members: 642, category: '📸' }
-                      ].map((community) => (
-                        <button
-                          key={community.name}
-                          className="w-full p-3 bg-neutral-50 hover:bg-neutral-100 rounded-lg transition-colors text-left"
-                        >
-                          <div className="flex items-center gap-3">
-                            <span className="text-2xl">{community.category}</span>
-                            <div className="flex-1">
-                              <div className="font-medium text-sm text-neutral-800">{community.name}</div>
-                              <div className="text-xs text-neutral-600">{community.members} membros</div>
-                            </div>
-                          </div>
-                        </button>
-                      ))}
+                    <div className="text-center py-6">
+                      <p className="text-sm text-neutral-500">
+                        Nenhuma comunidade em destaque ainda
+                      </p>
                     </div>
                   </div>
 
@@ -243,22 +227,10 @@ export default function CommunitiesPage() {
                       <Calendar className="w-5 h-5" />
                       Próximos Eventos
                     </h3>
-                    <div className="space-y-3">
-                      {[
-                        { name: 'Meetup React', community: 'React Devs', time: 'Hoje 19h' },
-                        { name: 'Pelada no Parque', community: 'Futebol SP', time: 'Amanhã 8h' },
-                        { name: 'Workshop Foto', community: 'Foto Urbana', time: 'Sábado 14h' }
-                      ].map((event) => (
-                        <button
-                          key={event.name}
-                          className="w-full p-3 bg-neutral-50 hover:bg-neutral-100 rounded-lg transition-colors text-left"
-                        >
-                          <div className="font-medium text-sm text-neutral-800">{event.name}</div>
-                          <div className="text-xs text-neutral-600 mt-1">
-                            {event.community} • {event.time}
-                          </div>
-                        </button>
-                      ))}
+                    <div className="text-center py-6">
+                      <p className="text-sm text-neutral-500">
+                        Nenhum evento próximo
+                      </p>
                     </div>
                   </div>
 

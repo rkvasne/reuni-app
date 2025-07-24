@@ -1,157 +1,93 @@
-# Migrações do Supabase - Sistema de Comunidades
+# 📁 Migrações do Banco de Dados
 
-Este diretório contém todas as migrações SQL organizadas cronologicamente para facilitar a manutenção e aplicação.
+## 🎯 **ARQUIVOS ESSENCIAIS (Use apenas estes)**
 
-## 📋 Ordem de Execução
+### **OBRIGATÓRIO**
+- `FINAL_fix_events.sql` - **Execute SEMPRE** - Corrige eventos e participações
 
-### Migrações Principais (Execute em ordem)
+### **OPCIONAL**
+- `FINAL_setup_storage.sql` - Execute se quiser upload de imagens
 
-1. **`001_initial_communities_migration.sql`** - Migração inicial completa
-   - Cria/atualiza tabela `comunidades`
-   - Cria tabela `membros_comunidade`
-   - Adiciona índices de performance
-   - Configura relacionamentos
+---
 
-2. **`002_rls_policies_setup.sql`** - Configuração de políticas RLS
-   - Habilita Row Level Security
-   - Cria políticas de acesso para comunidades
-   - Cria políticas de acesso para membros
+## 🏘️ **Sistema de Comunidades (Opcional)**
 
-3. **`003_triggers_and_functions.sql`** - Triggers e funções
-   - Função para atualizar contador de membros
-   - Função para atualizar contador de eventos
-   - Triggers automáticos para manter contadores
+Se quiser o sistema completo de comunidades:
 
-### Migrações Alternativas
+### **Base**
+- `001_initial_communities_migration.sql` - Cria tabelas de comunidades
+- `003_triggers_and_functions.sql` - Triggers para contadores
 
-4. **`004_minimal_migration.sql`** - Migração mínima
-   - Versão simplificada da migração inicial
-   - Use se a migração completa falhar
+### **Correções**
+- `009_fix_admins.sql` - Adiciona criadores como admins
+- `010_fix_rls_recursion.sql` - Corrige problemas de RLS
+- `011_disable_rls_temp.sql` - Desabilita RLS (apenas desenvolvimento)
 
-### Scripts de Verificação
+---
 
-5. **`005_check_structure.sql`** - Verificar estrutura das tabelas
-6. **`006_test_communities.sql`** - Inserir dados de teste
-7. **`007_safe_test.sql`** - Verificações sem inserções
-8. **`008_quick_check.sql`** - Verificação rápida
-9. **`009_fix_admins.sql`** - Corrigir criadores como admins
+## 🚀 **Como Usar**
 
-### Correções RLS (Criadas Recentemente)
-
-10. **`010_fix_rls_recursion.sql`** - ⚠️ Correção para recursão RLS
-    - Use quando houver erro "infinite recursion detected"
-    - Remove políticas problemáticas
-    - Cria políticas simples sem recursão
-
-11. **`011_disable_rls_temp.sql`** - ⚠️ Desabilitar RLS temporariamente
-    - **APENAS PARA DESENVOLVIMENTO**
-    - Remove todas as políticas RLS
-    - Use como último recurso
-
-## 🚀 Como Usar
-
-### Primeira Instalação
+### **Mínimo (apenas eventos)**
 ```sql
--- 1. Execute a migração inicial
-\i 001_initial_communities_migration.sql
-
--- 2. Configure as políticas RLS
-\i 002_rls_policies_setup.sql
-
--- 3. Configure triggers e funções
-\i 003_triggers_and_functions.sql
+-- Execute no SQL Editor do Supabase:
+FINAL_fix_events.sql
 ```
 
-### Se Houver Erro de Recursão RLS
+### **Com upload de imagens**
 ```sql
--- Opção 1: Corrigir políticas (recomendado)
-\i 010_fix_rls_recursion.sql
-
--- Opção 2: Desabilitar temporariamente (desenvolvimento)
-\i 011_disable_rls_temp.sql
+-- Execute no SQL Editor do Supabase:
+FINAL_fix_events.sql
+FINAL_setup_storage.sql
 ```
 
-### Verificar Instalação
+### **Sistema completo**
 ```sql
--- Verificação completa
-\i 007_safe_test.sql
-
--- Verificação rápida
-\i 008_quick_check.sql
+-- Execute na ordem:
+001_initial_communities_migration.sql
+003_triggers_and_functions.sql
+009_fix_admins.sql
+010_fix_rls_recursion.sql
+FINAL_fix_events.sql
 ```
 
-## 🔧 Resolução de Problemas
+---
 
-### Erro: "infinite recursion detected"
-- **Causa**: Políticas RLS com referências circulares
+## ⚠️ **Problemas Comuns**
+
+### **Erro: "max_participantes column not found"**
+- **Solução**: Execute `FINAL_fix_events.sql`
+
+### **Erro: "bucket does not exist"**
+- **Solução**: Execute `FINAL_setup_storage.sql`
+
+### **Erro: "infinite recursion detected"**
 - **Solução**: Execute `010_fix_rls_recursion.sql`
 
-### Erro: "relation does not exist"
-- **Causa**: Tabelas não foram criadas
-- **Solução**: Execute `001_initial_communities_migration.sql`
-
-### Comunidades sem admin
-- **Causa**: Criadores não foram adicionados como admins
+### **Comunidades sem admin**
 - **Solução**: Execute `009_fix_admins.sql`
 
-### Contadores incorretos
-- **Causa**: Triggers não configurados ou dados inconsistentes
-- **Solução**: Execute `003_triggers_and_functions.sql`
+---
 
-## 📊 Estrutura Final
+## 📊 **Status dos Arquivos**
 
-Após executar as migrações principais, você terá:
+| Arquivo | Status | Descrição |
+|---------|--------|-----------|
+| `FINAL_fix_events.sql` | ✅ **OBRIGATÓRIO** | Corrige eventos |
+| `FINAL_setup_storage.sql` | ✅ Opcional | Upload de imagens |
+| `001_initial_communities_migration.sql` | ✅ Estável | Base comunidades |
+| `003_triggers_and_functions.sql` | ✅ Estável | Triggers |
+| `009_fix_admins.sql` | ✅ Estável | Correção admins |
+| `010_fix_rls_recursion.sql` | ✅ Estável | Correção RLS |
+| `011_disable_rls_temp.sql` | ⚠️ Dev Only | Desabilita RLS |
 
-### Tabela `comunidades`
-- `id` (UUID, PK)
-- `nome` (VARCHAR, NOT NULL)
-- `descricao` (TEXT)
-- `avatar_url` (TEXT)
-- `banner_url` (TEXT)
-- `categoria` (VARCHAR, NOT NULL)
-- `tipo` (VARCHAR, CHECK: publica/privada/restrita)
-- `criador_id` (UUID, FK → usuarios)
-- `membros_count` (INTEGER, auto-atualizado)
-- `eventos_count` (INTEGER, auto-atualizado)
-- `created_at` (TIMESTAMP)
-- `updated_at` (TIMESTAMP)
+---
 
-### Tabela `membros_comunidade`
-- `id` (UUID, PK)
-- `comunidade_id` (UUID, FK → comunidades)
-- `usuario_id` (UUID, FK → usuarios)
-- `papel` (VARCHAR, CHECK: admin/moderador/membro)
-- `status` (VARCHAR, CHECK: ativo/pendente/banido)
-- `joined_at` (TIMESTAMP)
-- UNIQUE(comunidade_id, usuario_id)
+## 🎯 **Recomendação**
 
-### Políticas RLS
-- Comunidades públicas visíveis para todos
-- Comunidades privadas apenas para membros
-- Criadores podem gerenciar suas comunidades
-- Membros podem participar e sair
+**Para a maioria dos casos**: Execute apenas `FINAL_fix_events.sql`  
+**Para upload**: Adicione `FINAL_setup_storage.sql`  
+**Para comunidades**: Execute o sistema completo  
 
-### Triggers
-- Contador de membros atualizado automaticamente
-- Contador de eventos atualizado automaticamente
+---
 
-## 🔄 Versionamento
-
-Os arquivos seguem a convenção:
-- `001_xxx` - Migrações principais
-- `004_xxx` - Correções específicas
-- `007_xxx` - Scripts de verificação
-
-Para adicionar nova migração:
-1. Crie arquivo `012_nova_funcionalidade.sql`
-2. Documente no README
-3. Teste em ambiente de desenvolvimento
-4. Aplique em produção
-
-## ⚠️ Avisos Importantes
-
-- **Sempre faça backup** antes de executar migrações
-- **Teste em desenvolvimento** antes de aplicar em produção
-- **Execute em ordem** para evitar dependências quebradas
-- **Não modifique** arquivos já aplicados, crie novos
-- **Scripts 011_xxx** são apenas para desenvolvimento
+**Simples assim!** 🚀

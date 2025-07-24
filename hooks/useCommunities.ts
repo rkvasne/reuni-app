@@ -107,52 +107,12 @@ export function useCommunities() {
       } catch (err: any) {
         if (err.code === '42P17' || err.message?.includes('infinite recursion')) {
           isRLSError = true;
-          console.warn('Erro de recursão RLS detectado, usando dados de exemplo');
+          console.warn('Erro de recursão RLS detectado');
           
-          // Dados de exemplo para quando há erro RLS
-          communitiesData = [
-            {
-              id: 'example-1',
-              nome: 'React Developers',
-              descricao: 'Comunidade para desenvolvedores React',
-              categoria: 'Tecnologia',
-              tipo: 'publica',
-              criador_id: user?.id || 'example-user',
-              membros_count: 156,
-              eventos_count: 23,
-              created_at: new Date().toISOString(),
-              updated_at: new Date().toISOString(),
-              criador: { nome: 'Desenvolvedor' }
-            },
-            {
-              id: 'example-2',
-              nome: 'Futebol Amador SP',
-              descricao: 'Peladas e campeonatos em São Paulo',
-              categoria: 'Esportes',
-              tipo: 'publica',
-              criador_id: user?.id || 'example-user',
-              membros_count: 89,
-              eventos_count: 12,
-              created_at: new Date().toISOString(),
-              updated_at: new Date().toISOString(),
-              criador: { nome: 'Organizador' }
-            },
-            {
-              id: 'example-3',
-              nome: 'Fotografia Urbana',
-              descricao: 'Explorando a cidade através das lentes',
-              categoria: 'Arte',
-              tipo: 'publica',
-              criador_id: user?.id || 'example-user',
-              membros_count: 67,
-              eventos_count: 8,
-              created_at: new Date().toISOString(),
-              updated_at: new Date().toISOString(),
-              criador: { nome: 'Fotógrafo' }
-            }
-          ];
+          // Dados vazios para quando há erro RLS
+          communitiesData = [];
           
-          setError('⚠️ Problema temporário no banco de dados. Mostrando dados de exemplo. Execute o script de correção RLS.');
+          setError('⚠️ Problema temporário no banco de dados. Execute o script de correção RLS.');
         } else {
           throw err;
         }

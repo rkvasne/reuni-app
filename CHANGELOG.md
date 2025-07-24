@@ -2,6 +2,79 @@
 
 Todas as mudanças notáveis neste projeto serão documentadas neste arquivo.
 
+## [0.0.7-dev] - Em Desenvolvimento
+
+### 🎯 Próximas Features (v0.0.7)
+- **Sistema de Posts**: Criação e visualização de posts nas comunidades
+- **Comentários**: Sistema de comentários nos posts
+- **Reações**: Like, love, laugh, angry nos posts
+- **Moderação**: Ferramentas completas para moderadores
+- **Punições**: Ban, timeout e warnings
+- **Notificações**: Sistema de notificações em tempo real
+- **Logs**: Histórico completo de ações de moderação
+
+## [0.0.6] - 2025-07-24 - Correções e Otimizações
+
+### 🔧 Corrigido
+- **Erros SQL**: `CREATE POLICY IF NOT EXISTS` → sintaxe PostgreSQL válida
+- **Next.js Image**: Hostname do Supabase adicionado ao `next.config.js`
+- **OptimizedImage**: Validação de URL vazia e fallbacks melhorados
+- **Upload de imagens**: Funcionando perfeitamente com Supabase Storage
+
+### 🧹 Limpeza
+- **16 arquivos .md desnecessários removidos**
+- **3 migrações redundantes removidas**
+- **Documentação reorganizada e simplificada**
+
+### 📁 Arquivos Essenciais
+- `FINAL_fix_events.sql` - OBRIGATÓRIO para eventos
+- `FINAL_setup_storage.sql` - OPCIONAL para upload
+- `TROUBLESHOOTING.md` - Guia de problemas comuns
+- `README_STATUS.md` - Status atual do projeto
+
+## [0.0.5] - 2025-07-24 - Sistema de Comunidades ✅ CONCLUÍDA
+
+### ✅ Adicionado
+- **Sistema completo de comunidades**
+  - Criação e gerenciamento de comunidades
+  - Sistema de membros com roles (admin, moderador, membro)
+  - Interface para descoberta de comunidades
+  - Integração com eventos
+- **Upload de imagens**
+  - Componente drag & drop para upload (`ImageUpload.tsx`)
+  - Storage configurado no Supabase
+  - Validação de tipos e tamanhos
+  - Componente otimizado para exibição (`OptimizedImage.tsx`)
+- **Correções de eventos**
+  - Campo max_participantes adicionado
+  - Tabela participacoes criada
+  - Sistema de inscrições funcionando
+
+### 🔧 Corrigido
+- Problemas de RLS em comunidades
+- Erros de schema em eventos (coluna max_participantes)
+- Performance de queries
+- Interface responsiva
+- Validações de formulário
+
+### 🧹 Limpeza
+- **Arquivos desnecessários removidos**: 16 arquivos .md confusos deletados
+- **Migrações simplificadas**: Apenas 2 arquivos essenciais mantidos
+- **Documentação limpa**: README_STATUS.md criado com instruções claras
+
+### 🔧 Correções Finais
+- **Erros SQL corrigidos**: `CREATE POLICY IF NOT EXISTS` → sintaxe válida
+- **Next.js Image configurado**: Hostname do Supabase adicionado
+- **OptimizedImage melhorado**: Validação de URL e fallbacks
+- **Troubleshooting criado**: Guia de problemas comuns
+
+### 📊 Técnico
+- **Migrações essenciais**: `FINAL_fix_events.sql` (obrigatório) e `FINAL_setup_storage.sql` (opcional)
+- **Componentes React otimizados**: OptimizedImage, ImageUpload
+- **Hooks customizados**: useCommunities, useCommunity
+- **Sistema de cache implementado**
+- **Upload funcional**: Drag & drop + Supabase Storage
+
 ## [0.0.4] - 2025-07-22
 
 ### ✅ Adicionado
