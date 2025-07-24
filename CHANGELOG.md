@@ -2,9 +2,9 @@
 
 Todas as mudanças notáveis neste projeto serão documentadas neste arquivo.
 
-## [0.0.7-dev] - Em Desenvolvimento
+## [0.0.8-dev] - Em Desenvolvimento
 
-### 🎯 Próximas Features (v0.0.7)
+### 🎯 Próximas Features (v0.0.8)
 - **Sistema de Posts**: Criação e visualização de posts nas comunidades
 - **Comentários**: Sistema de comentários nos posts
 - **Reações**: Like, love, laugh, angry nos posts
@@ -12,6 +12,49 @@ Todas as mudanças notáveis neste projeto serão documentadas neste arquivo.
 - **Punições**: Ban, timeout e warnings
 - **Notificações**: Sistema de notificações em tempo real
 - **Logs**: Histórico completo de ações de moderação
+
+## [0.0.7] - 2025-07-24 - Sistema Social Completo e Interface Responsiva
+
+### ✨ Adicionado
+- **Interface Social Rica**
+  - Feed central melhorado com seções sociais personalizadas
+  - Sidebar direita expandida com blocos informativos
+  - Banner de destaques com carrossel automático
+  - Filtros avançados colapsáveis e intuitivos
+  - Mini calendário interativo para navegação por datas
+- **Funcionalidades Sociais**
+  - Eventos de Amigos - Slider horizontal com eventos que amigos vão participar
+  - Sugeridos para Você - Algoritmo inteligente baseado em preferências
+  - Comunidades em Alta - Trending baseado em atividade e crescimento
+  - Amigos Indo Hoje - Lista de amigos com eventos do dia
+  - Ações Rápidas - Grid 2x4 com atalhos coloridos
+- **Sistema de Calendário**
+  - Navegação por meses com setas e botão "Hoje"
+  - Indicadores visuais de eventos (dots/números)
+  - Lista de eventos da data selecionada
+  - Variantes modal e dropdown
+  - Integração no feed e sidebar
+- **Responsividade Completa**
+  - Mobile First design adaptável
+  - Touch interactions otimizadas para mobile
+  - Sidebars colapsáveis como drawers no mobile
+  - Sliders com drag e momentum scrolling
+  - Layout responsivo para todos os dispositivos
+
+### 🔧 Melhorado
+- **25+ componentes** criados/melhorados
+- **5 hooks personalizados** para dados sociais
+- **Algoritmos inteligentes** de sugestão e trending
+- **Performance otimizada** com lazy loading e memoização
+- **Acessibilidade** WCAG AA compliance
+
+### 📊 Técnico
+- **Componentes UI**: HorizontalSlider, SidebarBlock, AnimatedCard, SkeletonLoader
+- **Componentes Sociais**: SocialEventCard, EventSlider, FriendsEventsBlock, TrendingCommunitiesBlock
+- **Sistema de Calendário**: MiniCalendar, CalendarModal, CalendarDropdown
+- **Hooks**: useCalendar, useFriendsEvents, useSuggestedEvents, useTrendingCommunities, useBreakpoint
+- **Layout Responsivo**: ResponsiveLayout com breakpoints adaptativos
+- **Animações**: Micro-interações suaves de 60fps
 
 ## [0.0.6] - 2025-07-24 - Correções e Otimizações
 

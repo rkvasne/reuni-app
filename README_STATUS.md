@@ -32,5 +32,5 @@
 5. Pronto para usar!
 
 ---
-**Versão atual**: 0.0.6 (correções e otimizações)
-**Próxima versão**: 0.0.7 (sistema de moderação)
+**Versão atual**: 0.0.7 (sistema social completo e interface responsiva)
+**Próxima versão**: 0.0.8 (sistema de moderação)

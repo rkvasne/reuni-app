@@ -4,10 +4,16 @@ import { useState } from 'react'
 import { Plus, Filter, Search } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import EventCard from './EventCard'
-import FeaturedCarousel from './FeaturedCarousel'
+import FeaturedBanner from './FeaturedBanner'
 import EventModal from './EventModal'
+import SocialSection from './SocialSection'
+import EventSlider from './EventSlider'
+import AdvancedFilterBar from './AdvancedFilterBar'
+import CalendarButton from './CalendarButton'
 import { useEvents } from '@/hooks/useEvents'
 import { useAuth } from '@/hooks/useAuth'
+import { useFriendsEvents } from '@/hooks/useFriendsEvents'
+import { useSuggestedEvents } from '@/hooks/useSuggestedEvents'
 
 export default function MainFeed() {
   const { events, loading, error, fetchEvents } = useEvents()
@@ -15,6 +21,11 @@ export default function MainFeed() {
   const router = useRouter()
   const [showCreateModal, setShowCreateModal] = useState(false)
   const [activeFilter, setActiveFilter] = useState('Todos')
+  const [showAdvancedFilters, setShowAdvancedFilters] = useState(false)
+
+  // Hooks sociais
+  const { events: friendsEvents, loading: friendsLoading } = useFriendsEvents()
+  const { events: suggestedEvents, loading: suggestedLoading } = useSuggestedEvents()
 
   const filters = ['Todos', 'Hoje', 'Esta Semana', 'Próximo de Mim']
 
@@ -22,11 +33,41 @@ export default function MainFeed() {
     fetchEvents()
   }
 
+  const handleFiltersChange = (filters: any) => {
+    // TODO: Implementar lógica de filtros
+    console.log('Filtros aplicados:', filters)
+  }
+
+  const handleEventClick = (event: any) => {
+    // TODO: Abrir modal de detalhes do evento
+    console.log('Evento clicado:', event)
+  }
+
+  const handleDateSelect = (date: Date) => {
+    // TODO: Filtrar eventos por data selecionada
+    console.log('Data selecionada:', date)
+  }
+
+  const handleCalendarEventClick = (eventId: string) => {
+    // TODO: Abrir modal de detalhes do evento
+    console.log('Evento do calendário clicado:', eventId)
+  }
+
+  // Eventos em destaque (primeiros 3 eventos para o banner)
+  const featuredEvents = events.slice(0, 3).map(event => ({
+    ...event,
+    destaque_motivo: 'Evento Popular'
+  }))
+
   return (
-    <div className="space-y-4">
+    <div className="space-y-6">
       
-      {/* Carrossel de Destaques */}
-      <FeaturedCarousel />
+      {/* Banner de Destaques Melhorado */}
+      <FeaturedBanner 
+        events={featuredEvents}
+        loading={loading}
+        onEventClick={handleEventClick}
+      />
       
       {/* Busca Avançada - Card Separado */}
       <button
@@ -47,39 +88,57 @@ export default function MainFeed() {
         </div>
       </button>
       
-      {/* Filtros + Criar Evento */}
+      {/* Filtros Melhorados + Criar Evento */}
       <div className="card p-4">
         <div className="flex items-center justify-between mb-4">
           <h3 className="font-semibold text-neutral-800 flex items-center gap-2">
             <Filter className="w-5 h-5" />
             Filtros
           </h3>
-          {isAuthenticated && (
+          <div className="flex items-center gap-3">
+            <CalendarButton
+              onDateSelect={handleDateSelect}
+              onEventClick={handleCalendarEventClick}
+              variant="dropdown"
+              size="md"
+            />
             <button
-              onClick={() => setShowCreateModal(true)}
-              className="btn-primary flex items-center gap-2"
+              onClick={() => setShowAdvancedFilters(!showAdvancedFilters)}
+              className="text-sm text-primary-600 hover:text-primary-700 font-medium"
             >
-              <Plus className="w-4 h-4" />
-              Criar Evento
+              {showAdvancedFilters ? 'Filtros simples' : 'Filtros avançados'}
             </button>
-          )}
+            {isAuthenticated && (
+              <button
+                onClick={() => setShowCreateModal(true)}
+                className="btn-primary flex items-center gap-2"
+              >
+                <Plus className="w-4 h-4" />
+                Criar Evento
+              </button>
+            )}
+          </div>
         </div>
         
-        <div className="flex flex-wrap gap-2">
-          {filters.map((filter) => (
-            <button
-              key={filter}
-              onClick={() => setActiveFilter(filter)}
-              className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
-                activeFilter === filter
-                  ? 'bg-primary-500 text-white'
-                  : 'bg-neutral-100 hover:bg-neutral-200 text-neutral-700'
-              }`}
-            >
-              {filter}
-            </button>
-          ))}
-        </div>
+        {showAdvancedFilters ? (
+          <AdvancedFilterBar onFiltersChange={handleFiltersChange} />
+        ) : (
+          <div className="flex flex-wrap gap-2">
+            {filters.map((filter) => (
+              <button
+                key={filter}
+                onClick={() => setActiveFilter(filter)}
+                className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
+                  activeFilter === filter
+                    ? 'bg-primary-500 text-white'
+                    : 'bg-neutral-100 hover:bg-neutral-200 text-neutral-700'
+                }`}
+              >
+                {filter}
+              </button>
+            ))}
+          </div>
+        )}
       </div>
       
       {/* Estado de Loading */}
@@ -103,11 +162,55 @@ export default function MainFeed() {
         </div>
       )}
 
-      {/* Feed de Eventos */}
+      {/* Seções Sociais */}
+      {isAuthenticated && (
+        <>
+          {/* Eventos de Amigos */}
+          {friendsEvents.length > 0 && (
+            <SocialSection
+              title="Eventos de Amigos"
+              subtitle="Eventos que seus amigos vão participar"
+              viewAllLink="/friends/events"
+              loading={friendsLoading}
+            >
+              <EventSlider
+                events={friendsEvents}
+                loading={friendsLoading}
+                showSocialInfo={true}
+                onEventClick={handleEventClick}
+                emptyMessage="Seus amigos ainda não confirmaram presença em eventos"
+              />
+            </SocialSection>
+          )}
+
+          {/* Eventos Sugeridos */}
+          {suggestedEvents.length > 0 && (
+            <SocialSection
+              title="Sugeridos para Você"
+              subtitle="Baseado nos seus interesses e atividades"
+              viewAllLink="/suggested"
+              loading={suggestedLoading}
+            >
+              <EventSlider
+                events={suggestedEvents}
+                loading={suggestedLoading}
+                showSocialInfo={true}
+                onEventClick={handleEventClick}
+                emptyMessage="Nenhuma sugestão disponível no momento"
+              />
+            </SocialSection>
+          )}
+        </>
+      )}
+
+      {/* Feed Principal de Eventos */}
       {!loading && !error && (
         <>
           {events.length > 0 ? (
             <div className="space-y-4">
+              <h2 className="text-xl font-bold text-neutral-800 px-1">
+                Todos os Eventos
+              </h2>
               {events.map((event) => (
                 <EventCard key={event.id} event={event} />
               ))}

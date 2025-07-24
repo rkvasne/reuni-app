@@ -5,14 +5,14 @@
 ### 1. **Execute a migração obrigatória**
 ```sql
 -- No SQL Editor do Supabase Dashboard:
--- Copie e cole o conteúdo de: supabase/migrations/FINAL_fix_events.sql
+-- Copie e cole o conteúdo de: supabase/migrations/011_FINAL_fix_events.sql
 -- (Erros de sintaxe foram CORRIGIDOS)
 ```
 
 ### 2. **[OPCIONAL] Se quiser upload de imagens**
 ```sql
 -- No SQL Editor do Supabase Dashboard:
--- Copie e cole o conteúdo de: supabase/migrations/FINAL_setup_storage.sql
+-- Copie e cole o conteúdo de: supabase/migrations/012_FINAL_setup_storage.sql
 -- (Erros de sintaxe foram CORRIGIDOS)
 ```
 
@@ -30,8 +30,8 @@
 - ✅ Busca e perfis
 
 ## 📁 Arquivos importantes
-- `supabase/migrations/FINAL_fix_events.sql` - **OBRIGATÓRIO**
-- `supabase/migrations/FINAL_setup_storage.sql` - Opcional
+- `supabase/migrations/011_FINAL_fix_events.sql` - **OBRIGATÓRIO**
+- `supabase/migrations/012_FINAL_setup_storage.sql` - Opcional
 - `README_STATUS.md` - Status atual
 - `CHANGELOG.md` - Histórico de mudanças
 

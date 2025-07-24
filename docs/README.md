@@ -9,6 +9,11 @@ Documentação completa do sistema de eventos e comunidades.
 - **[Configuração Supabase](./setup/SUPABASE_SETUP.md)** - Banco de dados e autenticação
 - **[Migrações](../supabase/migrations/README.md)** - Scripts SQL organizados
 
+### 📋 [Especificações](./features/)
+- **[PRD - Product Requirements](./PRD.md)** - Documento de requisitos do produto
+- **[Sistema de Comunidades](./features/COMMUNITIES_SPEC.md)** - Especificação v0.0.5
+- **[Sistema de Moderação](./features/MODERATION_SPEC_v0.0.7.md)** - Especificação v0.0.7
+
 ### ✨ [Features](./features/)
 - **[Sistema de Comunidades](./features/COMMUNITIES.md)** - Funcionalidades das comunidades
 - **[Sistema de Busca](./features/SEARCH.md)** - Funcionalidades de busca

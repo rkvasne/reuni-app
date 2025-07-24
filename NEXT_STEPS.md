@@ -2,15 +2,33 @@
 
 ## 🚀 Ações Imediatas (Esta Semana)
 
-### 1. **Commit e Versionamento** ✅
+### 1. **Commit v0.0.6** ✅
 ```bash
 git add .
-git commit -m "🏘️ feat: Sistema de Comunidades v0.0.5 - Release Final"
-git tag v0.0.5
+git commit -m "🔧 v0.0.6 - Correções e Otimizações"
+git tag v0.0.6
 git push origin main --tags
 ```
 
-### 2. **Deploy em Produção** (1-2 dias)
+### 2. **Melhorias Sociais v0.0.7** (Próxima prioridade)
+- [ ] **Fase 1: Componentes Base** (Semana 1)
+  - Criar HorizontalSlider.tsx
+  - Implementar hooks sociais (useFriendsEvents, useSuggestedEvents)
+  - Componentes de card melhorados
+- [ ] **Fase 2: Feed Central** (Semana 2)
+  - Sliders horizontais no feed
+  - Seções sociais ("Eventos de Amigos", "Sugeridos")
+- [ ] **Fase 3: Sidebar Direita** (Semana 3)
+  - Blocos sociais (amigos, comunidades em alta)
+  - Ações rápidas
+- [ ] **Fase 4: Mini Calendário** (Semana 4)
+  - Calendário interativo
+  - Filtros por data
+- [ ] **Fase 5: Responsividade** (Semana 5)
+  - Mobile/tablet otimizado
+  - Animações e polimento
+
+### 3. **Deploy em Produção** (Paralelo)
 - [ ] **Configurar Vercel**
   - Conectar repositório GitHub
   - Configurar variáveis de ambiente
@@ -19,16 +37,6 @@ git push origin main --tags
   - Registrar domínio (sugestão: `reuni.app` ou `reuni.com.br`)
   - Configurar DNS
   - SSL automático via Vercel
-
-### 3. **Configuração Supabase Produção** (1 dia)
-- [ ] **Criar Projeto Produção**
-  - Novo projeto Supabase para produção
-  - Executar migrações em ordem (001-011)
-  - Configurar políticas RLS
-- [ ] **Configurar Autenticação**
-  - Google OAuth para produção
-  - Templates de email personalizados
-  - URLs de callback corretas
 
 ---
 
@@ -79,27 +87,24 @@ git push origin main --tags
 
 ---
 
-## 🔄 Mês 2: Preparação para v0.0.6
+## 🔄 Mês 2: Melhorias Sociais (v0.0.7)
 
-### **Planejamento Detalhado**
-- [ ] **Especificação v0.0.6**
-  - Definir escopo exato
-  - Criar wireframes para moderação
-  - Planejar sistema de notificações
-- [ ] **Setup de Desenvolvimento**
-  - Branch `develop` para próximas features
-  - CI/CD pipeline
-  - Ambiente de staging
+### **Implementação Faseada** (Ver SOCIAL_IMPROVEMENTS_PLAN.md)
+- [ ] **Semana 1**: Componentes base (sliders, hooks sociais)
+- [ ] **Semana 2**: Feed central melhorado (sliders horizontais)
+- [ ] **Semana 3**: Sidebar direita expandida (blocos sociais)
+- [ ] **Semana 4**: Mini calendário interativo
+- [ ] **Semana 5**: Responsividade e polimento
 
-### **Fundação para Features Sociais**
+### **Fundação para Features Avançadas**
 - [ ] **Estrutura de Dados**
-  - Tabelas para posts/discussões
-  - Sistema de notificações
-  - Logs de moderação
-- [ ] **Componentes Base**
-  - Sistema de comentários
-  - Modal de moderação
-  - Componente de notificação
+  - Sistema de amizades/seguir
+  - Eventos sugeridos (algoritmo)
+  - Comunidades em alta (métricas)
+- [ ] **Componentes Sociais**
+  - Cards de evento com info social
+  - Sliders horizontais reutilizáveis
+  - Blocos da sidebar direita
 
 ---
 

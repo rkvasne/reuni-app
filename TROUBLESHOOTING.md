@@ -23,7 +23,7 @@ ERROR: column "max_participantes" of relation "eventos" does not exist
 ```
 
 ### **Solução**
-1. Execute `FINAL_fix_events.sql` no Supabase Dashboard
+1. Execute `011_FINAL_fix_events.sql` no Supabase Dashboard
 2. Verifique se a migração foi aplicada com sucesso
 
 ---
@@ -36,7 +36,7 @@ ERROR: bucket "events" does not exist
 ```
 
 ### **Solução**
-1. Execute `FINAL_setup_storage.sql` no Supabase Dashboard
+1. Execute `012_FINAL_setup_storage.sql` no Supabase Dashboard
 2. Verifique se o Storage está habilitado no projeto
 
 ---
@@ -49,8 +49,8 @@ ERROR: new row violates row-level security policy
 ```
 
 ### **Solução**
-1. Execute `010_fix_rls_recursion.sql`
-2. Ou para desenvolvimento: `011_disable_rls_temp.sql`
+1. Execute `009_fix_rls_recursion.sql`
+2. Ou para desenvolvimento: `010_disable_rls_temp.sql`
 
 ---
 
@@ -60,7 +60,7 @@ ERROR: new row violates row-level security policy
 Consultas ficam lentas ou travam
 
 ### **Solução**
-1. Execute `010_fix_rls_recursion.sql`
+1. Execute `009_fix_rls_recursion.sql`
 2. Reinicie a aplicação
 
 ---
@@ -86,8 +86,8 @@ SELECT * FROM storage.buckets WHERE id = 'events';
 ## 🆘 **Se nada funcionar**
 
 ### **Reset completo**
-1. Execute `FINAL_fix_events.sql`
-2. Execute `FINAL_setup_storage.sql` (se quiser upload)
+1. Execute `011_FINAL_fix_events.sql`
+2. Execute `012_FINAL_setup_storage.sql` (se quiser upload)
 3. Reinicie o servidor: `npm run dev`
 4. Teste criação de evento
 
