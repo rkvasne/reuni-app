@@ -82,16 +82,17 @@ export default function EventGrid({
       {/* Grid View */}
       {viewMode === 'grid' && (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {events.map((event) => (
+          {events.map((event, index) => (
             <div key={event.id} className="card overflow-hidden hover:shadow-reuni-lg transition-shadow">
               {/* Imagem */}
-              <div className="relative h-32 bg-neutral-200">
+              <div className="relative h-48 bg-neutral-200">
                 {event.imagem_url ? (
                   <Image
                     src={event.imagem_url}
                     alt={event.titulo}
                     fill
                     className="object-cover"
+                    priority={index < 3}
                   />
                 ) : (
                   <div className="w-full h-full bg-gradient-to-br from-primary-100 to-secondary-100 flex items-center justify-center">

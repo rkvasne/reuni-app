@@ -81,12 +81,13 @@ export default function EventSlider({
         gap="16px"
         showArrows={events.length > 3}
       >
-        {events.map((event) => (
+        {events.map((event, index) => (
           <SocialEventCard
             key={event.id}
             event={event}
             showSocialInfo={showSocialInfo}
             compact={true}
+            priority={index < 2}
             onClick={() => onEventClick?.(event)}
           />
         ))}

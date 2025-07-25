@@ -9,9 +9,10 @@ import EventModal from './EventModal'
 
 interface EventCardProps {
   event: Event
+  priority?: boolean
 }
 
-export default function EventCard({ event }: EventCardProps) {
+export default function EventCard({ event, priority = false }: EventCardProps) {
   const { user } = useAuth()
   const { deleteEvent, participateInEvent, cancelParticipation } = useEvents()
   const [showMenu, setShowMenu] = useState(false)
@@ -86,7 +87,7 @@ export default function EventCard({ event }: EventCardProps) {
     <div className="card overflow-hidden">
       
       {/* Imagem do Evento */}
-      <div className="relative h-48 bg-neutral-200">
+      <div className="relative h-56 bg-neutral-200">
         {event.imagem_url ? (
           <OptimizedImage
             src={event.imagem_url}

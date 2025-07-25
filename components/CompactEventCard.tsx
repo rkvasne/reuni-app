@@ -48,7 +48,7 @@ export default function CompactEventCard({
       onClick={onClick}
     >
       {/* Imagem */}
-      <div className="relative h-24 bg-neutral-200 rounded-lg overflow-hidden mb-2">
+      <div className="relative h-32 bg-neutral-200 rounded-lg overflow-hidden mb-2">
         {event.imagem_url ? (
           <OptimizedImage
             src={event.imagem_url}

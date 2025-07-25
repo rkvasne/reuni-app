@@ -68,6 +68,7 @@ export default function FeaturedCarousel() {
               alt={event.title}
               fill
               className="object-cover"
+              priority={index === 0}
             />
             <div className={`absolute inset-0 bg-gradient-to-r ${event.gradient} opacity-80`} />
             

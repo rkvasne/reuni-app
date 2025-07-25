@@ -1,5 +1,6 @@
 'use client'
 
+import { useState } from 'react'
 import { useAuth } from '@/hooks/useAuth'
 import LandingPage from '@/components/LandingPage'
 import Header from '@/components/Header'
@@ -9,6 +10,12 @@ import RightSidebar from '@/components/RightSidebar'
 
 // Componente do App Principal (para usuários logados)
 function AppDashboard() {
+  const [showCreateModal, setShowCreateModal] = useState(false)
+
+  const handleCreateEvent = () => {
+    setShowCreateModal(true)
+  }
+
   return (
     <div className="min-h-screen bg-neutral-50">
       <Header />
@@ -20,19 +27,23 @@ function AppDashboard() {
             {/* Sidebar Esquerda */}
             <div className="lg:col-span-3 hidden lg:block">
               <div className="sticky top-20">
-                <LeftSidebar />
+                <LeftSidebar onCreateEvent={handleCreateEvent} />
               </div>
             </div>
 
             {/* Feed Central */}
             <div className="lg:col-span-6">
-              <MainFeed />
+              <MainFeed 
+                showCreateModal={showCreateModal}
+                onCloseCreateModal={() => setShowCreateModal(false)}
+                onCreateEvent={handleCreateEvent}
+              />
             </div>
 
             {/* Sidebar Direita */}
             <div className="lg:col-span-3 hidden lg:block">
               <div className="sticky top-20">
-                <RightSidebar />
+                <RightSidebar onCreateEvent={handleCreateEvent} />
               </div>
             </div>
 

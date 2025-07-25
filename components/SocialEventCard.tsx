@@ -32,6 +32,7 @@ interface SocialEventCardProps {
   };
   showSocialInfo?: boolean;
   compact?: boolean;
+  priority?: boolean;
   onClick?: () => void;
 }
 
@@ -39,6 +40,7 @@ export default function SocialEventCard({
   event,
   showSocialInfo = true,
   compact = false,
+  priority = false,
   onClick
 }: SocialEventCardProps) {
   const { user } = useAuth();
@@ -102,7 +104,7 @@ export default function SocialEventCard({
     >
       {/* Imagem do Evento */}
       <div className={`relative bg-neutral-200 rounded-lg overflow-hidden ${
-        compact ? 'h-32' : 'h-48'
+        compact ? 'h-40' : 'h-56'
       }`}>
         {event.imagem_url ? (
           <OptimizedImage
@@ -110,6 +112,7 @@ export default function SocialEventCard({
             alt={event.titulo}
             fill
             className="object-cover"
+            priority={priority}
             sizes={compact ? "280px" : "(max-width: 768px) 100vw, 33vw"}
             fallback={
               <div className="w-full h-full bg-gradient-to-br from-primary-100 to-secondary-100 flex items-center justify-center">

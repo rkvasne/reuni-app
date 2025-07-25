@@ -24,7 +24,11 @@ interface QuickAction {
   requiresAuth?: boolean;
 }
 
-export default function QuickActionsBlock() {
+interface QuickActionsBlockProps {
+  onCreateEvent?: () => void;
+}
+
+export default function QuickActionsBlock({ onCreateEvent }: QuickActionsBlockProps) {
   const router = useRouter();
   const { isAuthenticated } = useAuth();
 
@@ -34,8 +38,11 @@ export default function QuickActionsBlock() {
       label: 'Criar Evento',
       icon: <Plus className="w-4 h-4" />,
       onClick: () => {
-        // TODO: Abrir modal de criar evento
-        console.log('Criar evento');
+        if (onCreateEvent) {
+          onCreateEvent();
+        } else {
+          router.push('/create-event');
+        }
       },
       color: 'bg-primary-500 hover:bg-primary-600',
       description: 'Organize um novo evento',
@@ -45,9 +52,9 @@ export default function QuickActionsBlock() {
       id: 'create-community',
       label: 'Nova Comunidade',
       icon: <Users className="w-4 h-4" />,
-      href: '/communities/create',
+      href: '/communities',
       color: 'bg-secondary-500 hover:bg-secondary-600',
-      description: 'Crie sua comunidade',
+      description: 'Ver comunidades',
       requiresAuth: true
     },
     {
@@ -62,7 +69,7 @@ export default function QuickActionsBlock() {
       id: 'my-events',
       label: 'Meus Eventos',
       icon: <Calendar className="w-4 h-4" />,
-      href: '/my-events',
+      href: '/profile',
       color: 'bg-green-500 hover:bg-green-600',
       description: 'Eventos que vou',
       requiresAuth: true
@@ -71,7 +78,7 @@ export default function QuickActionsBlock() {
       id: 'saved',
       label: 'Salvos',
       icon: <Bookmark className="w-4 h-4" />,
-      href: '/saved',
+      href: '/profile?tab=salvos',
       color: 'bg-yellow-500 hover:bg-yellow-600',
       description: 'Eventos salvos',
       requiresAuth: true
@@ -80,7 +87,7 @@ export default function QuickActionsBlock() {
       id: 'nearby',
       label: 'Próximos',
       icon: <MapPin className="w-4 h-4" />,
-      href: '/nearby',
+      href: '/search?filter=proximo',
       color: 'bg-blue-500 hover:bg-blue-600',
       description: 'Eventos próximos'
     },
@@ -88,7 +95,7 @@ export default function QuickActionsBlock() {
       id: 'notifications',
       label: 'Notificações',
       icon: <Bell className="w-4 h-4" />,
-      href: '/notifications',
+      href: '/profile?tab=notifications',
       color: 'bg-purple-500 hover:bg-purple-600',
       description: 'Suas notificações',
       requiresAuth: true
@@ -97,7 +104,7 @@ export default function QuickActionsBlock() {
       id: 'settings',
       label: 'Configurações',
       icon: <Settings className="w-4 h-4" />,
-      href: '/settings',
+      href: '/profile?tab=settings',
       color: 'bg-neutral-500 hover:bg-neutral-600',
       description: 'Configurar conta',
       requiresAuth: true

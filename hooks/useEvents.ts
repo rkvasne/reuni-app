@@ -237,7 +237,12 @@ export function useEvents() {
   // Buscar eventos do usuário
   const getUserEvents = async () => {
     try {
-      if (!user) throw new Error('Usuário não autenticado')
+      if (!user) {
+        console.log('❌ getUserEvents - Usuário não autenticado')
+        return { data: [], error: 'Usuário não autenticado' }
+      }
+
+      console.log('🔍 getUserEvents - Buscando eventos para usuário:', user.id)
 
       const { data, error } = await supabase
         .from('eventos')
@@ -252,11 +257,21 @@ export function useEvents() {
         .eq('organizador_id', user.id)
         .order('created_at', { ascending: false })
 
-      if (error) throw error
+      console.log('📊 getUserEvents - Resultado:', { 
+        data: data, 
+        error: error,
+        count: data?.length || 0
+      })
+
+      if (error) {
+        console.error('❌ getUserEvents - Erro na query:', error)
+        return { data: [], error: error.message }
+      }
 
       return { data: data || [], error: null }
     } catch (err: any) {
       const errorMessage = err.message || 'Erro ao buscar seus eventos'
+      console.error('❌ getUserEvents - Erro capturado:', err)
       return { data: [], error: errorMessage }
     }
   }

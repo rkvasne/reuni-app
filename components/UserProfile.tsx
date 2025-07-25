@@ -7,6 +7,7 @@ import { useRouter } from 'next/navigation'
 import { useAuth } from '@/hooks/useAuth'
 import { useEvents } from '@/hooks/useEvents'
 import { useUserProfile } from '@/hooks/useUserProfile'
+import { supabase } from '@/lib/supabase'
 import EventGrid from './EventGrid'
 import UserStats from './UserStats'
 import QuickProfileEdit from './QuickProfileEdit'
@@ -14,6 +15,7 @@ import ProfileSettings from './ProfileSettings'
 import AvatarUpload from './AvatarUpload'
 import LoadingSpinner from './LoadingSpinner'
 import RLSWarning from './RLSWarning'
+
 
 export default function UserProfile() {
   const { user } = useAuth()
@@ -32,25 +34,42 @@ export default function UserProfile() {
 
       setLoading(true)
       try {
-        // Buscar eventos criados pelo usuário
-        const { data: createdEvents } = await getUserEvents()
-        setUserEvents(createdEvents || [])
+        // Buscar eventos criados pelo usuário diretamente
+        const { data, error } = await supabase
+          .from('eventos')
+          .select(`
+            *,
+            organizador:usuarios!organizador_id (
+              nome,
+              email,
+              avatar
+            )
+          `)
+          .eq('organizador_id', user.id)
+          .order('created_at', { ascending: false })
+
+        console.log('📊 Eventos do usuário encontrados:', { data, error, count: data?.length })
+
+        if (error) {
+          console.error('❌ Erro ao buscar eventos:', error)
+        } else {
+          setUserEvents(data || [])
+        }
 
         // Filtrar eventos que o usuário está participando
         const participating = events.filter(event => 
           event.user_participando && event.organizador_id !== user.id
         )
         setParticipatingEvents(participating)
+
       } catch (error) {
-        console.error('Erro ao carregar dados do usuário:', error)
+        console.error('❌ Erro ao carregar dados:', error)
       } finally {
         setLoading(false)
       }
     }
 
-    if (user) {
-      fetchUserData()
-    }
+    fetchUserData()
   }, [user?.id])
 
   if (!user || !userProfile) return null
@@ -81,6 +100,8 @@ export default function UserProfile() {
         Voltar ao Feed
       </button>
       
+
+
       {/* Aviso de RLS */}
       {profileError && (
         <RLSWarning 

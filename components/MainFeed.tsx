@@ -15,11 +15,20 @@ import { useAuth } from '@/hooks/useAuth'
 import { useFriendsEvents } from '@/hooks/useFriendsEvents'
 import { useSuggestedEvents } from '@/hooks/useSuggestedEvents'
 
-export default function MainFeed() {
+interface MainFeedProps {
+  showCreateModal?: boolean;
+  onCloseCreateModal?: () => void;
+  onCreateEvent?: () => void;
+}
+
+export default function MainFeed({ 
+  showCreateModal = false, 
+  onCloseCreateModal,
+  onCreateEvent 
+}: MainFeedProps) {
   const { events, loading, error, fetchEvents } = useEvents()
   const { isAuthenticated } = useAuth()
   const router = useRouter()
-  const [showCreateModal, setShowCreateModal] = useState(false)
   const [activeFilter, setActiveFilter] = useState('Todos')
   const [showAdvancedFilters, setShowAdvancedFilters] = useState(false)
 
@@ -110,7 +119,7 @@ export default function MainFeed() {
             </button>
             {isAuthenticated && (
               <button
-                onClick={() => setShowCreateModal(true)}
+                onClick={() => onCreateEvent && onCreateEvent()}
                 className="btn-primary flex items-center gap-2"
               >
                 <Plus className="w-4 h-4" />
@@ -228,7 +237,7 @@ export default function MainFeed() {
               </p>
               {isAuthenticated && (
                 <button
-                  onClick={() => setShowCreateModal(true)}
+                  onClick={() => onCreateEvent && onCreateEvent()}
                   className="btn-primary"
                 >
                   Criar Primeiro Evento
@@ -254,7 +263,7 @@ export default function MainFeed() {
       {/* Modal de Criar Evento */}
       <EventModal
         isOpen={showCreateModal}
-        onClose={() => setShowCreateModal(false)}
+        onClose={() => onCloseCreateModal && onCloseCreateModal()}
         mode="create"
       />
       

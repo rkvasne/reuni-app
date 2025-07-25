@@ -9,7 +9,11 @@ import TrendingCommunitiesBlock from './TrendingCommunitiesBlock'
 import QuickActionsBlock from './QuickActionsBlock'
 import MiniCalendar from './MiniCalendar'
 
-export default function RightSidebar() {
+interface RightSidebarProps {
+  onCreateEvent?: () => void;
+}
+
+export default function RightSidebar({ onCreateEvent }: RightSidebarProps) {
   const { isAuthenticated } = useAuth()
 
   const handleDateSelect = (date: Date) => {
@@ -31,7 +35,7 @@ export default function RightSidebar() {
         icon={<Zap className="w-4 h-4" />}
         collapsible={false}
       >
-        <QuickActionsBlock />
+        <QuickActionsBlock onCreateEvent={onCreateEvent} />
       </SidebarBlock>
 
       {/* Blocos sociais - Apenas para usuários autenticados */}
