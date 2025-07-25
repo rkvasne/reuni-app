@@ -18,7 +18,7 @@ function AppDashboard() {
 
   return (
     <div className="min-h-screen bg-neutral-50">
-      <Header />
+      <Header onCreateEvent={handleCreateEvent} />
 
       <div className="pt-16"> {/* Offset para header fixo */}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -43,7 +43,7 @@ function AppDashboard() {
             {/* Sidebar Direita */}
             <div className="lg:col-span-3 hidden lg:block">
               <div className="sticky top-20">
-                <RightSidebar onCreateEvent={handleCreateEvent} />
+                <RightSidebar />
               </div>
             </div>
 

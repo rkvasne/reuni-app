@@ -1,45 +1,55 @@
 'use client'
 
-import { Search, Bell, MessageCircle, User, LogOut, Settings } from 'lucide-react'
+import { Search, Bell, MessageCircle, User, LogOut, Settings, Zap } from 'lucide-react'
 import { useState, useEffect, useRef } from 'react'
 import { useAuth } from '@/hooks/useAuth'
 import { useRouter } from 'next/navigation'
+import QuickActionsBlock from './QuickActionsBlock'
 
-export default function Header() {
+interface HeaderProps {
+  onCreateEvent?: () => void;
+}
+
+export default function Header({ onCreateEvent }: HeaderProps) {
   const { user, signOut } = useAuth()
   const router = useRouter()
   const [showUserMenu, setShowUserMenu] = useState(false)
+  const [showQuickActions, setShowQuickActions] = useState(false)
   const menuRef = useRef<HTMLDivElement>(null)
+  const quickActionsRef = useRef<HTMLDivElement>(null)
 
   const handleLogout = async () => {
     await signOut()
     setShowUserMenu(false)
   }
 
-  // Fechar menu ao clicar fora
+  // Fechar menus ao clicar fora
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
         setShowUserMenu(false)
       }
+      if (quickActionsRef.current && !quickActionsRef.current.contains(event.target as Node)) {
+        setShowQuickActions(false)
+      }
     }
 
-    if (showUserMenu) {
+    if (showUserMenu || showQuickActions) {
       document.addEventListener('mousedown', handleClickOutside)
     }
 
     return () => {
       document.removeEventListener('mousedown', handleClickOutside)
     }
-  }, [showUserMenu])
+  }, [showUserMenu, showQuickActions])
   return (
-    <header className="fixed top-0 left-0 right-0 bg-white border-b border-neutral-200 z-50">
+    <header className="fixed top-0 left-0 right-0 bg-gradient-card backdrop-blur-md border-b border-white/20 z-50 shadow-soft">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           
           {/* Logo */}
           <div className="flex items-center">
-            <h1 className="text-2xl font-bold bg-gradient-to-r from-primary-500 to-secondary-500 bg-clip-text text-transparent">
+            <h1 className="text-3xl font-bold text-gradient tracking-tight">
               Reuni
             </h1>
           </div>
@@ -51,7 +61,7 @@ export default function Header() {
               <input
                 type="text"
                 placeholder="Buscar eventos, comunidades, organizadores..."
-                className="w-full pl-10 pr-4 py-2.5 bg-neutral-100 rounded-xl border-0 focus:ring-2 focus:ring-primary-500 focus:bg-white transition-all"
+                className="input-field pl-10 pr-4 py-3 bg-white/60 backdrop-blur-sm border border-white/30 focus:border-primary-400 focus:ring-primary-200 rounded-2xl"
                 onKeyDown={(e) => {
                   if (e.key === 'Enter') {
                     const query = (e.target as HTMLInputElement).value;
@@ -65,7 +75,7 @@ export default function Header() {
               />
               
               {/* Dropdown de Sugestões */}
-              <div className="absolute top-full left-0 right-0 bg-white rounded-xl shadow-lg border border-neutral-200 mt-1 py-2 opacity-0 invisible group-focus-within:opacity-100 group-focus-within:visible transition-all z-50">
+              <div className="absolute top-full left-0 right-0 bg-gradient-card backdrop-blur-md rounded-2xl shadow-reuni-lg border border-white/20 mt-2 py-3 opacity-0 invisible group-focus-within:opacity-100 group-focus-within:visible transition-all z-50">
                 
                 {/* Buscas Rápidas */}
                 <div className="px-3 py-2">
@@ -104,35 +114,58 @@ export default function Header() {
           {/* Busca Mobile */}
           <button 
             onClick={() => router.push('/search')}
-            className="md:hidden p-2 hover:bg-neutral-100 rounded-xl transition-colors"
+            className="md:hidden p-3 hover:bg-primary-50 rounded-2xl transition-all duration-300 hover:scale-110"
           >
-            <Search className="w-6 h-6 text-neutral-600" />
+            <Search className="w-6 h-6 text-primary-600" />
           </button>
 
           {/* Ações do usuário */}
-          <div className="flex items-center gap-4">
-            <button className="p-2 hover:bg-neutral-100 rounded-xl transition-colors relative">
-              <Bell className="w-6 h-6 text-neutral-600" />
-              <span className="absolute -top-1 -right-1 w-3 h-3 bg-secondary-500 rounded-full"></span>
+          <div className="flex items-center gap-2">
+            {/* Menu Ações Rápidas */}
+            <div className="relative" ref={quickActionsRef}>
+              <button 
+                onClick={() => setShowQuickActions(!showQuickActions)}
+                className="p-3 hover:bg-primary-50 rounded-2xl transition-all duration-300 hover:scale-110 group"
+              >
+                <Zap className="w-6 h-6 text-primary-600 group-hover:text-primary-700" />
+              </button>
+
+              {/* Dropdown Ações Rápidas */}
+              {showQuickActions && (
+                <div className="absolute right-0 top-14 bg-white rounded-2xl shadow-reuni-xl border border-neutral-200 p-4 w-80 z-50">
+                  <div className="mb-3">
+                    <h3 className="font-semibold text-neutral-800 text-sm">Ações Rápidas</h3>
+                    <p className="text-xs text-neutral-600">Acesse rapidamente suas funcionalidades</p>
+                  </div>
+                  <QuickActionsBlock onCreateEvent={onCreateEvent} />
+                </div>
+              )}
+            </div>
+
+            <button className="p-3 hover:bg-primary-50 rounded-2xl transition-all duration-300 hover:scale-110 relative group">
+              <Bell className="w-6 h-6 text-primary-600 group-hover:text-primary-700" />
+              <span className="absolute -top-1 -right-1 w-4 h-4 bg-gradient-primary rounded-full flex items-center justify-center">
+                <span className="w-2 h-2 bg-white rounded-full animate-pulse"></span>
+              </span>
             </button>
             
-            <button className="p-2 hover:bg-neutral-100 rounded-xl transition-colors">
-              <MessageCircle className="w-6 h-6 text-neutral-600" />
+            <button className="p-3 hover:bg-primary-50 rounded-2xl transition-all duration-300 hover:scale-110 group">
+              <MessageCircle className="w-6 h-6 text-primary-600 group-hover:text-primary-700" />
             </button>
             
             <div className="relative" ref={menuRef}>
               <button 
                 onClick={() => setShowUserMenu(!showUserMenu)}
-                className="flex items-center gap-2 p-2 hover:bg-neutral-100 rounded-xl transition-colors"
+                className="flex items-center gap-2 p-2 hover:bg-primary-50 rounded-2xl transition-all duration-300 hover:scale-110 group"
               >
-                <div className="w-8 h-8 bg-gradient-to-r from-primary-500 to-secondary-500 rounded-full flex items-center justify-center">
+                <div className="w-10 h-10 bg-gradient-primary rounded-2xl flex items-center justify-center shadow-reuni group-hover:shadow-glow transition-all duration-300">
                   <User className="w-5 h-5 text-white" />
                 </div>
               </button>
 
               {/* Menu do usuário */}
               {showUserMenu && (
-                <div className="absolute right-0 top-12 bg-white rounded-xl shadow-reuni-lg border border-neutral-200 py-2 w-48 z-50">
+                <div className="absolute right-0 top-14 bg-gradient-card backdrop-blur-md rounded-2xl shadow-reuni-xl border border-white/20 py-3 w-52 z-50">
                   <div className="px-4 py-2 border-b border-neutral-100">
                     <p className="font-medium text-neutral-800">{user?.user_metadata?.name || 'Usuário'}</p>
                     <p className="text-sm text-neutral-500">{user?.email}</p>

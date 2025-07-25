@@ -43,22 +43,9 @@ export default function MiniCalendar({
   };
 
   return (
-    <div className={`bg-white rounded-lg border border-neutral-200 ${className}`}>
+    <div className={`${className}`}>
       {/* Header do calendário */}
-      <div className="p-4 border-b border-neutral-100">
-        <div className="flex items-center justify-between mb-3">
-          <h3 className="font-semibold text-neutral-800 flex items-center gap-2">
-            <CalendarIcon className="w-4 h-4" />
-            Calendário
-          </h3>
-          <button
-            onClick={goToToday}
-            className="text-xs text-primary-600 hover:text-primary-700 font-medium"
-          >
-            Hoje
-          </button>
-        </div>
-
+      <div className="pb-3 border-b border-neutral-100">
         {/* Navegação do mês */}
         <div className="flex items-center justify-between">
           <button
@@ -84,9 +71,9 @@ export default function MiniCalendar({
       </div>
 
       {/* Grid do calendário */}
-      <div className="p-4">
+      <div className="px-4 py-3">
         {/* Cabeçalho dos dias da semana */}
-        <div className="grid grid-cols-7 gap-1 mb-2">
+        <div className="grid grid-cols-7 gap-1 mb-1.5">
           {dayNames.map(day => (
             <div key={day} className="text-center text-xs font-medium text-neutral-500 py-1">
               {day}
@@ -102,7 +89,7 @@ export default function MiniCalendar({
               onClick={() => handleDateClick(day.date)}
               disabled={loading}
               className={`
-                relative h-8 text-xs font-medium rounded transition-all
+                relative h-7 text-xs font-medium rounded transition-all
                 ${day.isCurrentMonth 
                   ? 'text-neutral-800 hover:bg-neutral-100' 
                   : 'text-neutral-400 hover:bg-neutral-50'
@@ -160,7 +147,7 @@ export default function MiniCalendar({
 
       {/* Eventos da data selecionada */}
       {eventsForSelectedDate.length > 0 && (
-        <div className="border-t border-neutral-100 p-4">
+        <div className="border-t border-neutral-100 px-4 py-3">
           <h4 className="font-medium text-sm text-neutral-800 mb-3">
             Eventos em {selectedDate.toLocaleDateString('pt-BR', { 
               day: 'numeric', 

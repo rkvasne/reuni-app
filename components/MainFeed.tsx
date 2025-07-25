@@ -9,7 +9,7 @@ import EventModal from './EventModal'
 import SocialSection from './SocialSection'
 import EventSlider from './EventSlider'
 import AdvancedFilterBar from './AdvancedFilterBar'
-import CalendarButton from './CalendarButton'
+
 import { useEvents } from '@/hooks/useEvents'
 import { useAuth } from '@/hooks/useAuth'
 import { useFriendsEvents } from '@/hooks/useFriendsEvents'
@@ -52,15 +52,7 @@ export default function MainFeed({
     console.log('Evento clicado:', event)
   }
 
-  const handleDateSelect = (date: Date) => {
-    // TODO: Filtrar eventos por data selecionada
-    console.log('Data selecionada:', date)
-  }
 
-  const handleCalendarEventClick = (eventId: string) => {
-    // TODO: Abrir modal de detalhes do evento
-    console.log('Evento do calendário clicado:', eventId)
-  }
 
   // Eventos em destaque (primeiros 3 eventos para o banner)
   const featuredEvents = events.slice(0, 3).map(event => ({
@@ -81,19 +73,19 @@ export default function MainFeed({
       {/* Busca Avançada - Card Separado */}
       <button
         onClick={() => router.push('/search')}
-        className="card p-4 hover:shadow-md transition-all group w-full text-left bg-gradient-to-r from-blue-50 to-purple-50 border border-blue-100"
+        className="card p-6 hover:shadow-reuni-lg transition-all group w-full text-left bg-gradient-to-r from-primary-50 to-secondary-50 border border-primary-100/50"
       >
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="p-2 bg-white rounded-lg group-hover:bg-blue-100 transition-colors">
-              <Search className="w-5 h-5 text-blue-600" />
+          <div className="flex items-center gap-4">
+            <div className="p-3 bg-gradient-primary rounded-2xl group-hover:shadow-glow transition-all duration-300">
+              <Search className="w-6 h-6 text-white" />
             </div>
             <div>
-              <p className="font-medium text-gray-800">Buscar eventos específicos?</p>
-              <p className="text-sm text-gray-600">Filtros avançados, categorias e localização</p>
+              <p className="font-semibold text-neutral-800 text-lg">Buscar eventos específicos?</p>
+              <p className="text-sm text-neutral-600">Filtros avançados, categorias e localização</p>
             </div>
           </div>
-          <div className="text-blue-600 font-medium">→</div>
+          <div className="text-primary-600 font-semibold text-xl group-hover:translate-x-1 transition-transform">→</div>
         </div>
       </button>
       
@@ -105,12 +97,6 @@ export default function MainFeed({
             Filtros
           </h3>
           <div className="flex items-center gap-3">
-            <CalendarButton
-              onDateSelect={handleDateSelect}
-              onEventClick={handleCalendarEventClick}
-              variant="dropdown"
-              size="md"
-            />
             <button
               onClick={() => setShowAdvancedFilters(!showAdvancedFilters)}
               className="text-sm text-primary-600 hover:text-primary-700 font-medium"

@@ -3,7 +3,8 @@
 import { useState } from 'react'
 import { useRouter, usePathname } from 'next/navigation'
 import { Home, Calendar, User, Users, Plus, MapPin, Bookmark, Search } from 'lucide-react'
-import EventModal from './EventModal'
+import SidebarBlock from './ui/SidebarBlock'
+import MiniCalendar from './MiniCalendar'
 import { useAuth } from '@/hooks/useAuth'
 import { useCommunities } from '@/hooks/useCommunities'
 
@@ -28,6 +29,16 @@ export default function LeftSidebar({ onCreateEvent }: LeftSidebarProps) {
   const router = useRouter()
   const pathname = usePathname()
   const { communities, loading: communitiesLoading } = useCommunities()
+
+  const handleDateSelect = (date: Date) => {
+    // TODO: Filtrar eventos por data selecionada
+    console.log('Data selecionada na sidebar:', date)
+  }
+
+  const handleCalendarEventClick = (eventId: string) => {
+    // TODO: Abrir modal de detalhes do evento
+    console.log('Evento do calendário clicado na sidebar:', eventId)
+  }
 
   return (
     <div className="space-y-6">
@@ -60,7 +71,21 @@ export default function LeftSidebar({ onCreateEvent }: LeftSidebarProps) {
           </button>
         )}
       </div>
-      
+
+      {/* Mini Calendário - Sempre exposto */}
+      <SidebarBlock
+        title="Calendário"
+        subtitle="Navegue por datas e eventos"
+        icon={<Calendar className="w-4 h-4" />}
+        collapsible={false}
+      >
+        <MiniCalendar
+          onDateSelect={handleDateSelect}
+          onEventClick={handleCalendarEventClick}
+          className="border-0"
+        />
+      </SidebarBlock>
+
       {/* Comunidades - Apenas se autenticado */}
       {isAuthenticated && (
         <div className="card p-4">
