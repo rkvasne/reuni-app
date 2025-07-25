@@ -93,7 +93,6 @@ export default function SearchPage() {
                             >
                               <span className="mr-3">{category.icon}</span>
                               <span className="flex-1">{category.name}</span>
-                              <span className="text-xs opacity-60">12</span>
                             </button>
                           ))}
                 </div>
@@ -103,10 +102,10 @@ export default function SearchPage() {
                         <h4 className="text-sm font-medium text-neutral-700 mb-3">Quando</h4>
                         <div className="flex flex-wrap gap-2">
                           {[
-                            { name: 'Hoje', count: 5 },
-                            { name: 'Esta Semana', count: 23 },
-                            { name: 'Este Mês', count: 87 },
-                            { name: 'Próximos', count: 156 }
+                            { name: 'Hoje' },
+                            { name: 'Esta Semana' },
+                            { name: 'Este Mês' },
+                            { name: 'Próximos' }
                           ].map((filter) => (
                             <button
                               key={filter.name}
@@ -117,7 +116,7 @@ export default function SearchPage() {
                                   : 'bg-neutral-100 hover:bg-neutral-200 text-neutral-700'
                               }`}
                             >
-                              {filter.name} ({filter.count})
+                              {filter.name}
                             </button>
                           ))}
                         </div>
@@ -307,25 +306,11 @@ export default function SearchPage() {
                       Próximo a Você
                     </h3>
                     <div className="space-y-3">
-                      {[
-                        { name: 'Tech Talk React', distance: '2.5 km', time: 'Hoje 19h' },
-                        { name: 'Corrida no Parque', distance: '1.2 km', time: 'Amanhã 7h' },
-                        { name: 'Workshop Design', distance: '3.8 km', time: 'Sábado 14h' }
-                      ].map((event) => (
-                        <button
-                          key={event.name}
-                          className="w-full p-3 bg-neutral-50 hover:bg-neutral-100 rounded-lg transition-colors text-left"
-                        >
-                          <div className="font-medium text-sm text-neutral-800">{event.name}</div>
-                          <div className="text-xs text-neutral-600 mt-1">
-                            📍 {event.distance} • ⏰ {event.time}
-                          </div>
-                          <div className="flex items-center justify-between mt-2">
-                            <span className="text-xs text-green-600 font-medium">12 participantes</span>
-                            <span className="text-xs text-primary-600 hover:text-primary-800">Ver detalhes →</span>
-                          </div>
-                        </button>
-                      ))}
+                      <div className="text-center py-8 text-neutral-500">
+                        <MapPin className="w-8 h-8 mx-auto mb-2 opacity-50" />
+                        <p className="text-sm">Nenhum evento próximo encontrado</p>
+                        <p className="text-xs mt-1">Tente expandir a área de busca</p>
+                      </div>
                     </div>
                   </div>
 

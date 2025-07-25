@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { supabase } from '@/lib/supabase'
 import { useAuth } from './useAuth'
+import { useNotification } from '@/components/NotificationContext'
 
 export interface Event {
   id: string
@@ -42,6 +43,7 @@ export function useEvents() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const { user } = useAuth()
+  const { increment } = useNotification()
 
   // Buscar eventos
   const fetchEvents = async () => {
@@ -294,7 +296,7 @@ export function useEvents() {
       }
 
       // Criar participação
-      const { error } = await supabase
+      const { error, status, code } = await supabase
         .from('participacoes')
         .insert([
           {
@@ -304,10 +306,21 @@ export function useEvents() {
           }
         ])
 
+      // Tratar erro 409 (Conflict) e unique_violation
+      if (error && (status === 409 || code === '23505')) {
+        return { error: 'Você já está participando deste evento' }
+      }
+      // Tratar erro 406 (Not Acceptable)
+      if (error && status === 406) {
+        return { error: 'Erro de consulta: verifique os campos e filtros da busca.' }
+      }
       if (error) throw error
 
       // Atualizar a lista de eventos para refletir a nova participação
       await fetchEvents()
+
+      // Incrementar notificações não lidas
+      increment()
 
       return { error: null }
     } catch (err: any) {
@@ -342,7 +355,7 @@ export function useEvents() {
   // Buscar participantes de um evento
   const getEventParticipants = async (eventId: string) => {
     try {
-      const { data, error } = await supabase
+      const { data, error, status } = await supabase
         .from('participacoes')
         .select(`
           *,
@@ -355,6 +368,10 @@ export function useEvents() {
         .eq('evento_id', eventId)
         .eq('status', 'confirmado')
 
+      // Tratar erro 406 (Not Acceptable)
+      if (error && status === 406) {
+        return { data: [], error: 'Erro de consulta: verifique os campos e filtros da busca.' }
+      }
       if (error) throw error
 
       return { data: data || [], error: null }

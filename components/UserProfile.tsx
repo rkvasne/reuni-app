@@ -72,6 +72,18 @@ export default function UserProfile() {
     fetchUserData()
   }, [user?.id])
 
+  useEffect(() => {
+    // Redirecionar se perfil incompleto
+    if (userProfile) {
+      const nomeInvalido = !userProfile.nome || userProfile.nome === 'Usuário' || userProfile.nome === userProfile.email;
+      const avatarInvalido = !userProfile.avatar;
+      if (nomeInvalido || avatarInvalido) {
+        router.replace('/profile/complete');
+        return;
+      }
+    }
+  }, [userProfile, router]);
+
   if (!user || !userProfile) return null
 
   const formatDate = (dateString: string) => {
@@ -180,10 +192,12 @@ export default function UserProfile() {
       </div>
 
       {/* Estatísticas */}
-      <UserStats 
-        userEvents={userEvents} 
-        participatingEvents={participatingEvents} 
-      />
+      <div className="mb-8">
+        <UserStats 
+          userEvents={userEvents} 
+          participatingEvents={participatingEvents} 
+        />
+      </div>
 
       {/* Tabs */}
       <div className="card p-0 mb-8">

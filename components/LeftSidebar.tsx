@@ -43,11 +43,23 @@ export default function LeftSidebar({ onCreateEvent }: LeftSidebarProps) {
   return (
     <div className="space-y-6">
       
+      {/* Botão Criar Evento - Destaque no topo */}
+      {isAuthenticated && (
+        <button 
+          onClick={() => onCreateEvent && onCreateEvent()}
+          className="btn-primary w-full flex items-center justify-center gap-2 shadow-reuni-lg hover:shadow-reuni-xl transition-all"
+        >
+          <Plus className="w-5 h-5" />
+          Criar Evento
+        </button>
+      )}
+      
       {/* Navegação Principal */}
       <div className="card p-4">
         <nav className="space-y-2">
           {menuItems.map((item, index) => {
-            const isActive = pathname === item.href || (item.href === '/' && pathname === '/');
+            // Remover destaque do item "Início" - apenas outros itens podem ter destaque
+            const isActive = item.href !== '/' && (pathname === item.href || (item.href === '/' && pathname === '/'));
             return (
               <button
                 key={index}
@@ -60,16 +72,6 @@ export default function LeftSidebar({ onCreateEvent }: LeftSidebarProps) {
             );
           })}
         </nav>
-        
-        {isAuthenticated && (
-          <button 
-            onClick={() => onCreateEvent && onCreateEvent()}
-            className="btn-primary w-full mt-4 flex items-center justify-center gap-2"
-          >
-            <Plus className="w-5 h-5" />
-            Criar Evento
-          </button>
-        )}
       </div>
 
       {/* Mini Calendário - Sempre exposto */}

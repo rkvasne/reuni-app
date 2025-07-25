@@ -5,6 +5,7 @@ import { Calendar, MapPin, Users, Heart, MessageCircle, Share2, Check } from 'lu
 import OptimizedImage from './OptimizedImage';
 import { useAuth } from '@/hooks/useAuth';
 import { useEvents } from '@/hooks/useEvents';
+import Toast, { useToast } from './Toast'
 
 interface User {
   id: string;
@@ -46,6 +47,7 @@ export default function SocialEventCard({
   const { user } = useAuth();
   const { participateInEvent, cancelParticipation } = useEvents();
   const [participationLoading, setParticipationLoading] = useState(false);
+  const { toast, showToast, hideToast } = useToast();
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -63,12 +65,12 @@ export default function SocialEventCard({
     e.stopPropagation(); // Evitar trigger do onClick do card
     
     if (!user) {
-      alert('Você precisa estar logado para participar de eventos');
+      showToast('Você precisa estar logado para participar de eventos', 'warning');
       return;
     }
 
     if (event.organizador_id === user.id) {
-      alert('Você é o organizador deste evento');
+      showToast('Você é o organizador deste evento', 'info');
       return;
     }
 
@@ -77,16 +79,16 @@ export default function SocialEventCard({
       if (event.user_participando) {
         const result = await cancelParticipation(event.id);
         if (result.error) {
-          alert('Erro ao cancelar participação: ' + result.error);
+          showToast('Erro ao cancelar participação: ' + result.error, 'error');
         }
       } else {
         const result = await participateInEvent(event.id);
         if (result.error) {
-          alert('Erro ao participar do evento: ' + result.error);
+          showToast(result.error, 'error');
         }
       }
     } catch (error) {
-      alert('Erro ao processar participação');
+      showToast('Erro ao processar participação', 'error');
     } finally {
       setParticipationLoading(false);
     }
@@ -275,6 +277,13 @@ export default function SocialEventCard({
           </button>
         )}
       </div>
+      {/* Toast para feedback */}
+      <Toast
+        message={toast.message}
+        type={toast.type}
+        isVisible={toast.isVisible}
+        onClose={hideToast}
+      />
     </div>
   );
 }

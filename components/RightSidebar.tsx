@@ -21,8 +21,7 @@ export default function RightSidebar() {
             title="Eventos de Amigos"
             subtitle="Eventos que seus amigos vão participar"
             icon={<Users className="w-4 h-4" />}
-            collapsible={true}
-            defaultOpen={false}
+            collapsible={false}
           >
             <FriendsEventsBlock maxEvents={3} />
           </SidebarBlock>
@@ -32,8 +31,7 @@ export default function RightSidebar() {
             title="Amigos Indo Hoje"
             subtitle="Veja quem vai a eventos hoje"
             icon={<Users className="w-4 h-4" />}
-            collapsible={true}
-            defaultOpen={false}
+            collapsible={false}
           >
             <FriendsGoingToday />
           </SidebarBlock>

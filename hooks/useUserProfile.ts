@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { supabase } from '@/lib/supabase'
 import { useAuth } from './useAuth'
+import Toast, { useToast } from '@/components/Toast'
 
 export interface UserProfile {
     id: string
@@ -18,6 +19,7 @@ export function useUserProfile() {
     const [userProfile, setUserProfile] = useState<UserProfile | null>(null)
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState<string | null>(null)
+    const { toast, showToast, hideToast } = useToast()
 
     // Buscar perfil completo do usuário
     const fetchUserProfile = async () => {
@@ -48,25 +50,44 @@ export function useUserProfile() {
                         bio: undefined
                     }
 
-                    const { data: createdUser, error: createError } = await supabase
+                    const { data: createdUser, error: createError, status } = await supabase
                         .from('usuarios')
                         .insert([newUser])
                         .select('id, nome, email, avatar, bio, created_at')
                         .single()
 
                     if (createError) {
-                        console.error('Erro ao criar usuário:', createError)
-                        // Se falhar por RLS, criar um perfil básico local
-                        const basicProfile: UserProfile = {
-                            id: authUser.id,
-                            nome: authUser.user_metadata?.name || authUser.email?.split('@')[0] || 'Usuário',
-                            email: authUser.email || '',
-                            avatar: authUser.user_metadata?.avatar_url || undefined,
-                            bio: undefined,
-                            created_at: new Date().toISOString()
+                        if (status === 409) {
+                            // Usuário já existe, buscar perfil
+                            const { data: existingUser, error: fetchExistingError } = await supabase
+                                .from('usuarios')
+                                .select('id, nome, email, avatar, bio, created_at')
+                                .eq('id', authUser.id)
+                                .single()
+                            if (fetchExistingError) {
+                                setError('Erro ao buscar perfil existente após conflito.');
+                                setUserProfile(null);
+                            } else {
+                                setUserProfile(existingUser);
+                            }
+                        } else if (status === 406) {
+                            setError('Erro de permissão ou consulta ao criar perfil. Verifique as políticas RLS.');
+                            setUserProfile(null);
+                        } else {
+                            console.error('Erro ao criar usuário:', createError)
+                            // Se falhar por RLS, criar um perfil básico local
+                            const basicProfile: UserProfile = {
+                                id: authUser.id,
+                                nome: authUser.user_metadata?.name || authUser.email?.split('@')[0] || 'Usuário',
+                                email: authUser.email || '',
+                                avatar: authUser.user_metadata?.avatar_url || undefined,
+                                bio: undefined,
+                                created_at: new Date().toISOString()
+                            }
+                            setUserProfile(basicProfile)
+                            setError('Perfil criado localmente. Configure o RLS no Supabase para persistir dados.')
+                            showToast('Erro ao criar seu perfil no sistema. Tente novamente ou contate o suporte.', 'error')
                         }
-                        setUserProfile(basicProfile)
-                        setError('Perfil criado localmente. Configure o RLS no Supabase para persistir dados.')
                     } else {
                         setUserProfile(createdUser)
                     }

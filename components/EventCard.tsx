@@ -6,6 +6,7 @@ import OptimizedImage from './OptimizedImage'
 import { useAuth } from '@/hooks/useAuth'
 import { useEvents, type Event } from '@/hooks/useEvents'
 import EventModal from './EventModal'
+import Toast, { useToast } from './Toast'
 
 interface EventCardProps {
   event: Event
@@ -20,6 +21,7 @@ export default function EventCard({ event, priority = false }: EventCardProps) {
   const [showViewModal, setShowViewModal] = useState(false)
   const [deleting, setDeleting] = useState(false)
   const [participationLoading, setParticipationLoading] = useState(false)
+  const { toast, showToast, hideToast } = useToast()
 
   const isOrganizer = user?.id === event.organizador_id
 
@@ -54,12 +56,12 @@ export default function EventCard({ event, priority = false }: EventCardProps) {
 
   const handleParticipation = async () => {
     if (!user) {
-      alert('Você precisa estar logado para participar de eventos')
+      showToast('Você precisa estar logado para participar de eventos', 'warning')
       return
     }
 
     if (isOrganizer) {
-      alert('Você é o organizador deste evento')
+      showToast('Você é o organizador deste evento', 'info')
       return
     }
 
@@ -68,16 +70,16 @@ export default function EventCard({ event, priority = false }: EventCardProps) {
       if (event.user_participando) {
         const result = await cancelParticipation(event.id)
         if (result.error) {
-          alert('Erro ao cancelar participação: ' + result.error)
+          showToast('Erro ao cancelar participação: ' + result.error, 'error')
         }
       } else {
         const result = await participateInEvent(event.id)
         if (result.error) {
-          alert('Erro ao participar do evento: ' + result.error)
+          showToast(result.error, 'error')
         }
       }
     } catch (error) {
-      alert('Erro ao processar participação')
+      showToast('Erro ao processar participação', 'error')
     } finally {
       setParticipationLoading(false)
     }
@@ -277,6 +279,13 @@ export default function EventCard({ event, priority = false }: EventCardProps) {
         onClose={() => setShowViewModal(false)}
         event={event}
         mode="view"
+      />
+      {/* Toast para feedback */}
+      <Toast
+        message={toast.message}
+        type={toast.type}
+        isVisible={toast.isVisible}
+        onClose={hideToast}
       />
     </div>
   )

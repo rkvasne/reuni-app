@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { Users, Calendar, Crown, Shield, MapPin } from 'lucide-react';
 import { Community } from '@/hooks/useCommunities';
 import { useCommunities } from '@/hooks/useCommunities';
+import Toast, { useToast } from './Toast'
 
 interface CommunityCardProps {
   community: Community;
@@ -14,6 +15,7 @@ interface CommunityCardProps {
 export default function CommunityCard({ community, onJoin, onLeave }: CommunityCardProps) {
   const { joinCommunity, leaveCommunity } = useCommunities();
   const [loading, setLoading] = useState(false);
+  const { toast, showToast, hideToast } = useToast();
 
   const handleJoinLeave = async () => {
     setLoading(true);
@@ -21,14 +23,15 @@ export default function CommunityCard({ community, onJoin, onLeave }: CommunityC
       if (community.is_member) {
         await leaveCommunity(community.id);
         onLeave?.(community.id);
+        showToast('Você saiu da comunidade com sucesso!', 'success');
       } else {
         await joinCommunity(community.id);
         onJoin?.(community.id);
+        showToast('Você entrou na comunidade com sucesso!', 'success');
       }
     } catch (error) {
       console.error('Erro ao alterar participação:', error);
-      // Você pode adicionar um toast/notificação aqui
-      alert('Erro ao alterar participação. Tente novamente.');
+      showToast('Erro ao alterar participação. Tente novamente.', 'error');
     } finally {
       setLoading(false);
     }
@@ -174,6 +177,13 @@ export default function CommunityCard({ community, onJoin, onLeave }: CommunityC
           </button>
         </div>
       </div>
+      {/* Toast para feedback */}
+      <Toast
+        message={toast.message}
+        type={toast.type}
+        isVisible={toast.isVisible}
+        onClose={hideToast}
+      />
     </div>
   );
 }

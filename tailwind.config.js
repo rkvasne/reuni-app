@@ -45,8 +45,10 @@ module.exports = {
           'gray-text': '#616161',
         },
         neutral: {
+          25: '#fefefe',   // Branco quase puro (mais claro que 50)
           50: '#F4F4F8',   // Fundo principal suave
           100: '#f8fafc',  // Branco suave
+          150: '#f0f0f0',  // Cinza muito claro (entre 100 e 200)
           200: '#E0E0E0',  // Cinza claro
           300: '#d1d5db',  // Cinza médio claro
           400: '#9ca3af',  // Cinza médio

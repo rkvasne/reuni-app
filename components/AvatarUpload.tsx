@@ -24,8 +24,7 @@ export default function AvatarUpload({ currentAvatar, userName, onClose }: Avata
     setTimeout(() => setMessage(null), 3000)
   }
 
-  const handleUrlSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
+  const handleUrlSubmit = async () => {
     if (!avatarUrl.trim()) return
 
     setLoading(true)
@@ -142,7 +141,7 @@ export default function AvatarUpload({ currentAvatar, userName, onClose }: Avata
           <div className="space-y-4">
             
             {/* URL da Imagem */}
-            <form onSubmit={handleUrlSubmit}>
+            <div>
               <label className="block text-sm font-medium text-neutral-700 mb-2">
                 URL da Imagem
               </label>
@@ -155,7 +154,8 @@ export default function AvatarUpload({ currentAvatar, userName, onClose }: Avata
                   placeholder="https://exemplo.com/sua-foto.jpg"
                 />
                 <button
-                  type="submit"
+                  type="button"
+                  onClick={handleUrlSubmit}
                   disabled={loading || !avatarUrl.trim()}
                   className="px-4 py-2 bg-primary-500 hover:bg-primary-600 text-white rounded-lg font-medium transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
                 >
@@ -163,7 +163,7 @@ export default function AvatarUpload({ currentAvatar, userName, onClose }: Avata
                   {loading ? 'Salvando...' : 'Salvar'}
                 </button>
               </div>
-            </form>
+            </div>
 
             {/* Upload de Arquivo */}
             <div>

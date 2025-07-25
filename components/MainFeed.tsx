@@ -24,28 +24,24 @@ interface MainFeedProps {
 export default function MainFeed({ 
   showCreateModal = false, 
   onCloseCreateModal,
-  onCreateEvent 
+  onCreateEvent
 }: MainFeedProps) {
   const { events, loading, error, fetchEvents } = useEvents()
   const { isAuthenticated } = useAuth()
   const router = useRouter()
-  const [activeFilter, setActiveFilter] = useState('Todos')
-  const [showAdvancedFilters, setShowAdvancedFilters] = useState(false)
+
 
   // Hooks sociais
   const { events: friendsEvents, loading: friendsLoading } = useFriendsEvents()
   const { events: suggestedEvents, loading: suggestedLoading } = useSuggestedEvents()
 
-  const filters = ['Todos', 'Hoje', 'Esta Semana', 'Próximo de Mim']
+
 
   const handleRefresh = () => {
     fetchEvents()
   }
 
-  const handleFiltersChange = (filters: any) => {
-    // TODO: Implementar lógica de filtros
-    console.log('Filtros aplicados:', filters)
-  }
+
 
   const handleEventClick = (event: any) => {
     // TODO: Abrir modal de detalhes do evento
@@ -73,12 +69,12 @@ export default function MainFeed({
       {/* Busca Avançada - Card Separado */}
       <button
         onClick={() => router.push('/search')}
-        className="card p-6 hover:shadow-reuni-lg transition-all group w-full text-left bg-gradient-to-r from-primary-50 to-secondary-50 border border-primary-100/50"
+        className="card p-6 hover:shadow-reuni-lg transition-all group w-full text-left bg-neutral-25 border border-neutral-150"
       >
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <div className="p-3 bg-gradient-primary rounded-2xl group-hover:shadow-glow transition-all duration-300">
-              <Search className="w-6 h-6 text-white" />
+            <div className="p-3 group-hover:scale-110 transition-all duration-300">
+              <Search className="w-6 h-6 text-primary-600" />
             </div>
             <div>
               <p className="font-semibold text-neutral-800 text-lg">Buscar eventos específicos?</p>
@@ -89,52 +85,7 @@ export default function MainFeed({
         </div>
       </button>
       
-      {/* Filtros Melhorados + Criar Evento */}
-      <div className="card p-4">
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="font-semibold text-neutral-800 flex items-center gap-2">
-            <Filter className="w-5 h-5" />
-            Filtros
-          </h3>
-          <div className="flex items-center gap-3">
-            <button
-              onClick={() => setShowAdvancedFilters(!showAdvancedFilters)}
-              className="text-sm text-primary-600 hover:text-primary-700 font-medium"
-            >
-              {showAdvancedFilters ? 'Filtros simples' : 'Filtros avançados'}
-            </button>
-            {isAuthenticated && (
-              <button
-                onClick={() => onCreateEvent && onCreateEvent()}
-                className="btn-primary flex items-center gap-2"
-              >
-                <Plus className="w-4 h-4" />
-                Criar Evento
-              </button>
-            )}
-          </div>
-        </div>
-        
-        {showAdvancedFilters ? (
-          <AdvancedFilterBar onFiltersChange={handleFiltersChange} />
-        ) : (
-          <div className="flex flex-wrap gap-2">
-            {filters.map((filter) => (
-              <button
-                key={filter}
-                onClick={() => setActiveFilter(filter)}
-                className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
-                  activeFilter === filter
-                    ? 'bg-primary-500 text-white'
-                    : 'bg-neutral-100 hover:bg-neutral-200 text-neutral-700'
-                }`}
-              >
-                {filter}
-              </button>
-            ))}
-          </div>
-        )}
-      </div>
+
       
       {/* Estado de Loading */}
       {loading && (

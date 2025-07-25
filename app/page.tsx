@@ -17,8 +17,10 @@ function AppDashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-neutral-50">
-      <Header onCreateEvent={handleCreateEvent} />
+    <div className="min-h-screen bg-neutral-100">
+      <Header 
+        onCreateEvent={handleCreateEvent} 
+      />
 
       <div className="pt-16"> {/* Offset para header fixo */}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -57,7 +59,7 @@ function AppDashboard() {
 // Loading component
 function LoadingScreen() {
   return (
-    <div className="min-h-screen bg-neutral-50 flex items-center justify-center">
+    <div className="min-h-screen bg-neutral-100 flex items-center justify-center">
       <div className="text-center">
         <div className="w-12 h-12 border-4 border-primary-200 border-t-primary-500 rounded-full animate-spin mx-auto mb-4"></div>
         <h2 className="text-xl font-bold bg-gradient-to-r from-primary-500 to-secondary-500 bg-clip-text text-transparent">
