@@ -51,7 +51,7 @@ export function useSuggestedEvents() {
         .eq('usuario_id', user.id);
 
       const preferredCategories = userParticipations
-        ?.map(p => p.eventos?.categoria)
+        ?.map((p: any) => p.eventos?.categoria)
         .filter(Boolean) || [];
 
       const categoryCount = preferredCategories.reduce((acc: any, cat) => {

@@ -48,7 +48,7 @@ export function useFriendsEvents() {
 
       // Por enquanto, vamos simular dados de amigos
       // TODO: Implementar sistema de amizades real
-      const mockFriendsIds = []; // Array vazio por enquanto
+      const mockFriendsIds: string[] = []; // Array vazio por enquanto
 
       // Buscar eventos futuros com participações
       const { data: eventsData, error: eventsError } = await supabase
