@@ -45,24 +45,24 @@ export default function MiniCalendar({
   return (
     <div className={`${className}`}>
       {/* Header do calendário */}
-      <div className="pb-3 border-b border-neutral-100">
+      <div className="border-b border-neutral-100">
         {/* Navegação do mês */}
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between py-2 px-1">
           <button
             onClick={goToPreviousMonth}
-            className="p-1 hover:bg-neutral-100 rounded transition-colors"
+            className="p-1 hover:bg-neutral-100 rounded transition-colors flex-shrink-0"
             disabled={loading}
           >
             <ChevronLeft className="w-4 h-4 text-neutral-600" />
           </button>
           
-          <span className="font-medium text-sm text-neutral-800">
+          <span className="text-sm font-medium text-neutral-800 text-center flex-1 mx-2 whitespace-nowrap leading-none">
             {monthNames[currentMonth.getMonth()]} {currentMonth.getFullYear()}
           </span>
           
           <button
             onClick={goToNextMonth}
-            className="p-1 hover:bg-neutral-100 rounded transition-colors"
+            className="p-1 hover:bg-neutral-100 rounded transition-colors flex-shrink-0"
             disabled={loading}
           >
             <ChevronRight className="w-4 h-4 text-neutral-600" />
@@ -71,9 +71,9 @@ export default function MiniCalendar({
       </div>
 
       {/* Grid do calendário */}
-      <div className="px-4 py-3">
+      <div className="p-1">
         {/* Cabeçalho dos dias da semana */}
-        <div className="grid grid-cols-7 gap-1 mb-1.5">
+        <div className="grid grid-cols-7 gap-0.5 mb-1">
           {dayNames.map(day => (
             <div key={day} className="text-center text-xs font-medium text-neutral-500 py-1">
               {day}
@@ -82,7 +82,7 @@ export default function MiniCalendar({
         </div>
 
         {/* Dias do calendário */}
-        <div className="grid grid-cols-7 gap-1">
+        <div className="grid grid-cols-7 gap-0.5">
           {calendarDays.map((day, index) => (
             <button
               key={index}
@@ -147,7 +147,7 @@ export default function MiniCalendar({
 
       {/* Eventos da data selecionada */}
       {eventsForSelectedDate.length > 0 && (
-        <div className="border-t border-neutral-100 px-4 py-3">
+        <div className="border-t border-neutral-100 px-2 py-2">
           <h4 className="font-medium text-sm text-neutral-800 mb-3">
             Eventos em {selectedDate.toLocaleDateString('pt-BR', { 
               day: 'numeric', 

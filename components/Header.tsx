@@ -1,10 +1,11 @@
 'use client'
 
-import { Search, Bell, MessageCircle, User, LogOut, Settings, Zap } from 'lucide-react'
+import { Search, Bell, MessageCircle, User, LogOut, Settings, Zap, Filter } from 'lucide-react'
 import { useState, useEffect, useRef } from 'react'
 import { useAuth } from '@/hooks/useAuth'
 import { useRouter } from 'next/navigation'
 import QuickActionsBlock from './QuickActionsBlock'
+import VisualFilterBar from './VisualFilterBar'
 
 interface HeaderProps {
   onCreateEvent?: () => void;
@@ -15,8 +16,10 @@ export default function Header({ onCreateEvent }: HeaderProps) {
   const router = useRouter()
   const [showUserMenu, setShowUserMenu] = useState(false)
   const [showQuickActions, setShowQuickActions] = useState(false)
+  const [showFilters, setShowFilters] = useState(false)
   const menuRef = useRef<HTMLDivElement>(null)
   const quickActionsRef = useRef<HTMLDivElement>(null)
+  const filtersRef = useRef<HTMLDivElement>(null)
 
   const handleLogout = async () => {
     await signOut()
@@ -32,16 +35,19 @@ export default function Header({ onCreateEvent }: HeaderProps) {
       if (quickActionsRef.current && !quickActionsRef.current.contains(event.target as Node)) {
         setShowQuickActions(false)
       }
+      if (filtersRef.current && !filtersRef.current.contains(event.target as Node)) {
+        setShowFilters(false)
+      }
     }
 
-    if (showUserMenu || showQuickActions) {
+    if (showUserMenu || showQuickActions || showFilters) {
       document.addEventListener('mousedown', handleClickOutside)
     }
 
     return () => {
       document.removeEventListener('mousedown', handleClickOutside)
     }
-  }, [showUserMenu, showQuickActions])
+  }, [showUserMenu, showQuickActions, showFilters])
   return (
     <header className="fixed top-0 left-0 right-0 bg-gradient-card backdrop-blur-md border-b border-white/20 z-50 shadow-soft">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -121,6 +127,30 @@ export default function Header({ onCreateEvent }: HeaderProps) {
 
           {/* Ações do usuário */}
           <div className="flex items-center gap-2">
+            {/* Menu Filtros de Eventos */}
+            <div className="relative" ref={filtersRef}>
+              <button 
+                onClick={() => setShowFilters(!showFilters)}
+                className="p-3 hover:bg-primary-50 rounded-2xl transition-all duration-300 hover:scale-110 group"
+              >
+                <Filter className="w-6 h-6 text-primary-600 group-hover:text-primary-700" />
+              </button>
+
+              {/* Dropdown Filtros */}
+              {showFilters && (
+                <div className="absolute right-0 top-14 bg-white rounded-2xl shadow-reuni-xl border border-neutral-200 p-4 w-96 z-50">
+                  <div className="mb-3">
+                    <h3 className="font-semibold text-neutral-800 text-sm">Filtros de Eventos</h3>
+                    <p className="text-xs text-neutral-600">Filtre eventos por período e categoria</p>
+                  </div>
+                  <VisualFilterBar onFiltersChange={(filters) => {
+                    // TODO: Implementar lógica de filtros
+                    console.log('Filtros aplicados:', filters)
+                  }} />
+                </div>
+              )}
+            </div>
+
             {/* Menu Ações Rápidas */}
             <div className="relative" ref={quickActionsRef}>
               <button 
