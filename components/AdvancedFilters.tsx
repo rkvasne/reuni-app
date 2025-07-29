@@ -10,16 +10,16 @@ interface AdvancedFiltersProps {
 }
 
 const categorias = [
-  'Tecnologia',
-  'Música',
-  'Esporte',
-  'Educação',
-  'Gastronomia',
   'Arte',
-  'Negócios',
-  'Saúde',
+  'Educação',
   'Entretenimento',
-  'Outros'
+  'Esporte',
+  'Gastronomia',
+  'Música',
+  'Negócios',
+  'Outros',
+  'Saúde',
+  'Tecnologia'
 ]
 
 const statusOptions = [

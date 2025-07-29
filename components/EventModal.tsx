@@ -14,16 +14,16 @@ interface EventModalProps {
 }
 
 const categorias = [
-  'Tecnologia',
-  'Música',
-  'Esporte',
-  'Educação',
-  'Gastronomia',
   'Arte',
-  'Negócios',
-  'Saúde',
+  'Educação',
   'Entretenimento',
-  'Outros'
+  'Esporte',
+  'Gastronomia',
+  'Música',
+  'Negócios',
+  'Outros',
+  'Saúde',
+  'Tecnologia'
 ]
 
 export default function EventModal({ isOpen, onClose, event, mode = 'create' }: EventModalProps) {

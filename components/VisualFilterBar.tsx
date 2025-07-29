@@ -36,12 +36,12 @@ export default function VisualFilterBar({
   ];
 
   const categorias = [
-    { value: 'tecnologia', label: 'Tecnologia', icon: '💻', color: 'bg-blue-100 text-blue-700' },
-    { value: 'esportes', label: 'Esportes', icon: '⚽', color: 'bg-blue-100 text-blue-700' },
     { value: 'arte', label: 'Arte', icon: '🎨', color: 'bg-red-100 text-red-700' },
-    { value: 'musica', label: 'Música', icon: '🎵', color: 'bg-purple-100 text-purple-700' },
     { value: 'culinaria', label: 'Culinária', icon: '🍳', color: 'bg-gray-100 text-gray-700' },
-    { value: 'negocios', label: 'Negócios', icon: '💼', color: 'bg-gray-100 text-gray-700' }
+    { value: 'esportes', label: 'Esportes', icon: '⚽', color: 'bg-blue-100 text-blue-700' },
+    { value: 'musica', label: 'Música', icon: '🎵', color: 'bg-purple-100 text-purple-700' },
+    { value: 'negocios', label: 'Negócios', icon: '💼', color: 'bg-gray-100 text-gray-700' },
+    { value: 'tecnologia', label: 'Tecnologia', icon: '💻', color: 'bg-blue-100 text-blue-700' }
   ];
 
   const locais = [

@@ -29,8 +29,8 @@ export default function AdvancedFilterBar({
   const [showAdvanced, setShowAdvanced] = useState(false);
 
   const categorias = [
-    'Tecnologia', 'Esportes', 'Arte', 'Música', 'Gastronomia', 
-    'Negócios', 'Educação', 'Saúde', 'Viagem', 'Outros'
+    'Arte', 'Educação', 'Esportes', 'Gastronomia', 'Música', 
+    'Negócios', 'Outros', 'Saúde', 'Tecnologia', 'Viagem'
   ];
 
   const dataOptions = [

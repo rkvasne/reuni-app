@@ -4,13 +4,7 @@ import { useState } from 'react'
 import { Search, TrendingUp, Clock } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 
-const trendingSearches = [
-  'Tecnologia',
-  'Música ao vivo',
-  'Networking',
-  'Workshop',
-  'São Paulo'
-]
+
 
 const quickFilters = [
   { label: 'Hoje', value: 'hoje' },
@@ -74,24 +68,7 @@ export default function QuickSearch() {
         </div>
       </div>
 
-      {/* Buscas em Alta */}
-      <div>
-        <p className="text-sm text-neutral-600 mb-2 flex items-center gap-1">
-          <TrendingUp className="w-3 h-3" />
-          Em alta:
-        </p>
-        <div className="flex flex-wrap gap-2">
-          {trendingSearches.map((search) => (
-            <button
-              key={search}
-              onClick={() => handleSearch(search)}
-              className="px-3 py-1.5 bg-gradient-to-r from-primary-50 to-secondary-50 hover:from-primary-100 hover:to-secondary-100 text-primary-700 rounded-full text-sm font-medium transition-all"
-            >
-              {search}
-            </button>
-          ))}
-        </div>
-      </div>
+
 
       {/* Botão Ver Todos */}
       <div className="mt-4 pt-4 border-t border-neutral-100">

@@ -80,12 +80,12 @@ export default function CommunitiesPage() {
                     
                     <div className="space-y-2">
                       {[
-                        { name: 'Tecnologia', icon: '💻' },
-                        { name: 'Esportes', icon: '⚽' },
                         { name: 'Arte', icon: '🎨' },
-                        { name: 'Música', icon: '🎵' },
                         { name: 'Culinária', icon: '🍳' },
-                        { name: 'Negócios', icon: '💼' }
+                        { name: 'Esportes', icon: '⚽' },
+                        { name: 'Música', icon: '🎵' },
+                        { name: 'Negócios', icon: '💼' },
+                        { name: 'Tecnologia', icon: '💻' }
                       ].map((category) => (
                         <button
                           key={category.name}

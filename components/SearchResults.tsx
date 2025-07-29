@@ -1,7 +1,6 @@
 'use client'
 
-import { useState } from 'react'
-import { Grid, List, ChevronLeft, ChevronRight, Filter } from 'lucide-react'
+import { ChevronLeft, ChevronRight, Filter } from 'lucide-react'
 import { useSearch } from '@/hooks/useSearch'
 import EventCard from './EventCard'
 import EventGrid from './EventGrid'
@@ -13,7 +12,7 @@ interface SearchResultsProps {
   viewMode?: 'grid' | 'list'
 }
 
-export default function SearchResults({ onFiltersToggle, viewMode: propViewMode }: SearchResultsProps) {
+export default function SearchResults({ onFiltersToggle, viewMode = 'grid' }: SearchResultsProps) {
   const { 
     results, 
     loading, 
@@ -24,8 +23,6 @@ export default function SearchResults({ onFiltersToggle, viewMode: propViewMode 
     searchStats,
     clearError 
   } = useSearch()
-  
-  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
 
   const handlePageChange = (newPage: number) => {
     updateOptions({ page: newPage })
@@ -72,59 +69,14 @@ export default function SearchResults({ onFiltersToggle, viewMode: propViewMode 
   return (
     <div id="search-results" className="space-y-6">
       
-      {/* Header dos Resultados */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
-          <h2 className="text-xl font-semibold text-neutral-800">
-            {loading ? 'Buscando...' : `${searchStats.totalResults} eventos encontrados`}
-          </h2>
-          {getActiveFiltersText() && (
-            <p className="text-sm text-neutral-600 mt-1">
-              Filtros ativos: {getActiveFiltersText()}
-            </p>
-          )}
-          {searchStats.totalResults > 0 && (
-            <p className="text-sm text-neutral-500 mt-1">
-              Mostrando {searchStats.showingFrom} - {searchStats.showingTo} de {searchStats.totalResults} resultados
-            </p>
-          )}
+      {/* Filtros Ativos */}
+      {getActiveFiltersText() && (
+        <div className="card p-4">
+          <p className="text-sm text-neutral-600">
+            Filtros ativos: {getActiveFiltersText()}
+          </p>
         </div>
-
-        <div className="flex items-center gap-3">
-          {/* Botão de Filtros */}
-          <button
-            onClick={onFiltersToggle}
-            className="flex items-center gap-2 px-4 py-2 border border-neutral-300 rounded-lg hover:bg-neutral-50 transition-colors"
-          >
-            <Filter className="w-4 h-4" />
-            Filtros
-          </button>
-
-          {/* Seletor de Visualização */}
-          <div className="flex items-center border border-neutral-300 rounded-lg">
-            <button
-              onClick={() => setViewMode('grid')}
-              className={`p-2 transition-colors ${
-                viewMode === 'grid'
-                  ? 'bg-primary-100 text-primary-600'
-                  : 'hover:bg-neutral-100 text-neutral-600'
-              }`}
-            >
-              <Grid className="w-4 h-4" />
-            </button>
-            <button
-              onClick={() => setViewMode('list')}
-              className={`p-2 transition-colors ${
-                viewMode === 'list'
-                  ? 'bg-primary-100 text-primary-600'
-                  : 'hover:bg-neutral-100 text-neutral-600'
-              }`}
-            >
-              <List className="w-4 h-4" />
-            </button>
-          </div>
-        </div>
-      </div>
+      )}
 
       {/* Loading State */}
       {loading && (

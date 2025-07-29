@@ -299,18 +299,18 @@ export function useCommunities() {
 
   // Categorias disponíveis
   const categories = [
-    'Tecnologia',
     'Arte',
-    'Esportes',
-    'Música',
     'Culinária',
-    'Literatura',
-    'Fotografia',
-    'Viagem',
-    'Negócios',
     'Educação',
+    'Esportes',
+    'Fotografia',
+    'Literatura',
+    'Música',
+    'Negócios',
+    'Outros',
     'Saúde',
-    'Outros'
+    'Tecnologia',
+    'Viagem'
   ];
 
   useEffect(() => {

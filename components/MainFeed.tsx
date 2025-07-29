@@ -46,8 +46,7 @@ export default function MainFeed({
   // Eventos em destaque (primeiros 3 eventos para o banner)
   const featuredEvents = events.slice(0, 3).map(event => ({
     ...event,
-    participantes_count: event.participantes_count || 0,
-    destaque_motivo: 'Evento Popular'
+    participantes_count: event.participantes_count || 0
   }))
 
   return (

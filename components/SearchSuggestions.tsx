@@ -71,8 +71,8 @@ export default function SearchSuggestions({
 
         // Sugestões de categorias
         const categorias = [
-          'Tecnologia', 'Música', 'Esporte', 'Educação', 'Gastronomia',
-          'Arte', 'Negócios', 'Saúde', 'Entretenimento', 'Outros'
+          'Arte', 'Educação', 'Entretenimento', 'Esporte', 'Gastronomia',
+          'Música', 'Negócios', 'Outros', 'Saúde', 'Tecnologia'
         ]
 
         const matchingCategories = categorias.filter(cat => 
