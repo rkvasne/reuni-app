@@ -151,7 +151,11 @@ export default function MainFeed({
                 Todos os Eventos
               </h2>
               {events.map((event) => (
-                <EventCard key={event.id} event={event} />
+                <EventCard 
+                  key={event.id} 
+                  event={event} 
+                  onEventUpdated={fetchEvents} // Atualizar lista após editar evento
+                />
               ))}
             </div>
           ) : (
@@ -195,6 +199,7 @@ export default function MainFeed({
         isOpen={showCreateModal}
         onClose={() => onCloseCreateModal && onCloseCreateModal()}
         mode="create"
+        onEventCreated={fetchEvents} // Atualizar lista após criar evento
       />
       
     </div>

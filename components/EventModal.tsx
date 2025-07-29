@@ -11,6 +11,8 @@ interface EventModalProps {
   onClose: () => void
   event?: Event | null // Para edição/visualização
   mode?: 'create' | 'edit' | 'view'
+  onEventCreated?: () => void // Callback para atualizar lista após criar
+  onEventUpdated?: () => void // Callback para atualizar lista após editar
 }
 
 const categorias = [
@@ -26,7 +28,14 @@ const categorias = [
   'Tecnologia'
 ]
 
-export default function EventModal({ isOpen, onClose, event, mode = 'create' }: EventModalProps) {
+export default function EventModal({ 
+  isOpen, 
+  onClose, 
+  event, 
+  mode = 'create',
+  onEventCreated,
+  onEventUpdated 
+}: EventModalProps) {
   const { createEvent, updateEvent } = useEvents()
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
@@ -104,8 +113,16 @@ export default function EventModal({ isOpen, onClose, event, mode = 'create' }: 
       let result
       if (mode === 'edit' && event) {
         result = await updateEvent(event.id, formData)
+        // Chamar callback de atualização
+        if (result.data && onEventUpdated) {
+          onEventUpdated()
+        }
       } else {
         result = await createEvent(formData)
+        // Chamar callback de criação
+        if (result.data && onEventCreated) {
+          onEventCreated()
+        }
       }
 
       if (result.error) {

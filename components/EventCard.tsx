@@ -10,9 +10,10 @@ import EventModal from './EventModal'
 interface EventCardProps {
   event: Event
   priority?: boolean
+  onEventUpdated?: () => void // Callback para atualizar lista após editar
 }
 
-export default function EventCard({ event, priority = false }: EventCardProps) {
+export default function EventCard({ event, priority = false, onEventUpdated }: EventCardProps) {
   const { user } = useAuth()
   const { deleteEvent, participateInEvent, cancelParticipation } = useEvents()
   const [showMenu, setShowMenu] = useState(false)
@@ -269,6 +270,7 @@ export default function EventCard({ event, priority = false }: EventCardProps) {
         onClose={() => setShowEditModal(false)}
         event={event}
         mode="edit"
+        onEventUpdated={onEventUpdated} // Passar callback para atualizar lista
       />
 
       {/* Modal de Visualização */}
