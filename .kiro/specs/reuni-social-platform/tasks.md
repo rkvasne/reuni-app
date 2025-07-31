@@ -25,7 +25,9 @@
 
 ## Phase 2: Event Management System
 
-- [x] 4. Create event data models and database schema
+- [ ] 4. Create event data models and database schema
+
+
 
 
   - Design and implement events table with proper relationships

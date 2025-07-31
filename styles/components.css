@@ -1,0 +1,134 @@
+/* Utilitários para componentes */
+
+/* Truncar texto em múltiplas linhas */
+.line-clamp-1 {
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.line-clamp-3 {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Animações suaves */
+.transition-all {
+  transition: all 0.2s ease-in-out;
+}
+
+/* Sombras personalizadas */
+.shadow-reuni-sm {
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+}
+
+.shadow-reuni-md {
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.shadow-reuni-lg {
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+/* Cards estilo Facebook */
+.card {
+  @apply bg-white rounded-lg;
+  background-color: #ffffff !important;
+  border: 1px solid #e5e7eb !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06) !important;
+}
+
+.card:hover {
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 2px 4px rgba(0, 0, 0, 0.06) !important;
+  transform: translateY(-1px);
+  transition: all 0.2s ease-out;
+  border-color: #d1d5db !important;
+}
+
+/* Card de evento específico - Estilo Facebook */
+.event-card {
+  @apply bg-white rounded-lg;
+  background-color: #ffffff !important;
+  border: 1px solid #e5e7eb !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06) !important;
+  margin-bottom: 20px;
+  overflow: hidden;
+}
+
+.event-card:hover {
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 2px 4px rgba(0, 0, 0, 0.06) !important;
+  transform: translateY(-1px);
+  transition: all 0.2s ease-out;
+  border-color: #d1d5db !important;
+}
+
+/* Botões de ação estilo Facebook */
+.action-button {
+  @apply flex items-center gap-2 text-neutral-600 transition-all duration-200 py-2 px-3 rounded-md font-medium text-sm;
+}
+
+.action-button:hover {
+  @apply bg-neutral-50;
+}
+
+/* Separador sutil */
+.card-separator {
+  @apply border-t border-neutral-100;
+  border-color: rgba(0, 0, 0, 0.08);
+}
+
+/* Badge de categoria melhorado */
+.category-badge {
+  @apply px-3 py-1 rounded-full text-xs font-semibold text-white;
+  backdrop-filter: blur(8px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Botões */
+.btn-primary {
+  @apply bg-primary-500 text-white px-4 py-2 rounded-lg font-medium hover:bg-primary-600 transition-colors;
+}
+
+.btn-secondary {
+  @apply bg-white text-neutral-700 px-4 py-2 rounded-lg font-medium border border-neutral-300 hover:bg-neutral-50 transition-colors;
+}
+
+/* Estados de loading */
+.loading-skeleton {
+  @apply animate-pulse bg-neutral-200 rounded;
+}
+
+/* Badges */
+.badge {
+  @apply px-2 py-1 rounded-full text-xs font-medium;
+}
+
+.badge-primary {
+  @apply bg-primary-100 text-primary-800;
+}
+
+.badge-secondary {
+  @apply bg-secondary-100 text-secondary-800;
+}
+
+.badge-success {
+  @apply bg-green-100 text-green-800;
+}
+
+.badge-warning {
+  @apply bg-yellow-100 text-yellow-800;
+}
+
+.badge-error {
+  @apply bg-red-100 text-red-800;
+}

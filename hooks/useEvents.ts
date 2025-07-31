@@ -49,7 +49,7 @@ export function useEvents() {
       setLoading(true)
       setError(null)
 
-      // Buscar eventos básicos
+      // Buscar eventos com contagem de participantes em uma única query
       const { data: eventsData, error: eventsError } = await supabase
         .from('eventos')
         .select(`
@@ -58,44 +58,58 @@ export function useEvents() {
             nome,
             email,
             avatar
+          ),
+          participacoes!left (
+            id,
+            status
           )
         `)
         .order('data', { ascending: true })
 
       if (eventsError) throw eventsError
 
-      // Buscar contagem de participantes para cada evento
-      const eventsWithCounts = await Promise.all(
-        (eventsData || []).map(async (event) => {
-          const { count } = await supabase
-            .from('participacoes')
-            .select('*', { count: 'exact', head: true })
-            .eq('evento_id', event.id)
-            .eq('status', 'confirmado')
+      // Processar contagem de participantes
+      const eventsWithCounts = (eventsData || []).map(event => ({
+        ...event,
+        participantes_count: event.participacoes?.filter((p: any) => p.status === 'confirmado').length || 0,
+        participacoes: undefined // Remove para não poluir o objeto
+      }))
 
-          return {
-            ...event,
-            participantes_count: count || 0
-          }
-        })
-      )
-
-      // Se usuário logado, verificar participações
+      // Se usuário logado, buscar eventos com participação do usuário em uma única query
       let eventsWithParticipation = eventsWithCounts
       
       if (user) {
-        const { data: userParticipations } = await supabase
-          .from('participacoes')
-          .select('evento_id')
-          .eq('usuario_id', user.id)
-          .eq('status', 'confirmado')
+        // Buscar eventos com participação do usuário em uma única query otimizada
+        const { data: eventsWithUserParticipation, error: participationError } = await supabase
+          .from('eventos')
+          .select(`
+            id,
+            participacoes!left (
+              usuario_id,
+              status
+            )
+          `)
+          .eq('participacoes.usuario_id', user.id)
+          .eq('participacoes.status', 'confirmado')
 
-        const userEventIds = new Set(userParticipations?.map(p => p.evento_id) || [])
+        if (!participationError) {
+          const userEventIds = new Set(
+            eventsWithUserParticipation
+              ?.filter(e => e.participacoes && e.participacoes.length > 0)
+              ?.map(e => e.id) || []
+          )
 
-        eventsWithParticipation = eventsWithCounts.map(event => ({
-          ...event,
-          user_participando: userEventIds.has(event.id)
-        }))
+          eventsWithParticipation = eventsWithCounts.map(event => ({
+            ...event,
+            user_participando: userEventIds.has(event.id)
+          }))
+        } else {
+          // Fallback: marcar todos como não participando se houver erro
+          eventsWithParticipation = eventsWithCounts.map(event => ({
+            ...event,
+            user_participando: false
+          }))
+        }
       } else {
         eventsWithParticipation = eventsWithCounts.map(event => ({
           ...event,

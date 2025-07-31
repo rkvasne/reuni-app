@@ -47,29 +47,133 @@ interface AuthHook {
   signUp: (email: string, password: string, metadata?: any) => Promise<AuthResponse>
   signOut: () => Promise<void>
   signInWithGoogle: () => Promise<AuthResponse>
+  updateProfile: (data: ProfileData) => Promise<void>
+}
+
+// AuthModal Component Interface
+interface AuthModalProps {
+  isOpen: boolean
+  onClose: () => void
+  defaultTab: 'login' | 'signup'
+  onSuccess: () => void
 }
 ```
 
 #### 2. Layout Components
-- **Header**: Logo, busca, notificações, menu do usuário
-- **LeftSidebar**: Navegação principal, comunidades
-- **MainFeed**: Carrossel de destaques, filtros, cards de eventos
-- **RightSidebar**: Amigos online, sugestões, ações rápidas
+```typescript
+// Responsive Layout System
+interface LayoutProps {
+  children: React.ReactNode
+  showSidebars?: boolean
+  mobileLayout?: 'single' | 'tabs'
+}
 
-#### 3. Event Components
+// Layout Components:
+// - Header: Logo, busca global, notificações, menu do usuário
+// - LeftSidebar: Navegação principal, comunidades, filtros rápidos
+// - MainFeed: Carrossel de destaques, filtros avançados, cards de eventos
+// - RightSidebar: Sugestões, ações rápidas, amigos online
+```
+
+#### 3. Event Management Components
 ```typescript
 interface EventCard {
   event: Event
+  variant: 'compact' | 'featured' | 'detailed'
   onAttend: (eventId: string) => void
   onShare: (eventId: string) => void
   onComment: (eventId: string, comment: string) => void
+  onLike: (eventId: string) => void
+  showParticipants?: boolean
+}
+
+interface EventModal {
+  mode: 'create' | 'edit' | 'view'
+  eventId?: string
+  onSave: (eventData: EventData) => Promise<void>
+  onDelete?: (eventId: string) => Promise<void>
+}
+
+interface EventForm {
+  initialData?: Partial<EventData>
+  onSubmit: (data: EventData) => Promise<void>
+  validation: EventValidationSchema
 }
 ```
 
-#### 4. Modal System
-- **AuthModal**: Login/cadastro com validação
-- **EventModal**: Criação/edição de eventos
-- **ConfirmModal**: Confirmações de ações
+#### 4. Search and Filter System
+```typescript
+interface SearchBarProps {
+  onSearch: (query: string) => void
+  placeholder: string
+  suggestions?: string[]
+  realTimeSearch?: boolean
+}
+
+interface FilterSystem {
+  categories: CategoryFilter[]
+  dateRange: DateRangeFilter
+  location: LocationFilter
+  onFilterChange: (filters: FilterState) => void
+  activeFilters: FilterState
+}
+
+interface AdvancedFilters {
+  priceRange: PriceRangeFilter
+  eventType: EventTypeFilter
+  participantCount: ParticipantCountFilter
+  distance: DistanceFilter
+}
+```
+
+#### 5. Community System Components
+```typescript
+interface CommunityCard {
+  community: Community
+  userMembership?: MembershipStatus
+  onJoin: (communityId: string) => void
+  onLeave: (communityId: string) => void
+}
+
+interface CommunityModal {
+  mode: 'create' | 'edit' | 'view'
+  communityId?: string
+  onSave: (data: CommunityData) => Promise<void>
+}
+```
+
+#### 6. Social Interaction Components
+```typescript
+interface ParticipantsList {
+  eventId: string
+  participants: User[]
+  maxVisible?: number
+  onUserClick: (userId: string) => void
+}
+
+interface CommentSystem {
+  eventId: string
+  comments: Comment[]
+  onAddComment: (comment: string) => Promise<void>
+  onDeleteComment: (commentId: string) => Promise<void>
+  realTimeUpdates: boolean
+}
+
+interface NotificationCenter {
+  notifications: Notification[]
+  onMarkAsRead: (notificationId: string) => void
+  onMarkAllAsRead: () => void
+  preferences: NotificationPreferences
+}
+```
+
+#### 7. Modal System
+- **AuthModal**: Login/cadastro com validação e OAuth
+- **EventModal**: Criação/edição/visualização de eventos
+- **CommunityModal**: Gestão de comunidades
+- **ConfirmModal**: Confirmações de ações críticas
+- **ProfileModal**: Edição rápida de perfil
+- **NotificationModal**: Centro de notificações
 
 ### State Management Strategy
 
@@ -101,6 +205,7 @@ CREATE TABLE usuarios (
   email VARCHAR(255) UNIQUE NOT NULL,
   avatar TEXT,
   bio TEXT,
+  perfil_publico BOOLEAN DEFAULT TRUE,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
@@ -119,6 +224,7 @@ CREATE TABLE eventos (
   imagem_url TEXT,
   organizador_id UUID REFERENCES usuarios(id),
   max_participantes INTEGER,
+  likes_count INTEGER DEFAULT 0,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
@@ -132,7 +238,82 @@ CREATE TABLE presencas (
   usuario_id UUID REFERENCES usuarios(id) ON DELETE CASCADE,
   status VARCHAR(20) DEFAULT 'confirmado' CHECK (status IN ('confirmado', 'interessado', 'cancelado')),
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   UNIQUE(evento_id, usuario_id)
+);
+```
+
+#### Communities Table
+```sql
+CREATE TABLE comunidades (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  nome VARCHAR(100) NOT NULL,
+  descricao TEXT,
+  tipo VARCHAR(50) NOT NULL,
+  imagem_url TEXT,
+  criador_id UUID REFERENCES usuarios(id),
+  privada BOOLEAN DEFAULT FALSE,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+```
+
+#### Community Members Table
+```sql
+CREATE TABLE membros_comunidade (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  comunidade_id UUID REFERENCES comunidades(id) ON DELETE CASCADE,
+  usuario_id UUID REFERENCES usuarios(id) ON DELETE CASCADE,
+  role VARCHAR(20) DEFAULT 'member' CHECK (role IN ('admin', 'moderator', 'member')),
+  joined_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  UNIQUE(comunidade_id, usuario_id)
+);
+```
+
+#### Comments Table
+```sql
+CREATE TABLE comentarios (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  evento_id UUID REFERENCES eventos(id) ON DELETE CASCADE,
+  usuario_id UUID REFERENCES usuarios(id) ON DELETE CASCADE,
+  conteudo TEXT NOT NULL,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+```
+
+#### Event Likes Table
+```sql
+CREATE TABLE curtidas_evento (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  evento_id UUID REFERENCES eventos(id) ON DELETE CASCADE,
+  usuario_id UUID REFERENCES usuarios(id) ON DELETE CASCADE,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  UNIQUE(evento_id, usuario_id)
+);
+```
+
+#### Notifications Table
+```sql
+CREATE TABLE notificacoes (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  usuario_id UUID REFERENCES usuarios(id) ON DELETE CASCADE,
+  tipo VARCHAR(50) NOT NULL,
+  titulo VARCHAR(200) NOT NULL,
+  conteudo TEXT,
+  lida BOOLEAN DEFAULT FALSE,
+  evento_id UUID REFERENCES eventos(id) ON DELETE CASCADE,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+```
+
+#### User Follows Table
+```sql
+CREATE TABLE seguindo (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  seguidor_id UUID REFERENCES usuarios(id) ON DELETE CASCADE,
+  seguido_id UUID REFERENCES usuarios(id) ON DELETE CASCADE,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  UNIQUE(seguidor_id, seguido_id)
 );
 ```
 
@@ -154,23 +335,56 @@ CREATE TABLE comunidades (
 
 #### REST Endpoints
 ```typescript
+// Authentication API
+POST   /api/auth/login          // Email/password login
+POST   /api/auth/signup         // User registration
+POST   /api/auth/google         // Google OAuth login
+POST   /api/auth/logout         // User logout
+GET    /api/auth/me             // Get current user
+
 // Events API
 GET    /api/events              // List events with filters
 POST   /api/events              // Create new event
 GET    /api/events/:id          // Get event details
 PUT    /api/events/:id          // Update event
 DELETE /api/events/:id          // Delete event
+GET    /api/events/search       // Search events
+GET    /api/events/featured     // Get featured events
 
 // Attendances API
 POST   /api/events/:id/attend   // Confirm attendance
 DELETE /api/events/:id/attend   // Cancel attendance
 GET    /api/events/:id/attendees // List attendees
+GET    /api/users/:id/events    // User's events (created/attending)
 
 // Communities API
 GET    /api/communities         // List communities
 POST   /api/communities         // Create community
 GET    /api/communities/:id     // Get community details
+PUT    /api/communities/:id     // Update community
 POST   /api/communities/:id/join // Join community
+DELETE /api/communities/:id/leave // Leave community
+GET    /api/communities/:id/members // List members
+GET    /api/communities/:id/events // Community events
+
+// Social API
+POST   /api/events/:id/comments // Add comment
+GET    /api/events/:id/comments // Get comments
+POST   /api/events/:id/like     // Like event
+DELETE /api/events/:id/like     // Unlike event
+POST   /api/users/:id/follow    // Follow user
+DELETE /api/users/:id/follow    // Unfollow user
+
+// Notifications API
+GET    /api/notifications       // Get user notifications
+PUT    /api/notifications/:id/read // Mark as read
+PUT    /api/notifications/read-all // Mark all as read
+PUT    /api/notifications/preferences // Update preferences
+
+// Profile API
+GET    /api/users/:id           // Get user profile
+PUT    /api/users/:id           // Update profile
+POST   /api/users/avatar        // Upload avatar
 ```
 
 ## Error Handling

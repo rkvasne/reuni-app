@@ -8,11 +8,12 @@ import FeaturedBanner from './FeaturedBanner'
 import EventModal from './EventModal'
 import SocialSection from './SocialSection'
 import EventSlider from './EventSlider'
+import OptimizedEventsList from './OptimizedEventsList'
 
-import { useEvents } from '@/hooks/useEvents'
 import { useAuth } from '@/hooks/useAuth'
 import { useFriendsEvents } from '@/hooks/useFriendsEvents'
 import { useSuggestedEvents } from '@/hooks/useSuggestedEvents'
+import { useFeaturedEvents } from '@/hooks/useFeaturedEvents'
 
 interface MainFeedProps {
   showCreateModal?: boolean;
@@ -25,37 +26,29 @@ export default function MainFeed({
   onCloseCreateModal,
   onCreateEvent 
 }: MainFeedProps) {
-  const { events, loading, error, fetchEvents } = useEvents()
   const { isAuthenticated } = useAuth()
   const router = useRouter()
-  // Hooks sociais
+  
+  // Hooks para diferentes seções
+  const { events: featuredEvents, loading: featuredLoading } = useFeaturedEvents(3)
   const { events: friendsEvents, loading: friendsLoading } = useFriendsEvents()
   const { events: suggestedEvents, loading: suggestedLoading } = useSuggestedEvents()
-
-  const handleRefresh = () => {
-    fetchEvents()
-  }
 
   const handleEventClick = (event: any) => {
     // TODO: Abrir modal de detalhes do evento
     console.log('Evento clicado:', event)
   }
 
-
-
-  // Eventos em destaque (primeiros 3 eventos para o banner)
-  const featuredEvents = events.slice(0, 3).map(event => ({
-    ...event,
-    participantes_count: event.participantes_count || 0
-  }))
-
   return (
     <div className="space-y-6">
       
       {/* Banner de Destaques Melhorado */}
       <FeaturedBanner 
-        events={featuredEvents}
-        loading={loading}
+        events={featuredEvents.map(event => ({
+          ...event,
+          participantes_count: event.participantes_count || 0
+        }))}
+        loading={featuredLoading}
         onEventClick={handleEventClick}
       />
       
@@ -80,26 +73,7 @@ export default function MainFeed({
       
 
       
-      {/* Estado de Loading */}
-      {loading && (
-        <div className="text-center py-8">
-          <div className="w-8 h-8 border-4 border-primary-200 border-t-primary-500 rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-neutral-600">Carregando eventos...</p>
-        </div>
-      )}
 
-      {/* Estado de Erro */}
-      {error && (
-        <div className="card p-6 text-center">
-          <p className="text-red-600 mb-4">{error}</p>
-          <button
-            onClick={handleRefresh}
-            className="btn-primary"
-          >
-            Tentar Novamente
-          </button>
-        </div>
-      )}
 
       {/* Seções Sociais */}
       {isAuthenticated && (
@@ -142,64 +116,31 @@ export default function MainFeed({
         </>
       )}
 
-      {/* Feed Principal de Eventos */}
-      {!loading && !error && (
-        <>
-          {events.length > 0 ? (
-            <div className="space-y-4">
-              <h2 className="text-xl font-bold text-neutral-800 px-1">
-                Todos os Eventos
-              </h2>
-              {events.map((event) => (
-                <EventCard 
-                  key={event.id} 
-                  event={event} 
-                  onEventUpdated={fetchEvents} // Atualizar lista após editar evento
-                />
-              ))}
-            </div>
-          ) : (
-            <div className="card p-8 text-center">
-              <div className="w-16 h-16 bg-neutral-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Plus className="w-8 h-8 text-neutral-400" />
-              </div>
-              <h3 className="text-lg font-semibold text-neutral-800 mb-2">
-                Nenhum evento encontrado
-              </h3>
-              <p className="text-neutral-600 mb-4">
-                Seja o primeiro a criar um evento incrível!
-              </p>
-              {isAuthenticated && (
-                <button
-                  onClick={() => onCreateEvent && onCreateEvent()}
-                  className="btn-primary"
-                >
-                  Criar Primeiro Evento
-                </button>
-              )}
-            </div>
-          )}
-        </>
-      )}
-      
-      {/* Botão Carregar Mais (futuro) */}
-      {!loading && !error && events.length > 0 && (
-        <div className="text-center py-4">
-          <button
-            onClick={handleRefresh}
-            className="bg-white border border-neutral-300 hover:bg-neutral-50 text-neutral-700 px-6 py-3 rounded-xl font-medium transition-all"
-          >
-            Atualizar eventos
-          </button>
+      {/* Feed Principal de Eventos com Scroll Infinito */}
+      <div className="space-y-4">
+        <div className="flex items-center justify-between">
+          <h2 className="text-xl font-bold text-neutral-800 px-1">
+            Todos os Eventos
+          </h2>
+          <span className="text-sm text-neutral-500 px-1">
+            Scroll para carregar mais
+          </span>
         </div>
-      )}
+        <OptimizedEventsList 
+          pageSize={6}
+          className="space-y-4"
+        />
+      </div>
 
       {/* Modal de Criar Evento */}
       <EventModal
         isOpen={showCreateModal}
         onClose={() => onCloseCreateModal && onCloseCreateModal()}
         mode="create"
-        onEventCreated={fetchEvents} // Atualizar lista após criar evento
+        onEventCreated={() => {
+          // O OptimizedEventsList se atualiza automaticamente
+          // Pode adicionar lógica adicional aqui se necessário
+        }}
       />
       
     </div>

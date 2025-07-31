@@ -1,7 +1,8 @@
 'use client';
 
 import Image from 'next/image';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { sanitizeImageUrl, optimizeImageUrl, getPlaceholderImage } from '@/utils/imageUtils';
 
 interface OptimizedImageProps {
   src: string;
@@ -30,15 +31,42 @@ export default function OptimizedImage({
 }: OptimizedImageProps) {
   const [imageError, setImageError] = useState(false);
   const [imageLoading, setImageLoading] = useState(true);
+  const [mounted, setMounted] = useState(false);
 
-  // Validar se a URL é válida
-  if (!src || src.trim() === '') {
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  // Não renderizar até estar montado no cliente
+  if (!mounted) {
+    return (
+      <div className={`bg-neutral-200 animate-pulse ${className}`}>
+        <div className="w-full h-full bg-neutral-300 rounded"></div>
+      </div>
+    );
+  }
+
+  // Sanitizar e otimizar a URL da imagem
+  const sanitizedSrc = sanitizeImageUrl(src);
+  const optimizedSrc = sanitizedSrc ? optimizeImageUrl(sanitizedSrc, width) : null;
+
+  // Se a URL não é válida, usar placeholder
+  if (!optimizedSrc) {
+    const placeholderSrc = getPlaceholderImage(width || 400, height || 300);
+    
     if (fallback) {
       return <>{fallback}</>;
     }
+    
     return (
       <div className={`bg-neutral-200 flex items-center justify-center ${className}`}>
-        <span className="text-neutral-500 text-sm">Sem imagem</span>
+        <Image
+          src={placeholderSrc}
+          alt={alt}
+          width={width || 400}
+          height={height || 300}
+          className="opacity-50"
+        />
       </div>
     );
   }
@@ -56,15 +84,27 @@ export default function OptimizedImage({
     );
   }
 
+  // Função para lidar com erro de imagem
+  const handleImageError = () => {
+    console.warn(`Erro ao carregar imagem: ${src}`);
+    setImageError(true);
+    setImageLoading(false);
+  };
+
+  const handleImageLoad = () => {
+    setImageLoading(false);
+  };
+
   // Props base para todas as imagens
   const baseProps = {
-    src,
+    src: optimizedSrc,
     alt,
     className: `${className} ${imageLoading ? 'opacity-0' : 'opacity-100'} transition-opacity duration-300`,
-    onError: () => setImageError(true),
-    onLoad: () => setImageLoading(false),
+    onError: handleImageError,
+    onLoad: handleImageLoad,
     priority,
-    placeholder
+    placeholder,
+    unoptimized: false // Forçar otimização
   };
 
   // Se usar fill

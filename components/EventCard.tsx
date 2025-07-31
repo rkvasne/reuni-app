@@ -1,8 +1,9 @@
 'use client'
 
 import { useState } from 'react'
-import { Calendar, MapPin, Users, Heart, MessageCircle, Share2, Edit, Trash2, MoreHorizontal, Check } from 'lucide-react'
+import { Calendar, MapPin, Users, Heart, MessageCircle, Share2, Edit, Trash2, MoreHorizontal, Check, Clock } from 'lucide-react'
 import OptimizedImage from './OptimizedImage'
+import EventDateBadge from './EventDateBadge'
 import { useAuth } from '@/hooks/useAuth'
 import { useEvents, type Event } from '@/hooks/useEvents'
 import EventModal from './EventModal'
@@ -84,11 +85,21 @@ export default function EventCard({ event, priority = false, onEventUpdated }: E
     }
   }
 
+  const formatFullDate = (dateString: string) => {
+    const date = new Date(dateString)
+    const day = date.getDate()
+    const month = date.toLocaleDateString('pt-BR', { month: 'short' })
+    const weekday = date.toLocaleDateString('pt-BR', { weekday: 'long' })
+    return { day, month, weekday }
+  }
+
+  const dateInfo = formatFullDate(event.data)
+
   return (
-    <div className="card overflow-hidden">
+    <div className="event-card overflow-hidden">
       
       {/* Imagem do Evento */}
-      <div className="relative h-56 bg-neutral-200">
+      <div className="relative h-48 bg-neutral-100 rounded-t-lg overflow-hidden">
         {event.imagem_url ? (
           <OptimizedImage
             src={event.imagem_url}
@@ -96,6 +107,7 @@ export default function EventCard({ event, priority = false, onEventUpdated }: E
             fill
             className="object-cover"
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+            priority={priority}
             fallback={
               <div className="w-full h-full bg-gradient-to-br from-primary-100 to-secondary-100 flex items-center justify-center">
                 <Calendar className="w-16 h-16 text-primary-400" />
@@ -107,74 +119,33 @@ export default function EventCard({ event, priority = false, onEventUpdated }: E
             <Calendar className="w-16 h-16 text-primary-400" />
           </div>
         )}
+        
+        {/* Badge da Categoria */}
         <div className="absolute top-3 left-3">
-          <span className="bg-primary-500 text-white px-2 py-1 rounded-lg text-xs font-medium">
+          <span className="category-badge bg-primary-500 capitalize">
             {event.categoria}
           </span>
         </div>
-        <div className="absolute top-3 right-3 bg-white/90 backdrop-blur-sm rounded-lg p-2 text-center">
-          <div className="text-lg font-bold text-primary-600">
-            {formatDate(event.data).split(' ')[0]}
-          </div>
-          <div className="text-xs text-neutral-600 uppercase">
-            {formatDate(event.data).split(' ')[1]}
-          </div>
-        </div>
-      </div>
-      
-      {/* Conteúdo */}
-      <div className="p-4">
         
-        {/* Título e Organizador */}
-        <div className="flex items-start justify-between mb-3">
-          <div className="flex-1">
-            <h3 
-              className="font-semibold text-lg text-neutral-800 mb-1 cursor-pointer hover:text-primary-600 transition-colors"
-              onClick={() => setShowViewModal(true)}
-            >
-              {event.titulo}
-            </h3>
-            <div className="flex items-center gap-2">
-              {event.organizador?.avatar ? (
-                <OptimizedImage
-                  src={event.organizador.avatar}
-                  alt={event.organizador.nome}
-                  width={20}
-                  height={20}
-                  className="rounded-full object-cover flex-shrink-0"
-                  fallback={
-                    <div className="w-5 h-5 bg-primary-500 rounded-full flex items-center justify-center">
-                      <span className="text-xs text-white font-medium">
-                        {event.organizador?.nome?.charAt(0) || 'U'}
-                      </span>
-                    </div>
-                  }
-                />
-              ) : (
-                <div className="w-5 h-5 bg-primary-500 rounded-full flex items-center justify-center">
-                  <span className="text-xs text-white font-medium">
-                    {event.organizador?.nome?.charAt(0) || 'U'}
-                  </span>
-                </div>
-              )}
-              <span className="text-sm text-neutral-600">
-                por {event.organizador?.nome || 'Organizador'}
-              </span>
-            </div>
-          </div>
-          
-          {/* Menu de ações para organizador */}
-          {isOrganizer && (
+        {/* Data no canto */}
+        <EventDateBadge 
+          date={event.data} 
+          className="absolute top-3 right-3"
+        />
+
+        {/* Menu de ações para organizador */}
+        {isOrganizer && (
+          <div className="absolute top-3 left-1/2 transform -translate-x-1/2">
             <div className="relative">
               <button
                 onClick={() => setShowMenu(!showMenu)}
-                className="p-2 hover:bg-neutral-100 rounded-lg transition-colors"
+                className="p-2 bg-white/90 hover:bg-white rounded-lg transition-colors shadow-sm"
               >
                 <MoreHorizontal className="w-4 h-4 text-neutral-600" />
               </button>
               
               {showMenu && (
-                <div className="absolute right-0 top-10 bg-white rounded-lg shadow-reuni-lg border border-neutral-200 py-2 w-40 z-10">
+                <div className="absolute top-10 left-1/2 transform -translate-x-1/2 bg-white rounded-lg shadow-lg border border-neutral-200 py-2 w-40 z-10">
                   <button
                     onClick={() => {
                       setShowEditModal(true)
@@ -196,39 +167,112 @@ export default function EventCard({ event, priority = false, onEventUpdated }: E
                 </div>
               )}
             </div>
+          </div>
+        )}
+      </div>
+      
+      {/* Conteúdo Principal */}
+      <div className="p-5">
+        
+        {/* Título do Evento */}
+        <h3 
+          className="font-bold text-xl text-neutral-800 mb-2 cursor-pointer hover:text-primary-600 transition-colors line-clamp-2"
+          onClick={() => setShowViewModal(true)}
+        >
+          {event.titulo}
+        </h3>
+
+        {/* Informações do Organizador */}
+        <div className="flex items-center gap-2 mb-4">
+          {event.organizador?.avatar ? (
+            <OptimizedImage
+              src={event.organizador.avatar}
+              alt={event.organizador.nome}
+              width={24}
+              height={24}
+              className="rounded-full object-cover flex-shrink-0"
+              fallback={
+                <div className="w-6 h-6 bg-primary-500 rounded-full flex items-center justify-center">
+                  <span className="text-xs text-white font-medium">
+                    {event.organizador?.nome?.charAt(0) || 'U'}
+                  </span>
+                </div>
+              }
+            />
+          ) : (
+            <div className="w-6 h-6 bg-primary-500 rounded-full flex items-center justify-center">
+              <span className="text-xs text-white font-medium">
+                {event.organizador?.nome?.charAt(0) || 'U'}
+              </span>
+            </div>
           )}
+          <span className="text-sm text-neutral-600">
+            por <span className="font-medium">{event.organizador?.nome || 'Organizador'}</span>
+          </span>
         </div>
         
         {/* Detalhes do Evento */}
-        <div className="space-y-2 mb-4">
-          <div className="flex items-center gap-2 text-neutral-600">
-            <Calendar className="w-4 h-4" />
-            <span className="text-sm">{formatTime(event.hora)}</span>
+        <div className="space-y-3 mb-4">
+          {/* Data e Hora */}
+          <div className="flex items-center gap-3 text-neutral-700">
+            <div className="flex items-center gap-2">
+              <Calendar className="w-4 h-4 text-primary-500" />
+              <span className="text-sm">
+                {dateInfo.weekday}, {dateInfo.day} de {dateInfo.month}
+              </span>
+            </div>
+            <div className="flex items-center gap-2">
+              <Clock className="w-4 h-4 text-primary-500" />
+              <span className="text-sm font-medium">
+                {formatTime(event.hora)}
+              </span>
+            </div>
           </div>
-          <div className="flex items-center gap-2 text-neutral-600">
-            <MapPin className="w-4 h-4" />
+          
+          {/* Local */}
+          <div className="flex items-center gap-3 text-neutral-700">
+            <MapPin className="w-4 h-4 text-primary-500" />
             <span className="text-sm">{event.local}</span>
           </div>
-          <div className="flex items-center gap-2 text-neutral-600">
-            <Users className="w-4 h-4" />
-            <span className="text-sm">{event.participantes_count || 0} pessoas confirmadas</span>
+          
+          {/* Participantes */}
+          <div className="flex items-center gap-3 text-neutral-700">
+            <Users className="w-4 h-4 text-primary-500" />
+            <span className="text-sm">
+              {event.participantes_count || 0} pessoas confirmadas
+              {event.max_participantes && (
+                <span className="text-neutral-500"> de {event.max_participantes}</span>
+              )}
+            </span>
           </div>
         </div>
+
+        {/* Descrição (se houver) */}
+        {event.descricao && (
+          <div className="mb-4">
+            <p className="text-sm text-neutral-600 line-clamp-2">
+              {event.descricao}
+            </p>
+          </div>
+        )}
+        
+        {/* Separador sutil */}
+        <div className="card-separator my-4"></div>
         
         {/* Ações */}
-        <div className="flex items-center justify-between pt-3 border-t border-neutral-100">
-          <div className="flex items-center gap-4">
-            <button className="flex items-center gap-2 text-neutral-600 hover:text-secondary-500 transition-colors">
-              <Heart className="w-5 h-5" />
-              <span className="text-sm">Curtir</span>
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-6">
+            <button className="flex items-center gap-2 text-neutral-600 hover:text-red-500 transition-colors py-2 px-3 rounded-md hover:bg-red-50">
+              <Heart className="w-4 h-4" />
+              <span className="text-sm font-medium">Curtir</span>
             </button>
-            <button className="flex items-center gap-2 text-neutral-600 hover:text-primary-500 transition-colors">
-              <MessageCircle className="w-5 h-5" />
-              <span className="text-sm">Comentar</span>
+            <button className="flex items-center gap-2 text-neutral-600 hover:text-primary-500 transition-colors py-2 px-3 rounded-md hover:bg-primary-50">
+              <MessageCircle className="w-4 h-4" />
+              <span className="text-sm font-medium">Comentar</span>
             </button>
-            <button className="flex items-center gap-2 text-neutral-600 hover:text-accent-500 transition-colors">
-              <Share2 className="w-5 h-5" />
-              <span className="text-sm">Compartilhar</span>
+            <button className="flex items-center gap-2 text-neutral-600 hover:text-blue-500 transition-colors py-2 px-3 rounded-md hover:bg-blue-50">
+              <Share2 className="w-4 h-4" />
+              <span className="text-sm font-medium">Compartilhar</span>
             </button>
           </div>
           
@@ -236,10 +280,10 @@ export default function EventCard({ event, priority = false, onEventUpdated }: E
             <button 
               onClick={handleParticipation}
               disabled={participationLoading}
-              className={`px-4 py-2 rounded-lg font-medium transition-all flex items-center gap-2 ${
+              className={`px-5 py-2.5 rounded-lg font-semibold transition-all flex items-center gap-2 text-sm shadow-sm ${
                 event.user_participando
-                  ? 'bg-green-100 text-green-700 border border-green-200 hover:bg-green-200'
-                  : 'btn-primary'
+                  ? 'bg-green-100 text-green-700 border border-green-200 hover:bg-green-200 hover:shadow-md'
+                  : 'bg-primary-500 text-white hover:bg-primary-600 hover:shadow-md'
               } disabled:opacity-50 disabled:cursor-not-allowed`}
             >
               {participationLoading ? (
@@ -256,7 +300,7 @@ export default function EventCard({ event, priority = false, onEventUpdated }: E
           )}
           
           {isOrganizer && (
-            <div className="px-4 py-2 bg-primary-50 text-primary-700 rounded-lg text-sm font-medium">
+            <div className="px-4 py-2 bg-primary-50 text-primary-700 rounded-lg text-sm font-semibold border border-primary-200">
               Seu evento
             </div>
           )}

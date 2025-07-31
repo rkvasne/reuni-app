@@ -1,0 +1,69 @@
+{
+  "name": "eventos-scraper-brasil",
+  "version": "1.0.0",
+  "description": "Sistema de scraping de eventos no Brasil com foco em Ji-Paraná/RO",
+  "main": "index.js",
+  "scripts": {
+    "start": "node scrape-eventos-completo.js",
+    "dev": "LOG_LEVEL=debug node index.js",
+    "setup": "node scripts/setup-simple.js",
+    "check": "node scripts/check-system.js",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "test:integration": "jest tests/integration",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "clean": "rm -rf logs/* reports/* temp/*",
+    "reset": "npm run clean && rm -f .env.local",
+    "health": "npm run check && npm test",
+    "deploy:check": "npm run health && npm run lint",
+    "deploy:prepare": "node scripts/deploy.js",
+    "production": "node start-production.js",
+    "monitor": "node monitor.js",
+    "docs": "node scripts/generate-docs.js",
+    "final-check": "node scripts/final-check.js"
+  },
+  "keywords": [
+    "scraping",
+    "eventos",
+    "brasil",
+    "ji-parana",
+    "rondonia",
+    "eventbrite",
+    "sympla"
+  ],
+  "author": "Seu Nome",
+  "license": "MIT",
+  "dependencies": {
+    "puppeteer": "^21.0.0",
+    "@supabase/supabase-js": "^2.38.0",
+    "inquirer": "^9.2.0",
+    "chalk": "^4.1.2",
+    "bcrypt": "^5.1.0",
+    "cheerio": "^1.0.0-rc.12",
+    "dotenv": "^16.3.0",
+    "winston": "^3.10.0",
+    "node-cron": "^3.0.2",
+    "express": "^4.18.0",
+    "cors": "^2.8.5"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "eslint": "^8.50.0",
+    "@jest/globals": "^29.7.0",
+    "supertest": "^6.3.0"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=8.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/seu-usuario/eventos-scraper-brasil.git"
+  },
+  "bugs": {
+    "url": "https://github.com/seu-usuario/eventos-scraper-brasil/issues"
+  },
+  "homepage": "https://github.com/seu-usuario/eventos-scraper-brasil#readme"
+}
