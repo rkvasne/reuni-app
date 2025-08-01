@@ -442,10 +442,35 @@ class EventoScraperCompleto {
       let horaEvento = infoExtraida.hora || '19:00:00';
       let localEvento = this.construirLocal(infoExtraida.venue, infoExtraida.cidade, evento.location, evento.cidade);
 
+      // Limpar descrição removendo local duplicado
+      let descricaoLimpa = evento.description || `Evento encontrado no ${evento.source}`;
+      if (descricaoLimpa && localEvento) {
+        // Remover cidade/estado da descrição se já está no campo local
+        const cidadeEstado = localEvento.split(',').pop()?.trim();
+        if (cidadeEstado) {
+          descricaoLimpa = descricaoLimpa.replace(new RegExp(cidadeEstado, 'gi'), '').trim();
+        }
+        
+        // Remover local específico da descrição se detectado
+        const locaisParaRemover = [
+          'Teatro', 'Bar', 'Pub', 'Hotel', 'Restaurante', 'Clube', 'Igreja',
+          'Centro', 'Espaço', 'Arena', 'Estádio', 'Ginásio', 'Cervejaria',
+          'Beco', 'Porão', 'Largo', 'Hall', 'Galpão', 'Rancho', 'Concha'
+        ];
+        
+        locaisParaRemover.forEach(local => {
+          const regex = new RegExp(`${local}\\s+[A-Za-z\\s]+`, 'gi');
+          descricaoLimpa = descricaoLimpa.replace(regex, '').trim();
+        });
+        
+        // Limpar espaços duplos e vírgulas soltas
+        descricaoLimpa = descricaoLimpa.replace(/\s+/g, ' ').replace(/,\s*,/g, ',').trim();
+      }
+
       // Preparar dados
       const eventoData = {
         titulo: tituloLimpo,
-        descricao: evento.description || `Evento encontrado no ${evento.source}`,
+        descricao: descricaoLimpa,
         data: dataEvento,
         hora: horaEvento,
         local: localEvento,
@@ -503,7 +528,13 @@ class EventoScraperCompleto {
       // Conteúdo inadequado
       'fuck', 'shit', 'porno', 'sex', 'nude', 'naked',
       'strip', 'adult', 'xxx', 'erotic', 'sensual',
-      'fetish', 'bdsm', 'swing', 'orgia',
+      'fetish', 'bdsm', 'swing', 'orgia', 'ardente',
+      'hot', 'baile ardente', 'noite quente',
+      
+      // Eventos não relevantes (cursos online, tours, etc.)
+      'audio tour', 'scavenger hunt', 'master your',
+      'aligning passion', 'adventurous', 'brooklyn bridge',
+      'ken burns', 'rtf', 'destrave e grave',
       
       // Títulos muito genéricos
       'evento', 'show', 'festa', 'encontro'
@@ -603,7 +634,7 @@ class EventoScraperCompleto {
 
   // Separadores que indicam fim do título
   getSeparadores() {
-    return ['|', '!', '–', '—', ' - ', ' – ', ' — '];
+    return ['|', '!', '–', '—', ' - ', ' – ', ' — ', ' / ', '/'];
   }
 
   // Verificar se evento é relevante
@@ -724,31 +755,48 @@ class EventoScraperCompleto {
       tituloProcessado = matchCom[1].trim();
     }
 
-    // 4. Padrão: Endereços e Locais (Av., Rua, Igreja, Clube, etc.)
+    // 4. Padrão: Endereços e Locais (expandido com novos locais)
     // Ex: "III JORNADA UNIVERSO DO PSI ESCOLARAv. Álvaro Otacílio" -> "III JORNADA UNIVERSO DO PSI ESCOLAR"
     // Ex: "Seminário de Ciências Bíblicas em Natal (RN)Igreja do Nazareno" -> "Seminário de Ciências Bíblicas em Natal (RN)"
-    const padraoEndereco = /^(.+?)(Av\.|Rua|R\.|Alameda|Travessa|Praça|Igreja|Clube|Estádio|Arena|Centro|Ginásio).*$/i;
+    const padraoEndereco = /^(.+?)(Av\.|Rua|R\.|Alameda|Travessa|Praça|Igreja|Clube|Estádio|Arena|Centro|Ginásio|Bar|Teatro|Rodovia|BR|Pub|Universidade|Espaço|Restaurante|Hotel|Beco|Porão|Cervejaria|Largo|Hall|Galpão|Rancho).*$/i;
     const matchEndereco = tituloProcessado.match(padraoEndereco);
     if (matchEndereco && matchEndereco[1].trim().length >= 10) {
       tituloProcessado = matchEndereco[1].trim();
     }
 
-    // 4.1. Padrão: Ausência de espaço entre palavras (indica fim do título)
-    // Ex: "A voz do sem voz TributoMercedes Sosa" -> "A voz do sem voz Tributo"
-    // Ex: "LOBÃO POWER TRIO NO ACRE ROCK FESTIVAL E AMAZÔNIA MOTORCYCLESCLUBE JUVENTUS" -> "LOBÃO POWER TRIO NO ACRE ROCK FESTIVAL E AMAZÔNIA MOTORCYCLES"
-    const padraoSemEspaco = /^(.+?)([A-Z][a-z]+)([A-Z][A-Za-z\s]+)$/;
-    const matchSemEspaco = tituloProcessado.match(padraoSemEspaco);
-    if (matchSemEspaco && matchSemEspaco[1].trim().length >= 10) {
-      // Verificar se realmente parece ser fim do título
-      const parteAntes = matchSemEspaco[1] + matchSemEspaco[2];
-      const parteDepois = matchSemEspaco[3];
+    // 4.1. Padrão: Ausência de espaço entre palavras (múltiplas abordagens)
+    
+    // Abordagem 1: Locais conhecidos sem espaço
+    const locaisEspecificos = [
+      'Sesi', 'Teatro', 'Bar', 'Pub', 'Hotel', 'Restaurante', 'Clube', 
+      'Igreja', 'Centro', 'Espaço', 'Arena', 'Estádio', 'Ginásio', 
+      'Cervejaria', 'Beco', 'Porão', 'Largo', 'Hall', 'Galpão', 
+      'Rancho', 'Concha', 'Hostel', 'Universidade', 'Academia'
+    ];
+    
+    for (const local of locaisEspecificos) {
+      const regex = new RegExp(`^(.+?)${local}.*$`, 'i');
+      const match = tituloProcessado.match(regex);
+      if (match && match[1].trim().length >= 10) {
+        // Verificar se não há espaço antes do local
+        const ultimaLetra = match[1].slice(-1);
+        if (ultimaLetra.match(/[a-zA-Z]/)) {
+          tituloProcessado = match[1].trim();
+          break;
+        }
+      }
+    }
+    
+    // Abordagem 2: Repetição de palavras (ex: "esperançaCanção Nova")
+    const padraoRepeticao = /^(.+?)([A-Z][a-z]+\s[A-Z][a-z]+)$/;
+    const matchRepeticao = tituloProcessado.match(padraoRepeticao);
+    if (matchRepeticao && matchRepeticao[1].trim().length >= 15) {
+      const parteAntes = matchRepeticao[1].trim();
+      const parteDepois = matchRepeticao[2].trim();
       
-      // Se a parte depois parece ser nome próprio ou local, cortar
-      if (parteDepois.match(/^[A-Z][a-z]+(\s[A-Z][a-z]+)*$/) || 
-          parteDepois.toLowerCase().includes('clube') ||
-          parteDepois.toLowerCase().includes('igreja') ||
-          parteDepois.toLowerCase().includes('centro')) {
-        tituloProcessado = parteAntes.trim();
+      // Verificar se a parte depois aparece na parte antes
+      if (parteAntes.toLowerCase().includes(parteDepois.toLowerCase().split(' ')[0])) {
+        tituloProcessado = parteAntes;
       }
     }
 
@@ -949,7 +997,7 @@ class EventoScraperCompleto {
     return local;
   }
 
-  // Processar data do evento
+  // Processar data do evento (com correção de fuso horário)
   processarDataEvento(dataEvento) {
     // Tentar usar a data fornecida
     if (dataEvento) {
@@ -962,20 +1010,26 @@ class EventoScraperCompleto {
           }
         }
         
-        // Se é uma data válida, usar
+        // Se é uma data válida, usar com fuso horário brasileiro
         const parsedDate = new Date(dataEvento);
         if (!isNaN(parsedDate.getTime())) {
-          return parsedDate.toISOString().split('T')[0];
+          // Ajustar para fuso horário brasileiro (UTC-3)
+          const brasiliaOffset = -3 * 60; // -3 horas em minutos
+          const localOffset = parsedDate.getTimezoneOffset();
+          const adjustedDate = new Date(parsedDate.getTime() + (brasiliaOffset - localOffset) * 60000);
+          
+          return adjustedDate.toISOString().split('T')[0];
         }
       } catch (e) {
         console.log(`Erro ao processar data: ${dataEvento}`);
       }
     }
 
-    // Usar data futura padrão (próximo mês)
-    const dataFutura = new Date();
-    dataFutura.setMonth(dataFutura.getMonth() + 1);
-    return dataFutura.toISOString().split('T')[0];
+    // Usar data futura padrão (próximo mês) no fuso brasileiro
+    const agora = new Date();
+    const brasiliaTime = new Date(agora.getTime() - (3 * 60 * 60 * 1000)); // UTC-3
+    brasiliaTime.setMonth(brasiliaTime.getMonth() + 1);
+    return brasiliaTime.toISOString().split('T')[0];
   }
 
   // Converter data em português para formato ISO
