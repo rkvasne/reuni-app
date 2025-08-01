@@ -810,10 +810,10 @@ class EventoScraperCompleto {
 
     // 6. Padrão: Repetição de local/estabelecimento
     // Ex: "Festival no Piazza NottePiazza Notte" -> "Festival no Piazza Notte"
-    const padraoRepeticao = /^(.+?)([A-Z][a-záàâãéêíóôõúç\s]+)\1.*$/;
-    const matchRepeticao = tituloProcessado.match(padraoRepeticao);
-    if (matchRepeticao && matchRepeticao[1].trim().length >= 10) {
-      tituloProcessado = matchRepeticao[1].trim() + matchRepeticao[2];
+    const padraoRepeticaoLocal = /^(.+?)([A-Z][a-záàâãéêíóôõúç\s]+)\1.*$/;
+    const matchRepeticaoLocal = tituloProcessado.match(padraoRepeticaoLocal);
+    if (matchRepeticaoLocal && matchRepeticaoLocal[1].trim().length >= 10) {
+      tituloProcessado = matchRepeticaoLocal[1].trim() + matchRepeticaoLocal[2];
     }
 
     // 7. Padrão: Nome de cidade repetido com data

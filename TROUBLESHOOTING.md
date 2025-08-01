@@ -98,4 +98,62 @@ SELECT * FROM storage.buckets WHERE id = 'events';
 
 ---
 
+## 🔧 Problemas Específicos do Supabase
+
+### ❌ Erro 503 (Service Unavailable)
+
+**Causa mais comum:** Projeto pausado por inatividade
+
+**Soluções:**
+1. Acesse [Supabase Dashboard](https://supabase.com/dashboard)
+2. Selecione seu projeto
+3. Se pausado, clique em "Resume Project"
+4. Aguarde alguns minutos para reativação
+
+**Ferramentas de diagnóstico:**
+```bash
+# Testar conectividade
+node scripts/test-supabase.js
+
+# Monitorar em tempo real
+node scripts/monitor-supabase.js
+```
+
+### 🔄 Sistema de Retry Implementado
+
+Para casos de instabilidade, use as funções com retry automático:
+```typescript
+import { fetchEventosWithRetry } from '@/utils/supabaseRetry';
+
+// Em vez de:
+const { data, error } = await supabase.from('eventos').select('*');
+
+// Use:
+const { data, error } = await fetchEventosWithRetry();
+```
+
+**Configuração de Retry:**
+- Máximo 3 tentativas
+- 1 segundo entre tentativas
+- Backoff exponencial
+
+### 📊 Monitoramento de Status
+
+Use o hook de status para monitorar conectividade:
+```typescript
+import { useSupabaseStatus } from '@/hooks/useSupabaseStatus';
+
+function MyComponent() {
+  const { isOnline, error, retry } = useSupabaseStatus();
+  
+  if (!isOnline) {
+    return <div>Offline: {error}</div>;
+  }
+  
+  return <div>Online!</div>;
+}
+```
+
+---
+
 **Na dúvida, execute apenas os arquivos FINAL_* e reinicie o servidor!** 🚀

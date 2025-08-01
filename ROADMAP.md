@@ -3,6 +3,7 @@
 ## 🎯 Status Atual: v0.0.8 ✅ CONCLUÍDA
 
 ### ✅ Implementado
+
 - Sistema de autenticação completo (**login corrigido**)
 - CRUD de eventos e comunidades
 - Busca avançada (**dados falsos removidos**)
@@ -13,45 +14,74 @@
 
 ## 🚀 Próximos Passos
 
-### v0.0.9 - Sistema de Posts (4-6 semanas)
+### 🎯 Ações Imediatas (1-2 semanas)
+
+- [ ] **Deploy em Produção**
+
+  - [ ] Configurar Vercel
+  - [ ] Configurar variáveis de ambiente
+  - [ ] Testar build de produção
+  - [ ] Configurar domínio
+
+- [ ] **Beta Testing**
+  - [ ] Recrutar 10-15 beta testers
+  - [ ] Organizar eventos piloto
+  - [ ] Coletar feedback
+  - [ ] Implementar melhorias críticas
+
+### v0.1.0 - Sistema de Posts (4-6 semanas)
+
 - [ ] Posts nas comunidades
 - [ ] Sistema de comentários e reações
 - [ ] Ferramentas de moderação
 - [ ] Sistema de punições
 - [ ] Notificações em tempo real
 
-### Deploy e Produção (2-3 semanas)
-- [ ] Deploy no Vercel
-- [ ] Configuração Supabase produção
-- [ ] Beta testing com usuários reais
-- [ ] Analytics e monitoramento
+### v0.1.1 - PWA e Mobile (4-5 semanas)
 
-### v0.0.9 - PWA e Mobile (4-5 semanas)
 - [ ] Service worker e cache offline
 - [ ] Instalação como app
 - [ ] Otimizações mobile avançadas
 
-### v0.1.0 - Monetização (5-6 semanas)
+### v0.2.0 - Monetização (5-6 semanas)
+
 - [ ] Eventos pagos (Stripe)
 - [ ] Planos premium
 - [ ] Sistema de ingressos com QR codes
 
 ### v1.0.0 - Apps Nativos (8-12 semanas)
+
 - [ ] React Native para iOS/Android
 - [ ] Features nativas (câmera, GPS, push)
 - [ ] Distribuição nas app stores
 
-## 🎯 Métricas de Sucesso
+## 📊 KPIs para Acompanhar
 
-### v0.0.8 Targets
-- 100+ usuários ativos
-- 50+ comunidades criadas
-- 200+ eventos organizados
+### Métricas de Produto
 
-### v1.0.0 Targets
-- 10,000+ usuários
-- Apps nativos publicados
-- Modelo de negócio sustentável
+- **Usuários Ativos Semanais (WAU)** - Target: 100+
+- **Eventos criados por semana** - Target: 50+
+- **Taxa de participação em eventos** - Target: 30%+
+- **Comunidades ativas** - Target: 20+
+
+### Métricas Técnicas
+
+- **Uptime** - Target: 99.5%
+- **Page Load Time** - Target: <2s
+- **Error Rate** - Target: <1%
+
+### Marcos de Celebração
+
+- **Milestone 1**: Deploy produção + primeiro usuário real
+- **Milestone 2**: 50 usuários + 20 eventos criados
+- **Milestone 3**: 500 usuários ativos + NPS > 50
+
+## 🛠️ Ferramentas Recomendadas
+
+- **Vercel Analytics** - Performance
+- **Google Analytics 4** - Comportamento
+- **Sentry** - Error tracking
+- **Supabase Dashboard** - Métricas de banco
 
 ## 🛠️ Considerações Técnicas
 
