@@ -2,37 +2,32 @@
 
 Documentação completa do sistema de eventos e comunidades com scraping inteligente.
 
-## 📁 Estrutura da Documentação
+## 📁 Estrutura Reorganizada (v0.0.11)
 
-### 🎯 Documentação Principal (v0.0.9)
-- **[SISTEMA-EVENTOS-COMPLETO.md](./SISTEMA-EVENTOS-COMPLETO.md)** - Documentação técnica completa
-- **[PADRÕES-AVANÇADOS-IMPLEMENTADOS.md](./PADRÕES-AVANÇADOS-IMPLEMENTADOS.md)** - Algoritmos de limpeza
-- **[ORGANIZACAO-FINAL.md](./ORGANIZACAO-FINAL.md)** - Registro da organização e limpeza
+### 🔧 [Technical](./technical/) - Documentação Técnica
+- **[SISTEMA-EVENTOS-COMPLETO.md](./technical/SISTEMA-EVENTOS-COMPLETO.md)** - Documentação técnica completa
+- **[PADRÕES-AVANÇADOS-IMPLEMENTADOS.md](./technical/PADRÕES-AVANÇADOS-IMPLEMENTADOS.md)** - Algoritmos de limpeza
+- **[CORREÇÕES-FINAIS-IMPLEMENTADAS.md](./technical/CORREÇÕES-FINAIS-IMPLEMENTADAS.md)** - Últimas correções
+- **[OTIMIZAÇÃO-PERFORMANCE.md](./technical/OTIMIZAÇÃO-PERFORMANCE.md)** - Otimizações de performance
 
-### 🔧 Melhorias e Correções
-- **[CORREÇÕES-FINAIS-IMPLEMENTADAS.md](./CORREÇÕES-FINAIS-IMPLEMENTADAS.md)** - Últimas correções
-- **[OTIMIZAÇÃO-PERFORMANCE.md](./OTIMIZAÇÃO-PERFORMANCE.md)** - Otimizações de performance
+### 📋 [Project](./project/) - Gestão do Projeto
+- **[PRD.md](./project/PRD.md)** - Documento de requisitos do produto
+- **[ORGANIZACAO-FINAL.md](./project/ORGANIZACAO-FINAL.md)** - Registro da organização
+- **[LIMPEZA-REDUNDANCIAS-FINAL.md](./project/LIMPEZA-REDUNDANCIAS-FINAL.md)** - Registro da limpeza
 
-### 📋 Planejamento
-- **[PRD.md](./PRD.md)** - Documento de requisitos do produto
+### 🛠️ [Development](./development/) - Desenvolvimento
+- **[Setup](./development/setup/)** - Guias de configuração
+  - [Configuração Inicial](./development/setup/SETUP.md)
+  - [Configuração Supabase](./development/setup/SUPABASE_SETUP.md)
+- **[Features](./development/features/)** - Documentação de funcionalidades
+  - [Sistema de Comunidades](./development/features/COMMUNITIES.md)
+  - [Sistema de Busca](./development/features/SEARCH.md)
+  - [Sistema de Perfil](./development/features/PROFILE.md)
+- **[Fixes](./development/fixes/)** - Correções implementadas
+  - [Problemas RLS](./development/fixes/RLS_ISSUES.md)
+  - [Correções de Layout](./development/fixes/LAYOUT_FIXES.md)
 
-### 🚀 [Setup](./setup/)
-- **[Configuração Inicial](./setup/SETUP.md)** - Como configurar o projeto
-- **[Configuração Supabase](./setup/SUPABASE_SETUP.md)** - Banco de dados e autenticação
-- **[Migrações](../supabase/migrations/README.md)** - Scripts SQL organizados
-
-### ✨ [Features](./features/)
-- **[Sistema de Comunidades](./features/COMMUNITIES.md)** - Funcionalidades das comunidades
-- **[Sistema de Busca](./features/SEARCH.md)** - Funcionalidades de busca
-- **[Sistema de Perfil](./features/PROFILE.md)** - Funcionalidades do perfil
-- **[Otimizações](./features/OPTIMIZATIONS.md)** - Melhorias de performance
-
-### 🔧 [Correções](./fixes/)
-- **[Problemas RLS](./fixes/RLS_ISSUES.md)** - Soluções para Row Level Security
-- **[Correções de Layout](./fixes/LAYOUT_FIXES.md)** - Ajustes visuais
-- **[Correções de Navegação](./fixes/NAVIGATION_FIXES.md)** - Melhorias de UX
-
-### 📋 [Releases](./releases/)
+### 📋 [Releases](./releases/) - Histórico de Versões
 - **[v0.0.10](./releases/v0.0.10.md)** - Limpeza final e organização profissional
 - **[v0.0.8](./releases/v0.0.8.md)** - Limpeza de dados e melhorias
 - **[v0.0.7](./releases/v0.0.7.md)** - Sistema social completo
@@ -42,20 +37,20 @@ Documentação completa do sistema de eventos e comunidades com scraping intelig
 ## 🎯 Links Rápidos
 
 ### Para Desenvolvedores
-- [Configuração do Projeto](./setup/SETUP.md)
+- [Configuração do Projeto](./development/setup/SETUP.md)
 - [Migrações do Banco](../supabase/migrations/README.md)
-- [Problemas Comuns](./fixes/RLS_ISSUES.md)
+- [Problemas Comuns](./development/fixes/RLS_ISSUES.md)
 
 ### Para Product Managers
-- [Especificações](./features/COMMUNITIES.md)
+- [Especificações](./development/features/COMMUNITIES.md)
 - [Releases](./releases/)
-- [Status do Projeto](./STATUS.md)
+- [Requisitos do Produto](./project/PRD.md)
 
 ### Para QA
 - [Testes](../supabase/migrations/008_test_communities.sql)
 - [Verificações](../supabase/migrations/009_safe_test.sql)
 
-## 📊 Status Atual (v0.0.10)
+## 📊 Status Atual (v0.0.11)
 
 - ✅ **Sistema de Scraping** - 100% funcional (14/14 tarefas concluídas)
 - ✅ **Padrões Avançados** - Limpeza inteligente de títulos (95% melhoria)
@@ -64,15 +59,20 @@ Documentação completa do sistema de eventos e comunidades com scraping intelig
 - ✅ **Sistema de Comunidades** - Implementado (v0.0.5)
 - ✅ **Sistema de Busca** - Implementado (v0.0.4)  
 - ✅ **Sistema de Perfil** - Implementado (v0.0.3)
-- ✅ **Documentação** - 100% limpa, zero redundâncias, estrutura profissional
+- ✅ **Documentação** - Estrutura profissional reorganizada por categorias
+- ✅ **Scripts** - Organizados por função (monitoring, maintenance, scraping)
 
 ## 🔄 Changelog
 
-Veja o [CHANGELOG.md](./CHANGELOG.md) para histórico completo de mudanças.
+Veja o [CHANGELOG.md](../CHANGELOG.md) para histórico completo de mudanças.
 
 ## 🆘 Suporte
 
 Para problemas específicos:
-1. Consulte a seção [Correções](./fixes/)
+1. Consulte a seção [Fixes](./development/fixes/)
 2. Verifique as [Migrações](../supabase/migrations/README.md)
 3. Execute os [Scripts de Verificação](../supabase/migrations/009_safe_test.sql)
+
+---
+
+**📁 Estrutura organizada por categorias para melhor navegação e manutenção**

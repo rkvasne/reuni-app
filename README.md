@@ -2,7 +2,7 @@
 
 > Sistema completo de eventos sociais com scraping inteligente, interface profissional e cobertura nacional. Conecta pessoas através de experiências compartilhadas com foco especial em Rondônia.
 
-**Versão:** v0.0.10 ✅ **CONCLUÍDA**  
+**Versão:** v0.0.11 ✅ **CONCLUÍDA**  
 **Status:** ✅ Pronto para produção  
 **Scraping:** ✅ 100% funcional (14/14 tarefas concluídas)
 
@@ -91,10 +91,11 @@ node test-correções-finais.js   # Teste das correções finais
 - **[TROUBLESHOOTING.md](./TROUBLESHOOTING.md)** - Solução de problemas
 
 ### Documentação Técnica
-- **[docs/SISTEMA-EVENTOS-COMPLETO.md](./docs/SISTEMA-EVENTOS-COMPLETO.md)** - Documentação técnica completa
-- **[docs/PADRÕES-AVANÇADOS-IMPLEMENTADOS.md](./docs/PADRÕES-AVANÇADOS-IMPLEMENTADOS.md)** - Algoritmos de limpeza
-- **[docs/ORGANIZACAO-FINAL.md](./docs/ORGANIZACAO-FINAL.md)** - Registro da organização
-- **[scripts/scraping/README.md](./scripts/scraping/README.md)** - Guia do sistema de scraping
+- **[docs/technical/SISTEMA-EVENTOS-COMPLETO.md](./docs/technical/SISTEMA-EVENTOS-COMPLETO.md)** - Documentação técnica completa
+- **[docs/technical/PADRÕES-AVANÇADOS-IMPLEMENTADOS.md](./docs/technical/PADRÕES-AVANÇADOS-IMPLEMENTADOS.md)** - Algoritmos de limpeza
+- **[docs/project/ORGANIZACAO-FINAL.md](./docs/project/ORGANIZACAO-FINAL.md)** - Registro da organização
+- **[scripts/README.md](./scripts/README.md)** - Guia dos scripts organizados
+- **[scripts/scraping/README.md](./scripts/scraping/README.md)** - Sistema de scraping completo
 
 ## 👨‍💻 Autor
 
