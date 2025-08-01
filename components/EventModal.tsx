@@ -65,7 +65,7 @@ export default function EventModal({
         imagem_url: event.imagem_url || '',
         max_participantes: event.max_participantes
       })
-    } else {
+    } else if (mode === 'create') {
       // Reset form for create mode
       setFormData({
         titulo: '',
@@ -78,7 +78,7 @@ export default function EventModal({
         max_participantes: undefined
       })
     }
-  }, [mode, event, isOpen])
+  }, [mode, event?.id]) // Removido isOpen e event, usando apenas event?.id
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()

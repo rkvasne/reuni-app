@@ -10,6 +10,16 @@ interface UseOptimizedEventsOptions {
   enableInfiniteScroll?: boolean
 }
 
+// Chave para sessionStorage
+const STORAGE_KEY = 'reuni_events_state'
+
+interface StoredEventsState {
+  events: Event[]
+  currentPage: number
+  hasMore: boolean
+  timestamp: number
+}
+
 export function useOptimizedEvents(options: UseOptimizedEventsOptions = {}) {
   const { pageSize = 12, enableInfiniteScroll = true } = options
   const [events, setEvents] = useState<Event[]>([])
@@ -19,6 +29,52 @@ export function useOptimizedEvents(options: UseOptimizedEventsOptions = {}) {
   const [hasMore, setHasMore] = useState(true)
   const [currentPage, setCurrentPage] = useState(0)
   const { user } = useAuth()
+
+  // Carregar estado persistido
+  const loadPersistedState = useCallback(() => {
+    try {
+      const stored = sessionStorage.getItem(STORAGE_KEY)
+      if (stored) {
+        const state: StoredEventsState = JSON.parse(stored)
+        // Verificar se o estado não é muito antigo (menos de 30 minutos)
+        const isRecent = Date.now() - state.timestamp < 30 * 60 * 1000
+        if (isRecent && state.events.length > 0) {
+          setEvents(state.events)
+          setCurrentPage(state.currentPage)
+          setHasMore(state.hasMore)
+          setLoading(false)
+          return true
+        }
+      }
+    } catch (error) {
+      console.warn('Erro ao carregar estado persistido:', error)
+    }
+    return false
+  }, [])
+
+  // Salvar estado atual
+  const savePersistedState = useCallback((currentEvents: Event[], page: number, more: boolean) => {
+    try {
+      const state: StoredEventsState = {
+        events: currentEvents,
+        currentPage: page,
+        hasMore: more,
+        timestamp: Date.now()
+      }
+      sessionStorage.setItem(STORAGE_KEY, JSON.stringify(state))
+    } catch (error) {
+      console.warn('Erro ao salvar estado persistido:', error)
+    }
+  }, [])
+
+  // Limpar estado persistido
+  const clearPersistedState = useCallback(() => {
+    try {
+      sessionStorage.removeItem(STORAGE_KEY)
+    } catch (error) {
+      console.warn('Erro ao limpar estado persistido:', error)
+    }
+  }, [])
 
   // Buscar eventos otimizado com uma única query
   const fetchEvents = useCallback(async (page: number = 0, append: boolean = false) => {
@@ -84,9 +140,14 @@ export function useOptimizedEvents(options: UseOptimizedEventsOptions = {}) {
       const hasMoreData = processedEvents.length === pageSize
 
       if (append) {
-        setEvents(prev => [...prev, ...processedEvents])
+        setEvents(prev => {
+          const newEvents = [...prev, ...processedEvents]
+          savePersistedState(newEvents, page, hasMoreData)
+          return newEvents
+        })
       } else {
         setEvents(processedEvents)
+        savePersistedState(processedEvents, page, hasMoreData)
       }
 
       setHasMore(hasMoreData)
@@ -99,7 +160,7 @@ export function useOptimizedEvents(options: UseOptimizedEventsOptions = {}) {
       setLoading(false)
       setLoadingMore(false)
     }
-  }, [pageSize, user])
+  }, [pageSize, user?.id, savePersistedState])
 
   // Carregar mais eventos (infinite scroll)
   const loadMore = useCallback(() => {
@@ -112,13 +173,20 @@ export function useOptimizedEvents(options: UseOptimizedEventsOptions = {}) {
   const refresh = useCallback(() => {
     setCurrentPage(0)
     setHasMore(true)
+    clearPersistedState()
     fetchEvents(0, false)
-  }, [fetchEvents])
+  }, [fetchEvents, clearPersistedState])
 
   // Carregar eventos na inicialização
   useEffect(() => {
-    fetchEvents(0, false)
-  }, [fetchEvents])
+    // Tentar carregar estado persistido primeiro
+    const stateLoaded = loadPersistedState()
+    
+    // Se não conseguiu carregar estado persistido, buscar do servidor
+    if (!stateLoaded) {
+      fetchEvents(0, false)
+    }
+  }, [loadPersistedState, fetchEvents])
 
   // Atualizar quando usuário muda
   useEffect(() => {
@@ -126,6 +194,33 @@ export function useOptimizedEvents(options: UseOptimizedEventsOptions = {}) {
       refresh()
     }
   }, [user?.id])
+
+  // Salvar estado quando componente é desmontado
+  useEffect(() => {
+    return () => {
+      if (events.length > 0) {
+        savePersistedState(events, currentPage, hasMore)
+      }
+    }
+  }, [events, currentPage, hasMore, savePersistedState])
+
+  // Detectar quando a página volta ao foco e restaurar estado se necessário
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (!document.hidden && events.length === 0 && !loading) {
+        // Página voltou ao foco e não há eventos carregados
+        const stateLoaded = loadPersistedState()
+        if (!stateLoaded) {
+          fetchEvents(0, false)
+        }
+      }
+    }
+
+    document.addEventListener('visibilitychange', handleVisibilityChange)
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange)
+    }
+  }, [events.length, loading, loadPersistedState, fetchEvents])
 
   return {
     events,

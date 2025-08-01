@@ -10,6 +10,9 @@ interface OptimizedEventsListProps {
   pageSize?: number
 }
 
+// Chave para sessionStorage da posição do scroll
+const SCROLL_POSITION_KEY = 'reuni_scroll_position'
+
 export default function OptimizedEventsList({ 
   className = '',
   pageSize = 12
@@ -26,6 +29,41 @@ export default function OptimizedEventsList({
 
   const observerRef = useRef<IntersectionObserver>()
   const lastEventElementRef = useRef<HTMLDivElement>()
+  const containerRef = useRef<HTMLDivElement>(null)
+
+  // Salvar posição do scroll
+  const saveScrollPosition = useCallback(() => {
+    try {
+      if (containerRef.current) {
+        const scrollTop = containerRef.current.scrollTop
+        sessionStorage.setItem(SCROLL_POSITION_KEY, scrollTop.toString())
+      }
+    } catch (error) {
+      console.warn('Erro ao salvar posição do scroll:', error)
+    }
+  }, [])
+
+  // Restaurar posição do scroll
+  const restoreScrollPosition = useCallback(() => {
+    try {
+      const savedPosition = sessionStorage.getItem(SCROLL_POSITION_KEY)
+      if (savedPosition && containerRef.current) {
+        const scrollTop = parseInt(savedPosition, 10)
+        containerRef.current.scrollTop = scrollTop
+      }
+    } catch (error) {
+      console.warn('Erro ao restaurar posição do scroll:', error)
+    }
+  }, [])
+
+  // Limpar posição do scroll
+  const clearScrollPosition = useCallback(() => {
+    try {
+      sessionStorage.removeItem(SCROLL_POSITION_KEY)
+    } catch (error) {
+      console.warn('Erro ao limpar posição do scroll:', error)
+    }
+  }, [])
 
   // Intersection Observer para infinite scroll
   const lastEventRef = useCallback((node: HTMLDivElement) => {
@@ -54,6 +92,27 @@ export default function OptimizedEventsList({
     }
   }, [])
 
+  // Salvar posição do scroll quando componente é desmontado
+  useEffect(() => {
+    return () => {
+      saveScrollPosition()
+    }
+  }, [saveScrollPosition])
+
+  // Restaurar posição do scroll quando eventos carregam
+  useEffect(() => {
+    if (!loading && events.length > 0) {
+      // Pequeno delay para garantir que o DOM foi renderizado
+      setTimeout(restoreScrollPosition, 100)
+    }
+  }, [loading, events.length, restoreScrollPosition])
+
+  // Limpar posição do scroll no refresh
+  const handleRefresh = useCallback(() => {
+    clearScrollPosition()
+    refresh()
+  }, [clearScrollPosition, refresh])
+
   if (loading) {
     return (
       <div className={`${className}`}>
@@ -77,7 +136,7 @@ export default function OptimizedEventsList({
           </h3>
           <p className="text-neutral-600 mb-4">{error}</p>
           <button
-            onClick={refresh}
+            onClick={handleRefresh}
             className="btn-primary"
           >
             Tentar Novamente
@@ -99,7 +158,7 @@ export default function OptimizedEventsList({
             Não há eventos disponíveis no momento.
           </p>
           <button
-            onClick={refresh}
+            onClick={handleRefresh}
             className="btn-secondary"
           >
             Atualizar
@@ -110,7 +169,7 @@ export default function OptimizedEventsList({
   }
 
   return (
-    <div className={`${className}`}>
+    <div className={`${className}`} ref={containerRef}>
       {/* Lista de eventos em coluna única */}
       <div className="space-y-6">
         {events.map((event, index) => (
@@ -121,7 +180,7 @@ export default function OptimizedEventsList({
             <EventCard
               event={event}
               priority={index < 6} // Prioridade para os primeiros 6 eventos
-              onEventUpdated={refresh}
+              onEventUpdated={handleRefresh}
             />
           </div>
         ))}

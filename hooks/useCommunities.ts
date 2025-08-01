@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/lib/supabase';
 import { useAuth } from './useAuth';
 
@@ -51,101 +51,65 @@ export function useCommunities() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Buscar comunidades com informações de membro
-  const fetchCommunities = async (filters?: {
+  const fetchCommunities = useCallback(async (filters?: {
     categoria?: string;
     search?: string;
     limit?: number;
     offset?: number;
   }) => {
+    setLoading(true);
+    setError(null);
+
     try {
-      setLoading(true);
-      setError(null);
+      let query = supabase
+        .from('comunidades')
+        .select(`
+          *,
+          criador:usuarios!criador_id (
+            nome
+          ),
+          membros_count:membros_comunidade(count),
+          eventos_count:eventos(count)
+        `)
+        .order('created_at', { ascending: false });
 
-      // Verificar se é erro de recursão RLS e usar dados mock
-      let communitiesData: any[] = [];
-      let isRLSError = false;
-
-      try {
-        let query = supabase
-          .from('comunidades')
-          .select(`
-            *,
-            criador:usuarios!criador_id(nome)
-          `)
-          .order('created_at', { ascending: false });
-
-        // Aplicar filtros
-        if (filters?.categoria) {
-          query = query.eq('categoria', filters.categoria);
-        }
-
-        if (filters?.search) {
-          query = query.or(`nome.ilike.%${filters.search}%,descricao.ilike.%${filters.search}%`);
-        }
-
-        if (filters?.limit) {
-          query = query.limit(filters.limit);
-        }
-
-        if (filters?.offset) {
-          query = query.range(filters.offset, filters.offset + (filters.limit || 10) - 1);
-        }
-
-        const { data, error: communitiesError } = await query;
-
-        if (communitiesError) {
-          // Verificar se é erro de recursão RLS
-          if (communitiesError.code === '42P17' || communitiesError.message?.includes('infinite recursion')) {
-            isRLSError = true;
-            throw communitiesError;
-          }
-          throw communitiesError;
-        }
-
-        communitiesData = data || [];
-      } catch (err: any) {
-        if (err.code === '42P17' || err.message?.includes('infinite recursion')) {
-          isRLSError = true;
-          console.warn('Erro de recursão RLS detectado');
-          
-          // Dados vazios para quando há erro RLS
-          communitiesData = [];
-          
-          setError('⚠️ Problema temporário no banco de dados. Execute o script de correção RLS.');
-        } else {
-          throw err;
-        }
+      // Aplicar filtros se fornecidos
+      if (filters?.categoria) {
+        query = query.eq('categoria', filters.categoria);
+      }
+      if (filters?.search) {
+        query = query.ilike('nome', `%${filters.search}%`);
+      }
+      if (filters?.limit) {
+        query = query.limit(filters.limit);
+      }
+      if (filters?.offset) {
+        query = query.range(filters.offset, filters.offset + (filters.limit || 10) - 1);
       }
 
-      // Se usuário logado e não há erro RLS, buscar informações de membro
-      if (user && communitiesData && !isRLSError) {
-        try {
-          const communityIds = communitiesData.map(c => c.id);
-          
-          const { data: memberData } = await supabase
-            .from('membros_comunidade')
-            .select('comunidade_id, papel, status')
-            .eq('usuario_id', user.id)
-            .in('comunidade_id', communityIds)
-            .eq('status', 'ativo');
+      const { data: communitiesData, error } = await query;
 
-          const memberMap = new Map(
-            memberData?.map(m => [m.comunidade_id, m]) || []
-          );
+      if (error) throw error;
 
-          const enrichedCommunities = communitiesData.map(community => ({
-            ...community,
-            is_member: memberMap.has(community.id),
-            user_role: memberMap.get(community.id)?.papel
-          }));
+      if (user) {
+        // Buscar informações de participação do usuário
+        const { data: userMemberships } = await supabase
+          .from('membros_comunidade')
+          .select('comunidade_id, papel')
+          .eq('usuario_id', user.id)
+          .eq('status', 'ativo');
 
-          setCommunities(enrichedCommunities);
-        } catch (memberErr) {
-          // Se erro ao buscar membros, usar dados sem informação de membro
-          console.warn('Erro ao buscar informações de membro:', memberErr);
-          setCommunities(communitiesData);
-        }
+        const userMembershipMap = new Map(
+          userMemberships?.map(membership => [membership.comunidade_id, membership.papel]) || []
+        );
+
+        // Enriquecer dados com informações do usuário
+        const enrichedCommunities = communitiesData.map(community => ({
+          ...community,
+          is_member: userMembershipMap.has(community.id),
+          user_role: userMembershipMap.get(community.id)
+        }));
+        setCommunities(enrichedCommunities);
       } else {
         // Para dados de exemplo ou quando não há usuário
         const enrichedCommunities = communitiesData.map(community => ({
@@ -164,7 +128,7 @@ export function useCommunities() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [user?.id]);
 
   // Criar nova comunidade
   const createCommunity = async (data: CreateCommunityData) => {
@@ -315,7 +279,7 @@ export function useCommunities() {
 
   useEffect(() => {
     fetchCommunities();
-  }, [user]);
+  }, [fetchCommunities]);
 
   return {
     communities,
