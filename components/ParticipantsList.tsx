@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { Users, User } from 'lucide-react'
 import Image from 'next/image'
 import { useEvents } from '@/hooks/useEvents'
@@ -30,18 +30,23 @@ export default function ParticipantsList({
   const [loading, setLoading] = useState(true)
   const [showAll, setShowAll] = useState(false)
 
-  useEffect(() => {
-    const fetchParticipants = async () => {
-      setLoading(true)
+  const fetchParticipants = useCallback(async () => {
+    setLoading(true)
+    try {
       const result = await getEventParticipants(eventId)
       if (result.data) {
         setParticipants(result.data)
       }
+    } catch (error) {
+      console.error('Erro ao buscar participantes:', error)
+    } finally {
       setLoading(false)
     }
-
-    fetchParticipants()
   }, [eventId, getEventParticipants])
+
+  useEffect(() => {
+    fetchParticipants()
+  }, [fetchParticipants])
 
   if (loading) {
     return (
@@ -98,19 +103,18 @@ export default function ParticipantsList({
           {/* Botão para mostrar mais/menos */}
           {participants.length > maxVisible && (
             <button
+              type="button"
               onClick={() => setShowAll(!showAll)}
               className="text-sm text-primary-600 hover:text-primary-700 font-medium"
             >
-              {showAll 
-                ? 'Mostrar menos' 
-                : `Ver mais ${remainingCount} ${remainingCount === 1 ? 'pessoa' : 'pessoas'}`
-              }
+              {showAll ? 'Mostrar menos' : `Ver mais ${remainingCount} participantes`}
             </button>
           )}
         </div>
       ) : (
-        <div className="text-sm text-neutral-500 italic">
-          Nenhuma pessoa confirmou presença ainda
+        <div className="text-center py-4 text-neutral-500">
+          <Users className="w-8 h-8 mx-auto mb-2 text-neutral-300" />
+          <p className="text-sm">Nenhum participante confirmado ainda</p>
         </div>
       )}
     </div>

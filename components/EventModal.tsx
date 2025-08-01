@@ -89,8 +89,7 @@ export default function EventModal({
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Escape' && isOpen) {
-        onClose()
-        resetForm()
+        handleClose()
       }
     }
 
@@ -101,7 +100,14 @@ export default function EventModal({
     return () => {
       document.removeEventListener('keydown', handleKeyDown)
     }
-  }, [isOpen, onClose])
+  }, [isOpen, handleClose])
+
+  // Click outside para fechar
+  const handleBackdropClick = useCallback((e: React.MouseEvent) => {
+    if (e.target === e.currentTarget) {
+      handleClose()
+    }
+  }, [handleClose])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -194,7 +200,7 @@ export default function EventModal({
   }
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[9999]">
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[9999]" onClick={handleBackdropClick}>
       <div className="bg-white rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
         
         {/* Header */}

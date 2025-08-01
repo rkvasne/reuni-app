@@ -61,13 +61,15 @@ export default function Header({ onCreateEvent }: HeaderProps) {
           
           {/* Logo */}
           <div className="flex items-center gap-3">
-            <Image 
-              src="/imagens/logo-reuni.png" 
-              alt="Logo Reuni" 
-              width={40} 
-              height={40}
-              className="object-contain"
-            />
+            <div className="w-10 h-10 bg-gradient-primary rounded-2xl flex items-center justify-center shadow-reuni transition-all duration-300 overflow-hidden">
+              <Image 
+                src="/logo-reuni.png" 
+                alt="Logo Reuni" 
+                width={40} 
+                height={40}
+                className="w-full h-full object-cover"
+              />
+            </div>
             <h1 className="text-3xl font-bold text-gradient tracking-tight">
               Reuni
             </h1>

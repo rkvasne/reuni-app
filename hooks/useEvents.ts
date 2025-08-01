@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { supabase } from '@/lib/supabase'
 import { useAuth } from './useAuth'
 
@@ -368,7 +368,7 @@ export function useEvents() {
   }
 
   // Buscar participantes de um evento
-  const getEventParticipants = async (eventId: string) => {
+  const getEventParticipants = useCallback(async (eventId: string) => {
     try {
       const { data, error } = await supabase
         .from('participacoes')
@@ -390,7 +390,7 @@ export function useEvents() {
       const errorMessage = err.message || 'Erro ao buscar participantes'
       return { data: [], error: errorMessage }
     }
-  }
+  }, [])
 
   // Carregar eventos na inicialização
   useEffect(() => {

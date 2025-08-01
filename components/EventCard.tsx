@@ -18,8 +18,7 @@ export default function EventCard({ event, priority = false, onEventUpdated }: E
   const { user } = useAuth()
   const { deleteEvent, participateInEvent, cancelParticipation } = useEvents()
   const [showMenu, setShowMenu] = useState(false)
-  const [showEditModal, setShowEditModal] = useState(false)
-  const [showViewModal, setShowViewModal] = useState(false)
+  const [modalState, setModalState] = useState<'closed' | 'view' | 'edit'>('closed')
   const [deleting, setDeleting] = useState(false)
   const [participationLoading, setParticipationLoading] = useState(false)
 
@@ -27,8 +26,18 @@ export default function EventCard({ event, priority = false, onEventUpdated }: E
 
   // Stable close handler to prevent infinite loops
   const handleCloseModal = useCallback(() => {
-    setShowEditModal(false)
-    setShowViewModal(false)
+    setModalState('closed')
+  }, [])
+
+  const handleOpenViewModal = useCallback((e: React.MouseEvent) => {
+    e.stopPropagation()
+    setModalState('view')
+  }, [])
+
+  const handleOpenEditModal = useCallback((e: React.MouseEvent) => {
+    e.stopPropagation()
+    setModalState('edit')
+    setShowMenu(false)
   }, [])
 
   const formatDate = (dateString: string) => {
@@ -42,6 +51,19 @@ export default function EventCard({ event, priority = false, onEventUpdated }: E
   const formatTime = (timeString: string) => {
     return timeString.slice(0, 5) // Remove seconds
   }
+
+  const getEventLocation = () => {
+    if (event.descricao === 'Evento encontrado no eventbrite') {
+      return event.local;
+    }
+    
+    // Extrair local da descrição (formato: "Local - Cidade, Estado")
+    if (event.descricao.includes(' - ')) {
+      return event.descricao;
+    }
+    
+    return event.local;
+  };
 
   const handleDelete = async () => {
     if (!confirm('Tem certeza que deseja deletar este evento?')) return
@@ -105,15 +127,12 @@ export default function EventCard({ event, priority = false, onEventUpdated }: E
   const dateInfo = formatFullDate(event.data)
 
   return (
-    <div className="event-card event-card-main">
+    <div className={`event-card event-card-main ${modalState !== 'closed' ? 'modal-open' : ''}`}>
       
       {/* Imagem do Evento - Limpa sem sobreposições */}
       <div 
         className="relative h-68 bg-neutral-100 rounded-t-lg overflow-hidden cursor-pointer"
-        onClick={() => {
-          setShowViewModal(true)
-          setShowEditModal(false)
-        }}
+        onClick={handleOpenViewModal}
       >
         {event.imagem_url ? (
           <OptimizedImage
@@ -148,7 +167,10 @@ export default function EventCard({ event, priority = false, onEventUpdated }: E
             <div className="relative">
               <button
                 type="button"
-                onClick={() => setShowMenu(!showMenu)}
+                onClick={(e) => {
+                  e.stopPropagation()
+                  setShowMenu(!showMenu)
+                }}
                 className="p-2 bg-black/20 hover:bg-black/30 backdrop-blur-sm rounded-lg transition-colors"
                 title="Opções do evento"
                 aria-label="Abrir menu de opções do evento"
@@ -160,11 +182,7 @@ export default function EventCard({ event, priority = false, onEventUpdated }: E
                 <div className="absolute top-10 left-0 bg-white rounded-lg shadow-lg border border-neutral-200 py-2 w-40 z-10">
                   <button
                     type="button"
-                    onClick={() => {
-                      setShowEditModal(true)
-                      setShowViewModal(false)
-                      setShowMenu(false)
-                    }}
+                    onClick={handleOpenEditModal}
                     className="w-full text-left px-4 py-2 hover:bg-neutral-50 flex items-center gap-2 text-neutral-700"
                   >
                     <Edit className="w-4 h-4" />
@@ -196,10 +214,7 @@ export default function EventCard({ event, priority = false, onEventUpdated }: E
           </span>
           <h3 
             className="font-bold text-xl text-neutral-800 cursor-pointer hover:text-primary-600 transition-colors line-clamp-2"
-            onClick={() => {
-              setShowViewModal(true)
-              setShowEditModal(false)
-            }}
+            onClick={handleOpenViewModal}
           >
             {event.titulo}
           </h3>
@@ -255,7 +270,7 @@ export default function EventCard({ event, priority = false, onEventUpdated }: E
           {/* Local */}
           <div className="flex items-center gap-3 text-neutral-700">
             <MapPin className="w-4 h-4 text-primary-500" />
-            <span className="text-sm">{event.local}</span>
+            <span className="text-sm">{getEventLocation()}</span>
           </div>
           
           {/* Participantes */}
@@ -333,12 +348,12 @@ export default function EventCard({ event, priority = false, onEventUpdated }: E
       </div>
 
       {/* Modal - apenas um por vez */}
-      {(showEditModal || showViewModal) && (
+      {modalState !== 'closed' && (
         <EventModal
-          isOpen={showEditModal || showViewModal}
+          isOpen={modalState !== 'closed'}
           onClose={handleCloseModal}
           event={event}
-          mode={showEditModal ? "edit" : "view"}
+          mode={modalState === 'edit' ? "edit" : "view"}
           onEventUpdated={onEventUpdated}
         />
       )}

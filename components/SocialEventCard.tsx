@@ -59,6 +59,19 @@ export default function SocialEventCard({
     return timeString.slice(0, 5);
   };
 
+  const getEventLocation = () => {
+    if (event.descricao === 'Evento encontrado no eventbrite') {
+      return event.local;
+    }
+    
+    // Extrair local da descrição (formato: "Local - Cidade, Estado")
+    if (event.descricao.includes(' - ')) {
+      return event.descricao;
+    }
+    
+    return event.local;
+  };
+
   const handleParticipation = async (e: React.MouseEvent) => {
     e.stopPropagation(); // Evitar trigger do onClick do card
     
@@ -161,7 +174,7 @@ export default function SocialEventCard({
           </div>
           <div className="flex items-center gap-2 text-neutral-600">
             <MapPin className="w-4 h-4 flex-shrink-0" />
-            <span className="truncate">{event.local}</span>
+            <span className="truncate">{getEventLocation()}</span>
           </div>
           <div className="flex items-center gap-2 text-neutral-600">
             <Users className="w-4 h-4 flex-shrink-0" />
