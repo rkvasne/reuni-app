@@ -57,12 +57,50 @@ class EventoScraperCompleto {
     await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36');
 
     const regioes = [
+      // Rondônia - Cobertura completa do estado
       { nome: 'Ji-Paraná', url: 'https://www.sympla.com.br/eventos/ji-parana-ro' },
       { nome: 'Porto Velho', url: 'https://www.sympla.com.br/eventos/porto-velho-ro' },
       { nome: 'Ariquemes', url: 'https://www.sympla.com.br/eventos/ariquemes-ro' },
       { nome: 'Cacoal', url: 'https://www.sympla.com.br/eventos/cacoal-ro' },
+      { nome: 'Vilhena', url: 'https://www.sympla.com.br/eventos/vilhena-ro' },
+      { nome: 'Rolim de Moura', url: 'https://www.sympla.com.br/eventos/rolim-de-moura-ro' },
+      { nome: 'Jaru', url: 'https://www.sympla.com.br/eventos/jaru-ro' },
+      { nome: 'Ouro Preto do Oeste', url: 'https://www.sympla.com.br/eventos/ouro-preto-do-oeste-ro' },
+      { nome: 'Guajará-Mirim', url: 'https://www.sympla.com.br/eventos/guajara-mirim-ro' },
+      { nome: 'Presidente Médici', url: 'https://www.sympla.com.br/eventos/presidente-medici-ro' },
+      { nome: 'Candeias do Jamari', url: 'https://www.sympla.com.br/eventos/candeias-do-jamari-ro' },
+      { nome: 'Pimenta Bueno', url: 'https://www.sympla.com.br/eventos/pimenta-bueno-ro' },
+      { nome: 'Espigão do Oeste', url: 'https://www.sympla.com.br/eventos/espigao-do-oeste-ro' },
+      { nome: 'Alta Floresta do Oeste', url: 'https://www.sympla.com.br/eventos/alta-floresta-do-oeste-ro' },
       { nome: 'Rondônia', url: 'https://www.sympla.com.br/eventos/rondonia' },
-      { nome: 'São Paulo', url: 'https://www.sympla.com.br/eventos/sao-paulo-sp' }
+      
+      // Capitais brasileiras
+      { nome: 'São Paulo', url: 'https://www.sympla.com.br/eventos/sao-paulo-sp' },
+      { nome: 'Rio de Janeiro', url: 'https://www.sympla.com.br/eventos/rio-de-janeiro-rj' },
+      { nome: 'Brasília', url: 'https://www.sympla.com.br/eventos/brasilia-df' },
+      { nome: 'Salvador', url: 'https://www.sympla.com.br/eventos/salvador-ba' },
+      { nome: 'Fortaleza', url: 'https://www.sympla.com.br/eventos/fortaleza-ce' },
+      { nome: 'Belo Horizonte', url: 'https://www.sympla.com.br/eventos/belo-horizonte-mg' },
+      { nome: 'Manaus', url: 'https://www.sympla.com.br/eventos/manaus-am' },
+      { nome: 'Curitiba', url: 'https://www.sympla.com.br/eventos/curitiba-pr' },
+      { nome: 'Recife', url: 'https://www.sympla.com.br/eventos/recife-pe' },
+      { nome: 'Goiânia', url: 'https://www.sympla.com.br/eventos/goiania-go' },
+      { nome: 'Belém', url: 'https://www.sympla.com.br/eventos/belem-pa' },
+      { nome: 'Porto Alegre', url: 'https://www.sympla.com.br/eventos/porto-alegre-rs' },
+      { nome: 'São Luís', url: 'https://www.sympla.com.br/eventos/sao-luis-ma' },
+      { nome: 'Maceió', url: 'https://www.sympla.com.br/eventos/maceio-al' },
+      { nome: 'Natal', url: 'https://www.sympla.com.br/eventos/natal-rn' },
+      { nome: 'Teresina', url: 'https://www.sympla.com.br/eventos/teresina-pi' },
+      { nome: 'João Pessoa', url: 'https://www.sympla.com.br/eventos/joao-pessoa-pb' },
+      { nome: 'Aracaju', url: 'https://www.sympla.com.br/eventos/aracaju-se' },
+      { nome: 'Cuiabá', url: 'https://www.sympla.com.br/eventos/cuiaba-mt' },
+      { nome: 'Campo Grande', url: 'https://www.sympla.com.br/eventos/campo-grande-ms' },
+      { nome: 'Florianópolis', url: 'https://www.sympla.com.br/eventos/florianopolis-sc' },
+      { nome: 'Vitória', url: 'https://www.sympla.com.br/eventos/vitoria-es' },
+      { nome: 'Palmas', url: 'https://www.sympla.com.br/eventos/palmas-to' },
+      { nome: 'Macapá', url: 'https://www.sympla.com.br/eventos/macapa-ap' },
+      { nome: 'Rio Branco', url: 'https://www.sympla.com.br/eventos/rio-branco-ac' },
+      { nome: 'Boa Vista', url: 'https://www.sympla.com.br/eventos/boa-vista-rr' }
     ];
 
     let eventos = [];
@@ -161,10 +199,32 @@ class EventoScraperCompleto {
     await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36');
 
     const regioes = [
+      // Rondônia - Cobertura expandida
       { nome: 'Ji-Paraná', url: 'https://www.eventbrite.com.br/d/brazil--ji-paran%C3%A1/events/' },
       { nome: 'Porto Velho', url: 'https://www.eventbrite.com.br/d/brazil--porto-velho/events/' },
+      { nome: 'Ariquemes', url: 'https://www.eventbrite.com.br/d/brazil--ariquemes/events/' },
+      { nome: 'Cacoal', url: 'https://www.eventbrite.com.br/d/brazil--cacoal/events/' },
+      { nome: 'Vilhena', url: 'https://www.eventbrite.com.br/d/brazil--vilhena/events/' },
+      { nome: 'Presidente Médici', url: 'https://www.eventbrite.com.br/d/brazil--presidente-m%C3%A9dici/events/' },
+      { nome: 'Pimenta Bueno', url: 'https://www.eventbrite.com.br/d/brazil--pimenta-bueno/events/' },
       { nome: 'Rondônia', url: 'https://www.eventbrite.com.br/d/brazil--rond%C3%B4nia/events/' },
-      { nome: 'São Paulo', url: 'https://www.eventbrite.com.br/d/brazil--s%C3%A3o-paulo/events/' }
+      
+      // Principais capitais
+      { nome: 'São Paulo', url: 'https://www.eventbrite.com.br/d/brazil--s%C3%A3o-paulo/events/' },
+      { nome: 'Rio de Janeiro', url: 'https://www.eventbrite.com.br/d/brazil--rio-de-janeiro/events/' },
+      { nome: 'Brasília', url: 'https://www.eventbrite.com.br/d/brazil--bras%C3%ADlia/events/' },
+      { nome: 'Salvador', url: 'https://www.eventbrite.com.br/d/brazil--salvador/events/' },
+      { nome: 'Fortaleza', url: 'https://www.eventbrite.com.br/d/brazil--fortaleza/events/' },
+      { nome: 'Belo Horizonte', url: 'https://www.eventbrite.com.br/d/brazil--belo-horizonte/events/' },
+      { nome: 'Manaus', url: 'https://www.eventbrite.com.br/d/brazil--manaus/events/' },
+      { nome: 'Curitiba', url: 'https://www.eventbrite.com.br/d/brazil--curitiba/events/' },
+      { nome: 'Recife', url: 'https://www.eventbrite.com.br/d/brazil--recife/events/' },
+      { nome: 'Goiânia', url: 'https://www.eventbrite.com.br/d/brazil--goi%C3%A2nia/events/' },
+      { nome: 'Belém', url: 'https://www.eventbrite.com.br/d/brazil--bel%C3%A9m/events/' },
+      { nome: 'Porto Alegre', url: 'https://www.eventbrite.com.br/d/brazil--porto-alegre/events/' },
+      { nome: 'Cuiabá', url: 'https://www.eventbrite.com.br/d/brazil--cuiab%C3%A1/events/' },
+      { nome: 'Campo Grande', url: 'https://www.eventbrite.com.br/d/brazil--campo-grande/events/' },
+      { nome: 'Florianópolis', url: 'https://www.eventbrite.com.br/d/brazil--florian%C3%B3polis/events/' }
     ];
 
     let eventos = [];
@@ -342,24 +402,45 @@ class EventoScraperCompleto {
   // Salvar evento na tabela
   async salvarEvento(evento) {
     try {
-      // Verificar se já existe
-      const { data: existing } = await this.supabase
+      // Processar e extrair informações do título
+      const infoExtraida = this.extrairInformacoesDoTitulo(evento);
+      
+      // Se evento é irrelevante, pular
+      if (!infoExtraida) {
+        return { action: 'skipped', evento: { title: evento.title, reason: 'irrelevant' } };
+      }
+      
+      let tituloLimpo = infoExtraida.titulo;
+
+      // Verificar duplicatas por múltiplos critérios
+      const { data: existingByUrl } = await this.supabase
         .from('eventos')
-        .select('id')
+        .select('id, titulo')
         .eq('external_url', evento.url)
         .single();
 
-      if (existing) {
-        return { action: 'skipped', evento: existing };
+      if (existingByUrl) {
+        return { action: 'skipped', evento: existingByUrl, reason: 'duplicate_url' };
       }
 
-      // Processar e extrair informações do título
-      const infoExtraida = this.extrairInformacoesDoTitulo(evento.title);
-      
+      // Verificar duplicata por título similar (85% de similaridade)
+      const { data: existingByTitle } = await this.supabase
+        .from('eventos')
+        .select('id, titulo')
+        .ilike('titulo', `%${tituloLimpo.substring(0, 20)}%`);
+
+      if (existingByTitle && existingByTitle.length > 0) {
+        for (const existing of existingByTitle) {
+          const similarity = this.calcularSimilaridade(tituloLimpo, existing.titulo);
+          if (similarity > 0.85) {
+            return { action: 'skipped', evento: existing, reason: 'duplicate_title' };
+          }
+        }
+      }
+
       let dataEvento = this.processarDataEvento(infoExtraida.data || evento.date);
       let horaEvento = infoExtraida.hora || '19:00:00';
       let localEvento = this.construirLocal(infoExtraida.venue, infoExtraida.cidade, evento.location, evento.cidade);
-      let tituloLimpo = infoExtraida.titulo;
 
       // Preparar dados
       const eventoData = {
@@ -411,99 +492,427 @@ class EventoScraperCompleto {
     };
   }
 
-  // Extrair informações do título (versão melhorada)
-  extrairInformacoesDoTitulo(titulo) {
+  // Palavras que indicam eventos irrelevantes ou inadequados
+  getEventosIrrelevantes() {
+    return [
+      // Eventos pessoais
+      'aniversário', 'birthday', 'festa de aniversário',
+      'casamento', 'wedding', 'formatura',
+      'reunião', 'meeting', 'particular',
+      
+      // Conteúdo inadequado
+      'fuck', 'shit', 'porno', 'sex', 'nude', 'naked',
+      'strip', 'adult', 'xxx', 'erotic', 'sensual',
+      'fetish', 'bdsm', 'swing', 'orgia',
+      
+      // Títulos muito genéricos
+      'evento', 'show', 'festa', 'encontro'
+    ];
+  }
+
+  // Detectar conteúdo inadequado por imagem ou descrição
+  isConteudoInadequado(evento) {
+    const textoCompleto = `${evento.title} ${evento.description || ''}`.toLowerCase();
+    
+    const palavrasInadequadas = [
+      'fuck', 'shit', 'porno', 'sex', 'nude', 'naked',
+      'strip', 'adult', 'xxx', 'erotic', 'sensual',
+      'fetish', 'bdsm', 'swing', 'orgia', 'putaria',
+      'safadeza', 'tesão', 'gostosa', 'gostoso'
+    ];
+    
+    return palavrasInadequadas.some(palavra => textoCompleto.includes(palavra));
+  }
+
+  // Detectar se título é apenas cidade/estado
+  isTituloApenasCidade(titulo) {
+    const tituloLimpo = titulo.trim().toLowerCase();
+    
+    // Padrões de cidade/estado
+    const padroesCidade = [
+      /^[a-záàâãéêíóôõúç\s]+,?\s*[a-z]{2}$/i, // "Belém, PA" ou "São Paulo SP"
+      /^[a-záàâãéêíóôõúç\s]+\/[a-z]{2}$/i,    // "Belém/PA"
+      /^[a-záàâãéêíóôõúç\s]+\s*-\s*[a-z]{2}$/i // "Belém - PA"
+    ];
+    
+    return padroesCidade.some(padrao => padrao.test(tituloLimpo)) || tituloLimpo.length < 5;
+  }
+
+  // Extrair título real de eventos com nomes genéricos
+  extrairTituloReal(evento) {
+    const titulo = evento.title;
+    const descricao = evento.description || '';
+    
+    // Se título é apenas cidade, tentar extrair da descrição
+    if (this.isTituloApenasCidade(titulo)) {
+      // Procurar por padrões de título na descrição
+      const padroesTitulo = [
+        /^([A-ZÁÀÂÃÉÊÍÓÔÕÚÇ][A-ZÁÀÂÃÉÊÍÓÔÕÚÇ\s]{10,})/m, // Linha em maiúsculas
+        /(?:evento|show|apresenta[çc]ão|curso|workshop|palestra):\s*([^.\n]{10,})/i,
+        /^([^.\n]{15,})/m // Primeira linha com mais de 15 caracteres
+      ];
+      
+      for (const padrao of padroesTitulo) {
+        const match = descricao.match(padrao);
+        if (match && match[1]) {
+          const tituloExtraido = match[1].trim();
+          if (tituloExtraido.length > 10 && !this.isTituloApenasCidade(tituloExtraido)) {
+            return tituloExtraido;
+          }
+        }
+      }
+      
+      return null; // Descartar se não conseguir extrair título válido
+    }
+    
+    // Se título é nome de pessoa, tentar extrair contexto
+    if (this.isTituloNomePessoa(titulo)) {
+      const contextoMatch = descricao.match(new RegExp(`(.{10,}?)\\b${titulo}\\b`, 'i'));
+      if (contextoMatch && contextoMatch[1]) {
+        return `${contextoMatch[1].trim()} COM ${titulo.toUpperCase()}`;
+      }
+    }
+    
+    return titulo;
+  }
+
+  // Detectar se título é apenas nome de pessoa
+  isTituloNomePessoa(titulo) {
+    const tituloLimpo = titulo.trim();
+    
+    // Padrões de nome de pessoa
+    const padroes = [
+      /^[A-ZÁÀÂÃÉÊÍÓÔÕÚÇ][a-záàâãéêíóôõúç]+\s+[A-ZÁÀÂÃÉÊÍÓÔÕÚÇ][a-záàâãéêíóôõúç]+$/,
+      /^[A-Z]+\s+[A-Z]+$/
+    ];
+    
+    return padroes.some(padrao => padrao.test(tituloLimpo)) && 
+           tituloLimpo.length < 30 && 
+           !tituloLimpo.includes('SHOW') && 
+           !tituloLimpo.includes('EVENTO');
+  }
+
+  // Palavras que indicam local
+  getPalavrasLocal() {
+    return [
+      'local', 'espaço', 'teatro', 'estádio', 'arena', 'centro',
+      'casa', 'clube', 'hotel', 'shopping', 'parque', 'praça',
+      'auditório', 'ginásio', 'quadra', 'salão', 'pavilhão'
+    ];
+  }
+
+  // Separadores que indicam fim do título
+  getSeparadores() {
+    return ['|', '!', '–', '—', ' - ', ' – ', ' — '];
+  }
+
+  // Verificar se evento é relevante
+  isEventoRelevante(titulo) {
+    const tituloLower = titulo.toLowerCase();
+    const irrelevantes = this.getEventosIrrelevantes();
+    
+    return !irrelevantes.some(palavra => tituloLower.includes(palavra));
+  }
+
+  // Detectar mudança de caixa após ano
+  detectarMudancaCaixaAposAno(texto) {
+    // Padrão: TEXTO 2025PalavraComCaixaMista
+    const pattern = /^(.+20\d{2})([A-Z][a-z].*)$/;
+    const match = texto.match(pattern);
+    
+    if (match) {
+      return {
+        titulo: match[1].trim(),
+        resto: match[2].trim()
+      };
+    }
+    
+    return null;
+  }
+
+  // Detectar mudança de maiúsculas para local
+  detectarMudancaParaLocal(texto) {
+    // Padrão: TEXTO EM MAIÚSCULATexto em caixa mista
+    const pattern = /^([A-Z\s\d]+?)([A-Z][a-z].*)$/;
+    const match = texto.match(pattern);
+    
+    if (match) {
+      const titulo = match[1].trim();
+      const resto = match[2].trim();
+      
+      // Verificar se o resto parece ser local
+      const palavrasLocal = this.getPalavrasLocal();
+      const pareceLocal = palavrasLocal.some(palavra => 
+        resto.toLowerCase().includes(palavra.toLowerCase())
+      );
+      
+      if (pareceLocal) {
+        return {
+          titulo: titulo,
+          local: resto
+        };
+      }
+    }
+    
+    return null;
+  }
+
+  // Detectar eventos esportivos e aplicar regras específicas
+  isEventoEsportivo(titulo) {
+    const tituloLower = titulo.toLowerCase();
+    const palavrasEsportivas = [
+      'corrida', 'run', 'marathon', 'maratona', 'caminhada', 'pedalada',
+      'ciclismo', 'triathlon', 'natação', 'atletismo', 'cooper'
+    ];
+    
+    return palavrasEsportivas.some(palavra => tituloLower.includes(palavra));
+  }
+
+  // Processar títulos de eventos esportivos
+  processarTituloEsportivo(titulo) {
+    let tituloProcessado = titulo;
+    
+    // Padrão: evento esportivo com ano seguido de distância e K
+    // Ex: "2ª PVH CITY HALF MARATHON 2025. 5K" -> "2ª PVH CITY HALF MARATHON 2025"
+    const padraoAnoK = /^(.+20\d{2})[\.\s]*\d+K.*$/i;
+    const matchAnoK = titulo.match(padraoAnoK);
+    if (matchAnoK) {
+      return matchAnoK[1].trim();
+    }
+    
+    // Padrão: evento esportivo terminando com distância e K (sem ano)
+    // Ex: "5ª CORRIDA E CAMINHADA OUTUBRO ROSA OAB 5K" -> "5ª CORRIDA E CAMINHADA OUTUBRO ROSA OAB"
+    const padraoK = /^(.+?)\s*\d+K.*$/i;
+    const matchK = titulo.match(padraoK);
+    if (matchK) {
+      const tituloSemK = matchK[1].trim();
+      
+      // Verificar se não cortou muito (mínimo 15 caracteres para eventos esportivos)
+      if (tituloSemK.length >= 15) {
+        return tituloSemK;
+      }
+    }
+    
+    return tituloProcessado;
+  }
+
+  // Aplicar padrões de corte identificados nos títulos
+  aplicarPadroesDeCorte(titulo) {
+    let tituloProcessado = titulo;
+
+    // 1. Padrão: Mudança de MAIÚSCULAS para Mistas (indica local)
+    // Ex: "RESENHA DO ASSISSeu Geraldo Boteco" -> "RESENHA DO ASSIS"
+    const padraoMudancaCaixa = /^([A-ZÁÀÂÃÉÊÍÓÔÕÚÇ\s]+?)([A-Z][a-záàâãéêíóôõúç].*)$/;
+    const matchCaixa = titulo.match(padraoMudancaCaixa);
+    if (matchCaixa && matchCaixa[1].trim().length >= 10) {
+      tituloProcessado = matchCaixa[1].trim();
+    }
+
+    // 2. Padrão: Palavra "dia" seguida de data
+    // Ex: "Baile Fest Car dia 30 de agosto no Piazza Notte" -> "Baile Fest Car"
+    const padraoDia = /^(.+?)\s+dia\s+\d{1,2}.*$/i;
+    const matchDia = tituloProcessado.match(padraoDia);
+    if (matchDia && matchDia[1].trim().length >= 8) {
+      tituloProcessado = matchDia[1].trim();
+    }
+
+    // 3. Padrão: Preposição "com" seguida de complementos
+    // Ex: "POSICIONA 360° com Elas N Sucesso" -> "POSICIONA 360°"
+    const padraoCom = /^(.+?)\s+com\s+[A-Z].*$/i;
+    const matchCom = tituloProcessado.match(padraoCom);
+    if (matchCom && matchCom[1].trim().length >= 10) {
+      tituloProcessado = matchCom[1].trim();
+    }
+
+    // 4. Padrão: Endereços e Locais (Av., Rua, Igreja, Clube, etc.)
+    // Ex: "III JORNADA UNIVERSO DO PSI ESCOLARAv. Álvaro Otacílio" -> "III JORNADA UNIVERSO DO PSI ESCOLAR"
+    // Ex: "Seminário de Ciências Bíblicas em Natal (RN)Igreja do Nazareno" -> "Seminário de Ciências Bíblicas em Natal (RN)"
+    const padraoEndereco = /^(.+?)(Av\.|Rua|R\.|Alameda|Travessa|Praça|Igreja|Clube|Estádio|Arena|Centro|Ginásio).*$/i;
+    const matchEndereco = tituloProcessado.match(padraoEndereco);
+    if (matchEndereco && matchEndereco[1].trim().length >= 10) {
+      tituloProcessado = matchEndereco[1].trim();
+    }
+
+    // 4.1. Padrão: Ausência de espaço entre palavras (indica fim do título)
+    // Ex: "A voz do sem voz TributoMercedes Sosa" -> "A voz do sem voz Tributo"
+    // Ex: "LOBÃO POWER TRIO NO ACRE ROCK FESTIVAL E AMAZÔNIA MOTORCYCLESCLUBE JUVENTUS" -> "LOBÃO POWER TRIO NO ACRE ROCK FESTIVAL E AMAZÔNIA MOTORCYCLES"
+    const padraoSemEspaco = /^(.+?)([A-Z][a-z]+)([A-Z][A-Za-z\s]+)$/;
+    const matchSemEspaco = tituloProcessado.match(padraoSemEspaco);
+    if (matchSemEspaco && matchSemEspaco[1].trim().length >= 10) {
+      // Verificar se realmente parece ser fim do título
+      const parteAntes = matchSemEspaco[1] + matchSemEspaco[2];
+      const parteDepois = matchSemEspaco[3];
+      
+      // Se a parte depois parece ser nome próprio ou local, cortar
+      if (parteDepois.match(/^[A-Z][a-z]+(\s[A-Z][a-z]+)*$/) || 
+          parteDepois.toLowerCase().includes('clube') ||
+          parteDepois.toLowerCase().includes('igreja') ||
+          parteDepois.toLowerCase().includes('centro')) {
+        tituloProcessado = parteAntes.trim();
+      }
+    }
+
+    // 5. Padrão: Ano no final (para eventos não esportivos)
+    // Ex: "CORRIDA NOTURNA CACOAL ROTA DA JUSTIÇA 2025OAB" -> "CORRIDA NOTURNA CACOAL ROTA DA JUSTIÇA 2025"
+    const padraoAnoFinal = /^(.+20\d{2})[A-Z]{2,}.*$/;
+    const matchAnoFinal = tituloProcessado.match(padraoAnoFinal);
+    if (matchAnoFinal && matchAnoFinal[1].trim().length >= 15) {
+      tituloProcessado = matchAnoFinal[1].trim();
+    }
+
+    // 6. Padrão: Repetição de local/estabelecimento
+    // Ex: "Festival no Piazza NottePiazza Notte" -> "Festival no Piazza Notte"
+    const padraoRepeticao = /^(.+?)([A-Z][a-záàâãéêíóôõúç\s]+)\1.*$/;
+    const matchRepeticao = tituloProcessado.match(padraoRepeticao);
+    if (matchRepeticao && matchRepeticao[1].trim().length >= 10) {
+      tituloProcessado = matchRepeticao[1].trim() + matchRepeticao[2];
+    }
+
+    // 7. Padrão: Nome de cidade repetido com data
+    // Ex: "Cuiabá 16/08 POSICIONA 360° com Elas N SucessoCuiabá Lar Shopping" -> "POSICIONA 360°"
+    const cidades = ['São Paulo', 'Rio de Janeiro', 'Cuiabá', 'Goiânia', 'Brasília', 'Salvador', 'Fortaleza'];
+    for (const cidade of cidades) {
+      const regexCidade = new RegExp(`^${cidade}\\s+\\d{1,2}/\\d{1,2}\\s+(.+?)\\s+com\\s+.*${cidade}.*$`, 'i');
+      const matchCidade = tituloProcessado.match(regexCidade);
+      if (matchCidade && matchCidade[1].trim().length >= 8) {
+        tituloProcessado = matchCidade[1].trim();
+        break;
+      }
+    }
+
+    return tituloProcessado;
+  }
+
+  // Extrair informações do título (versão inteligente baseada em padrões)
+  extrairInformacoesDoTitulo(evento) {
+    const titulo = evento.title || evento.titulo;
     const original = titulo;
     let tituloLimpo = titulo;
     let data = null;
-    let venue = null;  // Local específico (teatro, estádio, etc)
-    let cidade = null; // Cidade e estado
+    let venue = null;
+    let cidade = null;
     let hora = '19:00:00';
 
-    const { estados, cidades } = this.getCidadesEstados();
+    // 1. Verificar conteúdo inadequado
+    if (this.isConteudoInadequado(evento)) {
+      return null; // Conteúdo inadequado
+    }
 
-    // 1. Extrair hora (padrão "às HH:MM")
-    const matchHoraAs = titulo.match(/às\s*(\d{1,2}):(\d{2})/i);
+    // 2. Verificar se evento tem imagem (obrigatório)
+    if (!evento.image || evento.image.includes('placeholder') || evento.image.includes('default')) {
+      return null; // Eventos sem imagem são descartados
+    }
+
+    // 3. Verificar relevância básica
+    if (!this.isEventoRelevante(titulo)) {
+      return null; // Evento irrelevante
+    }
+
+    // 4. Tentar extrair título real se for genérico
+    const tituloReal = this.extrairTituloReal(evento);
+    if (!tituloReal) {
+      return null; // Não conseguiu extrair título válido
+    }
+    
+    tituloLimpo = tituloReal;
+
+    // 5. Processar eventos esportivos primeiro
+    if (this.isEventoEsportivo(tituloLimpo)) {
+      tituloLimpo = this.processarTituloEsportivo(tituloLimpo);
+    }
+
+    // 6. Aplicar novos padrões de corte identificados
+    tituloLimpo = this.aplicarPadroesDeCorte(tituloLimpo);
+
+    // 7. Detectar separadores explícitos (|, !, –)
+    const separadores = this.getSeparadores();
+    for (const sep of separadores) {
+      if (tituloLimpo.includes(sep)) {
+        const partes = tituloLimpo.split(sep);
+        tituloLimpo = partes[0].trim();
+        
+        // Extrair data se estiver na segunda parte
+        const segundaParte = partes[1]?.trim();
+        if (segundaParte && /\d{1,2}\s+\w+/.test(segundaParte)) {
+          data = segundaParte.match(/\d{1,2}\s+\w+/)[0];
+        }
+        break;
+      }
+    }
+
+    // 8. Detectar mudança de caixa após ano (método legado)
+    const mudancaAno = this.detectarMudancaCaixaAposAno(tituloLimpo);
+    if (mudancaAno) {
+      tituloLimpo = mudancaAno.titulo;
+      venue = mudancaAno.resto;
+    }
+
+    // 9. Detectar mudança de maiúsculas para local (método legado)
+    if (!venue) {
+      const mudancaLocal = this.detectarMudancaParaLocal(tituloLimpo);
+      if (mudancaLocal) {
+        tituloLimpo = mudancaLocal.titulo;
+        venue = mudancaLocal.local;
+      }
+    }
+
+    // 10. Detectar padrão "em [cidade]"
+    if (!cidade) {
+      const matchEm = tituloLimpo.match(/^(.+?)\s+em\s+([A-Za-z\s\/]+)$/i);
+      if (matchEm) {
+        tituloLimpo = matchEm[1].trim();
+        cidade = matchEm[2].trim();
+      }
+    }
+
+    // 11. Detectar "Local a definir" ou similar
+    if (!venue) {
+      const matchLocal = tituloLimpo.match(/^(.+?)(local\s+.+)$/i);
+      if (matchLocal) {
+        tituloLimpo = matchLocal[1].trim();
+        venue = matchLocal[2].trim();
+      }
+    }
+
+    // 12. Extrair hora (padrão "às HH:MM")
+    const matchHoraAs = original.match(/às\s*(\d{1,2}):(\d{2})/i);
     if (matchHoraAs) {
       hora = `${matchHoraAs[1].padStart(2, '0')}:${matchHoraAs[2]}:00`;
-      tituloLimpo = tituloLimpo.replace(matchHoraAs[0], '').trim();
     } else {
-      // Hora simples
-      const matchHora = titulo.match(/(\d{1,2}):(\d{2})/);
+      const matchHora = original.match(/(\d{1,2}):(\d{2})/);
       if (matchHora) {
         hora = `${matchHora[1].padStart(2, '0')}:${matchHora[2]}:00`;
-        tituloLimpo = tituloLimpo.replace(matchHora[0], '').trim();
       }
     }
 
-    // 2. Extrair data
-    const padroesDatas = [
-      /(\d{1,2})\s*de\s*(jan|fev|mar|abr|mai|jun|jul|ago|set|out|nov|dez)/gi,
-      /\ba\s*(\d{1,2})\s*de\s*(jan|fev|mar|abr|mai|jun|jul|ago|set|out|nov|dez)/gi,
-      /(domingo|segunda|terça|quarta|quinta|sexta|sábado),?\s*(\d{1,2})\s*de\s*(jan|fev|mar|abr|mai|jun|jul|ago|set|out|nov|dez)/gi
-    ];
+    // 13. Extrair data se não foi encontrada
+    if (!data) {
+      const padroesDatas = [
+        /(\d{1,2})\s*de\s*(jan|fev|mar|abr|mai|jun|jul|ago|set|out|nov|dez)/gi,
+        /\ba\s*(\d{1,2})\s*de\s*(jan|fev|mar|abr|mai|jun|jul|ago|set|out|nov|dez)/gi
+      ];
 
-    for (const padrao of padroesDatas) {
-      const match = titulo.match(padrao);
-      if (match) {
-        data = match[0].replace(/^a\s*/, '').replace(/^(domingo|segunda|terça|quarta|quinta|sexta|sábado),?\s*/gi, '');
-        tituloLimpo = tituloLimpo.replace(match[0], '').trim();
-        break;
+      for (const padrao of padroesDatas) {
+        const match = original.match(padrao);
+        if (match) {
+          data = match[0].replace(/^a\s*/, '');
+          break;
+        }
       }
     }
 
-    // 3. Extrair cidade e estado
-    const estadosRegex = estados.join('|');
-    const cidadeEstadoPattern = new RegExp(`([A-Za-z\\s]+),\\s*(${estadosRegex})\\b`, 'g');
-    const matchCidade = titulo.match(cidadeEstadoPattern);
-    
-    if (matchCidade) {
-      cidade = matchCidade[0];
-      tituloLimpo = tituloLimpo.replace(matchCidade[0], '').trim();
-    }
-
-    // 4. Extrair venue (local específico) - geralmente antes da cidade
-    const venuePatterns = [
-      /-\s*([^,]+?)\s*-\s*[A-Za-z\s]+,\s*[A-Z]{2}\b/,  // "- Teatro Sérgio - São Paulo, SP"
-      /([A-Z][^-,]+(?:\s+[A-Z][^-,]*)*)\s*-\s*[A-Za-z\s]+,\s*[A-Z]{2}\b/  // "Teatro Sérgio - São Paulo, SP"
-    ];
-
-    for (const pattern of venuePatterns) {
-      const match = titulo.match(pattern);
-      if (match) {
-        venue = match[1].trim();
-        tituloLimpo = tituloLimpo.replace(match[0], '').trim();
-        break;
-      }
-    }
-
-    // 5. Limpeza agressiva do título
+    // 14. Limpeza final do título
     tituloLimpo = tituloLimpo
-      // Remover dias da semana
       .replace(/(domingo|segunda|terça|quarta|quinta|sexta|sábado)/gi, '')
-      // Remover "às" restante
       .replace(/,?\s*às?\s*/gi, '')
-      // Remover qualquer cidade/estado restante
-      .replace(new RegExp(`\\s*-?\\s*[A-Za-z\\s]+,\\s*(${estadosRegex})\\b.*$`, 'g'), '')
-      // Remover datas restantes
-      .replace(/\s*\d{1,2}\s*de\s*\w+.*$/gi, '')
-      // Remover horas restantes
-      .replace(/\s*\d{1,2}:\d{2}.*$/g, '')
-      // Remover "a" solto
-      .replace(/\s*\ba\s*$/gi, '')
-      // Limpar pontuação final
-      .replace(/[\s\-,\.]+$/, '')
+      .replace(/\s*-\s*$/, '')
+      .replace(/\s*,\s*$/, '')
       .replace(/\s+/g, ' ')
       .trim();
 
-    // 6. Fallback se título ficou muito pequeno
-    if (tituloLimpo.length < 5) {
-      const partes = original.split(/(?:\s*-\s*|\s*,\s*)/);
-      tituloLimpo = partes[0].trim();
-      
-      if (tituloLimpo.length < 5) {
-        tituloLimpo = original; // Último recurso
-      }
+    // 15. Validação final do título
+    if (tituloLimpo.length < 10) {
+      return null; // Título muito curto após processamento
     }
 
     return {
@@ -624,6 +1033,42 @@ class EventoScraperCompleto {
     }
 
     return null;
+  }
+
+  // Calcular similaridade entre dois textos (algoritmo de Levenshtein simplificado)
+  calcularSimilaridade(str1, str2) {
+    const s1 = str1.toLowerCase().trim();
+    const s2 = str2.toLowerCase().trim();
+    
+    if (s1 === s2) return 1;
+    
+    const len1 = s1.length;
+    const len2 = s2.length;
+    
+    if (len1 === 0) return len2 === 0 ? 1 : 0;
+    if (len2 === 0) return 0;
+    
+    // Matriz de distância
+    const matrix = Array(len2 + 1).fill(null).map(() => Array(len1 + 1).fill(null));
+    
+    for (let i = 0; i <= len1; i++) matrix[0][i] = i;
+    for (let j = 0; j <= len2; j++) matrix[j][0] = j;
+    
+    for (let j = 1; j <= len2; j++) {
+      for (let i = 1; i <= len1; i++) {
+        const cost = s1[i - 1] === s2[j - 1] ? 0 : 1;
+        matrix[j][i] = Math.min(
+          matrix[j - 1][i] + 1,     // deletion
+          matrix[j][i - 1] + 1,     // insertion
+          matrix[j - 1][i - 1] + cost // substitution
+        );
+      }
+    }
+    
+    const distance = matrix[len2][len1];
+    const maxLen = Math.max(len1, len2);
+    
+    return (maxLen - distance) / maxLen;
   }
 
   // Categorizar evento baseado no título

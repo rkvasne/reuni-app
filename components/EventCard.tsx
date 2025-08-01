@@ -98,7 +98,7 @@ export default function EventCard({ event, priority = false, onEventUpdated }: E
   return (
     <div className="event-card overflow-hidden">
       
-      {/* Imagem do Evento */}
+      {/* Imagem do Evento - Limpa sem sobreposições */}
       <div className="relative h-48 bg-neutral-100 rounded-t-lg overflow-hidden">
         {event.imagem_url ? (
           <OptimizedImage
@@ -120,32 +120,26 @@ export default function EventCard({ event, priority = false, onEventUpdated }: E
           </div>
         )}
         
-        {/* Badge da Categoria */}
-        <div className="absolute top-3 left-3">
-          <span className="category-badge bg-primary-500 capitalize">
-            {event.categoria}
-          </span>
-        </div>
-        
-        {/* Data no canto */}
+        {/* Apenas elementos essenciais sobre a imagem */}
+        {/* Data no canto superior direito */}
         <EventDateBadge 
           date={event.data} 
           className="absolute top-3 right-3"
         />
 
-        {/* Menu de ações para organizador */}
+        {/* Menu de ações para organizador - apenas se necessário */}
         {isOrganizer && (
-          <div className="absolute top-3 left-1/2 transform -translate-x-1/2">
+          <div className="absolute top-3 left-3">
             <div className="relative">
               <button
                 onClick={() => setShowMenu(!showMenu)}
-                className="p-2 bg-white/90 hover:bg-white rounded-lg transition-colors shadow-sm"
+                className="p-2 bg-black/20 hover:bg-black/30 backdrop-blur-sm rounded-lg transition-colors"
               >
-                <MoreHorizontal className="w-4 h-4 text-neutral-600" />
+                <MoreHorizontal className="w-4 h-4 text-white" />
               </button>
               
               {showMenu && (
-                <div className="absolute top-10 left-1/2 transform -translate-x-1/2 bg-white rounded-lg shadow-lg border border-neutral-200 py-2 w-40 z-10">
+                <div className="absolute top-10 left-0 bg-white rounded-lg shadow-lg border border-neutral-200 py-2 w-40 z-10">
                   <button
                     onClick={() => {
                       setShowEditModal(true)
@@ -174,13 +168,18 @@ export default function EventCard({ event, priority = false, onEventUpdated }: E
       {/* Conteúdo Principal */}
       <div className="p-5">
         
-        {/* Título do Evento */}
-        <h3 
-          className="font-bold text-xl text-neutral-800 mb-2 cursor-pointer hover:text-primary-600 transition-colors line-clamp-2"
-          onClick={() => setShowViewModal(true)}
-        >
-          {event.titulo}
-        </h3>
+        {/* Categoria e Título */}
+        <div className="mb-3">
+          <span className="inline-block px-2 py-1 bg-primary-100 text-primary-700 text-xs font-medium rounded-full mb-2 capitalize">
+            {event.categoria}
+          </span>
+          <h3 
+            className="font-bold text-xl text-neutral-800 cursor-pointer hover:text-primary-600 transition-colors line-clamp-2"
+            onClick={() => setShowViewModal(true)}
+          >
+            {event.titulo}
+          </h3>
+        </div>
 
         {/* Informações do Organizador */}
         <div className="flex items-center gap-2 mb-4">
