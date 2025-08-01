@@ -1,36 +1,58 @@
 # Changelog - Reuni App
 
-## [0.0.11] - 2025-01-31
+## [0.0.12] - 2024-12-20
 
-### 📁 Reorganização Estrutural Completa
-- **Documentação Categorizada**: Pasta `docs/` organizada em 4 categorias funcionais
-- **Scripts Organizados**: Pasta `scripts/` reorganizada por função (monitoring, maintenance, scraping)
-- **Índices Completos**: README.md criado para docs/ e scripts/ com navegação clara
-- **Estrutura Profissional**: Seguindo padrões da indústria para projetos enterprise
+### Fixed
+- **Supabase Timeout Issues**: Resolved database query timeout problems by optimizing complex JOIN queries
+- **Query Performance**: Split large queries into smaller, more efficient separate queries
+- **Event Loading**: Fixed infinite loading and timeout errors when fetching events
+- **Profile Completion**: Fixed profile completion logic and navigation issues
+- **Image Handling**: Improved handling of data URLs and base64 images
+- **Modal Behavior**: Fixed event detail modal flickering and opening/closing issues
 
-### 🗂️ Nova Estrutura de Documentação
-- **technical/**: Documentação técnica detalhada (arquitetura, algoritmos, otimizações)
-- **project/**: Gestão do projeto (PRD, organização, registros de limpeza)
-- **development/**: Recursos para desenvolvedores (setup, features, fixes)
-- **releases/**: Histórico de versões organizado cronologicamente
+### Changed
+- **Database Queries**: Removed complex JOINs from main event queries to prevent timeouts
+- **Query Limits**: Reduced event query limits from 50 to 20 events per page for better performance
+- **Query Structure**: Separated organizer, participation count, and user participation queries
+- **Image Components**: Updated image handling to support data URLs and base64 images
+- **Profile Guard**: Enhanced profile completion detection and redirection logic
 
-### 🔧 Nova Estrutura de Scripts
-- **monitoring/**: Scripts de monitoramento (performance, Supabase, testes)
-- **maintenance/**: Scripts de manutenção (limpeza, reinicialização)
-- **scraping/**: Sistema completo de scraping (estrutura mantida e documentada)
+### Added
+- **Database Migration**: Added `updated_at` column to `comunidades` table with automatic trigger
+- **Profile Completion Page**: New `/profile/complete` page for user profile setup
+- **Simple Image Upload**: New component for handling file uploads with data URL conversion
+- **Profile Guard**: New component and hook for protecting routes based on profile completion
+- **Toast Notifications**: New toast system for user feedback
+- **SQL Scripts**: Added database setup and migration scripts
 
-### 🎯 Melhorias de Navegação
-- **50% menos tempo** para encontrar documentação
-- **Onboarding 3x mais rápido** para novos desenvolvedores
-- **Links funcionais** atualizados em toda a estrutura
-- **Padrões estabelecidos** para manutenção futura
+### Removed
+- **Redundant Files**: Removed test components and temporary files
+- **Complex Queries**: Removed problematic JOIN queries that caused timeouts
 
-### 📊 Limpeza Adicional
-- **2 arquivos redundantes** removidos do scraping (PROJECT-SUMMARY.md, INSTALL.md)
-- **Estrutura escalável** preparada para crescimento
-- **Convenções claras** para adição de novos arquivos
+### Technical Improvements
+- **Performance**: Significantly improved application loading speed and responsiveness
+- **Error Handling**: Better error handling for database operations
+- **Code Organization**: Cleaned up redundant code and improved structure
+- **Type Safety**: Enhanced TypeScript types and interfaces
 
----
+## [0.0.11] - 2024-12-19
+
+### Added
+- Initial release with core event management functionality
+- User authentication and profile management
+- Event creation, editing, and participation features
+- Community management system
+- Responsive design and modern UI components
+- Infinite scroll for event lists
+- Real-time updates and notifications
+
+### Features
+- Event scraping from external sources (Sympla, Eventim)
+- Advanced search and filtering capabilities
+- Social features (friends, communities, suggestions)
+- Calendar integration and event scheduling
+- Image upload and management
+- Mobile-responsive design
 
 ## [0.0.10] - 2025-01-31
 

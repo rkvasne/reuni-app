@@ -8,6 +8,7 @@ import { useRouter } from 'next/navigation'
 import QuickActionsBlock from './QuickActionsBlock'
 import VisualFilterBar from './VisualFilterBar'
 import OptimizedImage from './OptimizedImage'
+import Image from 'next/image'
 
 interface HeaderProps {
   onCreateEvent?: () => void;
@@ -59,7 +60,14 @@ export default function Header({ onCreateEvent }: HeaderProps) {
         <div className="flex items-center justify-between h-16">
           
           {/* Logo */}
-          <div className="flex items-center">
+          <div className="flex items-center gap-3">
+            <Image 
+              src="/imagens/logo-reuni.png" 
+              alt="Logo Reuni" 
+              width={40} 
+              height={40}
+              className="object-contain"
+            />
             <h1 className="text-3xl font-bold text-gradient tracking-tight">
               Reuni
             </h1>

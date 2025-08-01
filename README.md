@@ -2,7 +2,7 @@
 
 > Sistema completo de eventos sociais com scraping inteligente, interface profissional e cobertura nacional. Conecta pessoas através de experiências compartilhadas com foco especial em Rondônia.
 
-**Versão:** v0.0.11 ✅ **CONCLUÍDA**  
+**Versão:** v0.0.12 ✅ **CONCLUÍDA**  
 **Status:** ✅ Pronto para produção  
 **Scraping:** ✅ 100% funcional (14/14 tarefas concluídas)
 
