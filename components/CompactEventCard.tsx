@@ -7,6 +7,7 @@ interface CompactEventCardProps {
   event: {
     id: string;
     titulo: string;
+    descricao?: string;
     data: string;
     hora: string;
     local: string;
@@ -38,6 +39,19 @@ export default function CompactEventCard({
 
   const formatTime = (timeString: string) => {
     return timeString.slice(0, 5);
+  };
+
+  const getEventLocation = () => {
+    if (event.descricao === 'Evento encontrado no eventbrite') {
+      return event.local;
+    }
+    
+    // Extrair local da descrição (formato: "Local - Cidade, Estado")
+    if (event.descricao && event.descricao.includes(' - ')) {
+      return event.descricao;
+    }
+    
+    return event.local;
   };
 
   const friendsGoing = event.friends_going || [];
@@ -92,7 +106,7 @@ export default function CompactEventCard({
         {/* Local */}
         <div className="flex items-center gap-1 text-xs text-neutral-600 mb-2">
           <MapPin className="w-3 h-3 flex-shrink-0" />
-          <span className="truncate">{event.local}</span>
+          <span className="truncate">{getEventLocation()}</span>
         </div>
         
         {/* Participantes */}

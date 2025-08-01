@@ -199,6 +199,21 @@ export default function EventModal({
     return timeString.slice(0, 5)
   }
 
+  const getEventLocation = () => {
+    if (!event) return '';
+    
+    if (event.descricao === 'Evento encontrado no eventbrite') {
+      return event.local;
+    }
+    
+    // Extrair local da descrição (formato: "Local - Cidade, Estado")
+    if (event.descricao && event.descricao.includes(' - ')) {
+      return event.descricao;
+    }
+    
+    return event.local;
+  };
+
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[9999]" onClick={handleBackdropClick}>
       <div className="bg-white rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
@@ -259,7 +274,7 @@ export default function EventModal({
                   <MapPin className="w-5 h-5 text-primary-500" />
                   <div>
                     <div className="font-medium text-neutral-800">Local</div>
-                    <div className="text-sm text-neutral-600">{event.local}</div>
+                    <div className="text-sm text-neutral-600">{getEventLocation()}</div>
                   </div>
                 </div>
               </div>
