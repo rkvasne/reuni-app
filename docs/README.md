@@ -33,6 +33,7 @@ Documentação completa do sistema de eventos e comunidades com scraping intelig
 - **[Correções de Navegação](./fixes/NAVIGATION_FIXES.md)** - Melhorias de UX
 
 ### 📋 [Releases](./releases/)
+- **[v0.0.10](./releases/v0.0.10.md)** - Limpeza final e organização profissional
 - **[v0.0.8](./releases/v0.0.8.md)** - Limpeza de dados e melhorias
 - **[v0.0.7](./releases/v0.0.7.md)** - Sistema social completo
 - **[v0.0.6](./releases/v0.0.6.md)** - Correções e otimizações
@@ -54,7 +55,7 @@ Documentação completa do sistema de eventos e comunidades com scraping intelig
 - [Testes](../supabase/migrations/008_test_communities.sql)
 - [Verificações](../supabase/migrations/009_safe_test.sql)
 
-## 📊 Status Atual (v0.0.9)
+## 📊 Status Atual (v0.0.10)
 
 - ✅ **Sistema de Scraping** - 100% funcional (14/14 tarefas concluídas)
 - ✅ **Padrões Avançados** - Limpeza inteligente de títulos (95% melhoria)
@@ -63,7 +64,7 @@ Documentação completa do sistema de eventos e comunidades com scraping intelig
 - ✅ **Sistema de Comunidades** - Implementado (v0.0.5)
 - ✅ **Sistema de Busca** - Implementado (v0.0.4)  
 - ✅ **Sistema de Perfil** - Implementado (v0.0.3)
-- ✅ **Documentação** - Limpa e organizada
+- ✅ **Documentação** - 100% limpa, zero redundâncias, estrutura profissional
 
 ## 🔄 Changelog
 
