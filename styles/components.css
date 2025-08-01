@@ -80,6 +80,20 @@
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.20), 0 12px 24px rgba(0, 0, 0, 0.15) !important;
 }
 
+/* Card sem zoom para sidebars */
+.card-no-zoom {
+  @apply bg-white rounded-lg;
+  background-color: #ffffff !important;
+  border: 1px solid #d1d5db !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15), 0 6px 16px rgba(0, 0, 0, 0.12) !important;
+  border-radius: 12px !important;
+  transition: box-shadow 0.12s ease-out !important;
+}
+
+.card-no-zoom:hover {
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.20), 0 12px 24px rgba(0, 0, 0, 0.15) !important;
+}
+
 /* Card de evento específico - Estilo Facebook */
 .event-card {
   @apply bg-white rounded-lg;
@@ -140,11 +154,13 @@
 .btn-primary {
   @apply bg-primary-500 text-white px-4 py-2 rounded-lg font-medium hover:bg-primary-600;
   transition: transform 0.12s ease-out, box-shadow 0.12s ease-out !important;
+  border-radius: 8px !important;
 }
 
 .btn-primary:hover {
   transform: scale(1.03) !important;
   box-shadow: 0 4px 12px rgba(155, 89, 182, 0.3) !important;
+  border-radius: 8px !important;
 }
 
 .btn-secondary {

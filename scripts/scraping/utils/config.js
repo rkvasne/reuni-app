@@ -95,39 +95,62 @@ const config = {
       
       // Seletores CSS específicos do Sympla
       selectors: {
-        eventCard: '.sympla-card, .event-item, .EventCardstyles__Container',
-        title: '.sympla-card__title, .event-title, .EventCardstyles__Title',
-        date: '.sympla-card__date, .event-date, .EventCardstyles__Date',
-        location: '.sympla-card__location, .event-location, .EventCardstyles__Location',
-        image: '.sympla-card__image img, .event-image img, .EventCardstyles__Image img',
-        price: '.sympla-card__price, .event-price, .EventCardstyles__Price',
-        description: '.sympla-card__description, .event-description',
-        organizer: '.event-organizer, .organizer-name',
-        category: '.event-category, .category-name'
+        eventCard: '.sympla-card, .event-item, .EventCardstyles__Container, [data-testid="event-card"]',
+        title: '.sympla-card__title, .event-title, .EventCardstyles__Title, [data-testid="event-title"]',
+        date: '.sympla-card__date, .event-date, .EventCardstyles__Date, [data-testid="event-date"]',
+        location: '.sympla-card__location, .event-location, .EventCardstyles__Location, [data-testid="event-location"]',
+        image: '.sympla-card__image img, .event-image img, .EventCardstyles__Image img, [data-testid="event-image"] img',
+        price: '.sympla-card__price, .event-price, .EventCardstyles__Price, [data-testid="event-price"]',
+        description: '.sympla-card__description, .event-description, [data-testid="event-description"]',
+        organizer: '.event-organizer, .organizer-name, [data-testid="event-organizer"]',
+        category: '.event-category, .category-name, [data-testid="event-category"]'
       },
       
+      // Regiões prioritárias - Rondônia e capitais
       regions: {
-        jiparana: {
-          name: 'Ji-Paraná e Região',
-          searchTerms: ['Ji-Paraná', 'Rondônia', 'RO', 'Ji Parana'],
-          nearbyCities: ['Ariquemes', 'Cacoal', 'Rolim de Moura', 'Vilhena', 'Porto Velho'],
-          priority: 1
+        rondonia: {
+          name: 'Rondônia - Cidades Principais',
+          searchTerms: ['Ji-Paraná', 'Porto Velho', 'Ariquemes', 'Cacoal', 'Vilhena', 'Rolim de Moura', 'Jaru', 'Ouro Preto do Oeste', 'Guajará-Mirim', 'Pimenta Bueno'],
+          nearbyCities: ['Ji-Paraná', 'Porto Velho', 'Ariquemes', 'Cacoal', 'Vilhena', 'Rolim de Moura', 'Jaru', 'Ouro Preto do Oeste', 'Guajará-Mirim', 'Pimenta Bueno'],
+          priority: 1,
+          maxEvents: 20
+        },
+        capitais: {
+          name: 'Capitais Brasileiras',
+          searchTerms: ['São Paulo', 'Rio de Janeiro', 'Brasília', 'Salvador', 'Fortaleza', 'Belo Horizonte', 'Manaus', 'Curitiba', 'Recife', 'Goiânia', 'Belém', 'Porto Alegre'],
+          keywords: ['show', 'festival', 'artista', 'evento', 'apresentação'],
+          priority: 2,
+          maxEvents: 15
         },
         nacional: {
           name: 'Eventos Nacionais',
-          searchTerms: ['Brasil', 'nacional', 'turnê'],
-          keywords: ['show', 'festival', 'artista'],
-          priority: 2
+          searchTerms: ['Brasil', 'nacional', 'turnê', 'tour'],
+          keywords: ['show nacional', 'turnê', 'festival', 'artista famoso'],
+          priority: 3,
+          maxEvents: 10
         }
       },
       
+      // Filtros de qualidade melhorados
       qualityFilters: {
-        requireImage: true,
+        requireImage: false, // Sympla nem sempre tem imagens
         requireDescription: false, // Sympla às vezes não tem descrição completa
         minTitleLength: 8,
         maxTitleLength: 150,
         requireValidDate: true,
-        requireLocation: true
+        requireLocation: true,
+        // Filtros de relevância
+        excludeKeywords: [
+          'teste', 'test', 'exemplo', 'example', 'placeholder', 'lorem ipsum',
+          'evento teste', 'evento exemplo', 'show teste', 'apresentação teste',
+          'workshop teste', 'curso teste', 'palestra teste'
+        ],
+        // Palavras que indicam eventos reais
+        includeKeywords: [
+          'show', 'festival', 'apresentação', 'workshop', 'curso', 'palestra',
+          'conferência', 'seminário', 'encontro', 'reunião', 'comemoração',
+          'celebração', 'inauguração', 'lançamento', 'exposição', 'feira'
+        ]
       }
     }
   },

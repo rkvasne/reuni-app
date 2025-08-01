@@ -89,7 +89,7 @@ export default function MiniCalendar({
               onClick={() => handleDateClick(day.date)}
               disabled={loading}
               className={`
-                relative h-7 text-xs font-medium rounded transition-all
+                relative h-8 text-xs font-medium rounded transition-all
                 ${day.isCurrentMonth 
                   ? 'text-neutral-800 hover:bg-neutral-100' 
                   : 'text-neutral-400 hover:bg-neutral-50'
@@ -109,7 +109,7 @@ export default function MiniCalendar({
               
               {/* Indicadores de eventos */}
               {day.eventCount > 0 && (
-                <div className="absolute bottom-0.5 left-1/2 -translate-x-1/2 flex gap-0.5">
+                <div className="absolute bottom-1 left-1/2 -translate-x-1/2 flex gap-0.5">
                   {day.eventCount <= 3 ? (
                     // Mostrar dots individuais para até 3 eventos
                     Array.from({ length: day.eventCount }).map((_, i) => (
@@ -125,17 +125,19 @@ export default function MiniCalendar({
                       />
                     ))
                   ) : (
-                    // Mostrar número para mais de 3 eventos
+                    // Mostrar número para mais de 3 eventos com melhor formatação
                     <div
-                      className={`text-xs font-bold ${
-                        day.isSelected 
-                          ? 'text-white' 
+                      className={`
+                        text-[10px] font-semibold px-1 py-0.5 rounded-full min-w-[16px] text-center
+                        ${day.isSelected 
+                          ? 'bg-white/90 text-primary-600 shadow-sm' 
                           : day.hasUserEvents 
-                            ? 'text-primary-500' 
-                            : 'text-neutral-400'
-                      }`}
+                            ? 'bg-primary-500 text-white shadow-sm' 
+                            : 'bg-neutral-200 text-neutral-700'
+                        }
+                      `}
                     >
-                      {day.eventCount}
+                      {day.eventCount > 9 ? '9+' : day.eventCount}
                     </div>
                   )}
                 </div>

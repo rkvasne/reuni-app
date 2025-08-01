@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { X, Calendar, Clock, MapPin, Users, Image, Tag } from 'lucide-react'
 import { useEvents, type Event, type CreateEventData } from '@/hooks/useEvents'
 import ParticipantsList from './ParticipantsList'
@@ -80,6 +80,29 @@ export default function EventModal({
     }
   }, [mode, event?.id]) // Removido isOpen e event, usando apenas event?.id
 
+  const handleClose = useCallback(() => {
+    onClose()
+    resetForm()
+  }, [onClose])
+
+  // Listener para tecla ESC
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape' && isOpen) {
+        onClose()
+        resetForm()
+      }
+    }
+
+    if (isOpen) {
+      document.addEventListener('keydown', handleKeyDown)
+    }
+
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown)
+    }
+  }, [isOpen, onClose])
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
@@ -151,11 +174,6 @@ export default function EventModal({
       max_participantes: undefined
     })
     setError('')
-  }
-
-  const handleClose = () => {
-    onClose()
-    resetForm()
   }
 
   if (!isOpen) return null

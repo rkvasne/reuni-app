@@ -83,6 +83,9 @@ module.exports = {
       transitionDuration: {
         '120': '120ms',
         '150': '150ms',
+      },
+      height: {
+        '68': '17rem', // 272px (48 + 20 = 68)
       }
     },
   },

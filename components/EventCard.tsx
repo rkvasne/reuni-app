@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useCallback } from 'react'
 import { Calendar, MapPin, Users, Heart, MessageCircle, Share2, Edit, Trash2, MoreHorizontal, Check, Clock } from 'lucide-react'
 import OptimizedImage from './OptimizedImage'
 import EventDateBadge from './EventDateBadge'
@@ -24,6 +24,12 @@ export default function EventCard({ event, priority = false, onEventUpdated }: E
   const [participationLoading, setParticipationLoading] = useState(false)
 
   const isOrganizer = user?.id === event.organizador_id
+
+  // Stable close handler to prevent infinite loops
+  const handleCloseModal = useCallback(() => {
+    setShowEditModal(false)
+    setShowViewModal(false)
+  }, [])
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString)
@@ -86,11 +92,14 @@ export default function EventCard({ event, priority = false, onEventUpdated }: E
   }
 
   const formatFullDate = (dateString: string) => {
-    const date = new Date(dateString)
-    const day = date.getDate()
-    const month = date.toLocaleDateString('pt-BR', { month: 'short' })
+    // Criar data considerando fuso horário local (evita problema de -1 dia)
+    const [year, month, day] = dateString.split('-').map(Number)
+    const date = new Date(year, month - 1, day) // month - 1 porque Date usa 0-11
+    
+    const dayNum = date.getDate()
+    const monthStr = date.toLocaleDateString('pt-BR', { month: 'short' })
     const weekday = date.toLocaleDateString('pt-BR', { weekday: 'long' })
-    return { day, month, weekday }
+    return { day: dayNum, month: monthStr, weekday }
   }
 
   const dateInfo = formatFullDate(event.data)
@@ -99,7 +108,13 @@ export default function EventCard({ event, priority = false, onEventUpdated }: E
     <div className="event-card event-card-main">
       
       {/* Imagem do Evento - Limpa sem sobreposições */}
-      <div className="relative h-48 bg-neutral-100 rounded-t-lg overflow-hidden">
+      <div 
+        className="relative h-68 bg-neutral-100 rounded-t-lg overflow-hidden cursor-pointer"
+        onClick={() => {
+          setShowViewModal(true)
+          setShowEditModal(false)
+        }}
+      >
         {event.imagem_url ? (
           <OptimizedImage
             src={event.imagem_url}
@@ -147,6 +162,7 @@ export default function EventCard({ event, priority = false, onEventUpdated }: E
                     type="button"
                     onClick={() => {
                       setShowEditModal(true)
+                      setShowViewModal(false)
                       setShowMenu(false)
                     }}
                     className="w-full text-left px-4 py-2 hover:bg-neutral-50 flex items-center gap-2 text-neutral-700"
@@ -180,7 +196,10 @@ export default function EventCard({ event, priority = false, onEventUpdated }: E
           </span>
           <h3 
             className="font-bold text-xl text-neutral-800 cursor-pointer hover:text-primary-600 transition-colors line-clamp-2"
-            onClick={() => setShowViewModal(true)}
+            onClick={() => {
+              setShowViewModal(true)
+              setShowEditModal(false)
+            }}
           >
             {event.titulo}
           </h3>
@@ -313,22 +332,16 @@ export default function EventCard({ event, priority = false, onEventUpdated }: E
         
       </div>
 
-      {/* Modal de Edição */}
-      <EventModal
-        isOpen={showEditModal}
-        onClose={() => setShowEditModal(false)}
-        event={event}
-        mode="edit"
-        onEventUpdated={onEventUpdated} // Passar callback para atualizar lista
-      />
-
-      {/* Modal de Visualização */}
-      <EventModal
-        isOpen={showViewModal}
-        onClose={() => setShowViewModal(false)}
-        event={event}
-        mode="view"
-      />
+      {/* Modal - apenas um por vez */}
+      {(showEditModal || showViewModal) && (
+        <EventModal
+          isOpen={showEditModal || showViewModal}
+          onClose={handleCloseModal}
+          event={event}
+          mode={showEditModal ? "edit" : "view"}
+          onEventUpdated={onEventUpdated}
+        />
+      )}
     </div>
   )
 }

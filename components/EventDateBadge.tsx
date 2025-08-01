@@ -5,13 +5,16 @@ interface EventDateBadgeProps {
 
 export default function EventDateBadge({ date, className = '' }: EventDateBadgeProps) {
   const formatDate = (dateString: string) => {
-    const eventDate = new Date(dateString)
+    // Criar data considerando fuso horário local (evita problema de -1 dia)
+    const [year, month, day] = dateString.split('-').map(Number)
+    const eventDate = new Date(year, month - 1, day) // month - 1 porque Date usa 0-11
+    
     const today = new Date()
     const tomorrow = new Date(today)
     tomorrow.setDate(today.getDate() + 1)
     
-    const day = eventDate.getDate()
-    const month = eventDate.toLocaleDateString('pt-BR', { month: 'short' })
+    const dayNum = eventDate.getDate()
+    const monthStr = eventDate.toLocaleDateString('pt-BR', { month: 'short' })
     
     // Verificar se é hoje ou amanhã
     if (eventDate.toDateString() === today.toDateString()) {
@@ -19,7 +22,7 @@ export default function EventDateBadge({ date, className = '' }: EventDateBadgeP
     } else if (eventDate.toDateString() === tomorrow.toDateString()) {
       return { day: 'AMANHÃ', month: '', isTomorrow: true }
     } else {
-      return { day: day.toString(), month, isToday: false, isTomorrow: false }
+      return { day: dayNum.toString(), month: monthStr, isToday: false, isTomorrow: false }
     }
   }
 

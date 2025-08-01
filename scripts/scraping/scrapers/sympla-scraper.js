@@ -398,14 +398,30 @@ class SymplaScraper extends BaseScraper {
       const cleanDate = dateText
         .replace(/^(seg|ter|qua|qui|sex|sáb|dom),?\s*/i, '')
         .replace(/\s+às?\s+/i, ' ')
+        .replace(/\s+horas?\s*/i, ' ')
+        .replace(/\s+hs?\s*/i, ' ')
         .trim();
       
       // Tenta diferentes formatos de data brasileira
       const dateFormats = [
-        /(\d{1,2})\/(\d{1,2})\/(\d{4})/,  // DD/MM/YYYY
-        /(\d{1,2})\s+de\s+(\w+)\s+de\s+(\d{4})/i,  // DD de MMMM de YYYY
-        /(\w+)\s+(\d{1,2}),\s+(\d{4})/i,  // MMMM DD, YYYY
-        /(\d{1,2})\s+(\w{3})\s+(\d{4})/i  // DD MMM YYYY
+        // DD/MM/YYYY
+        /(\d{1,2})\/(\d{1,2})\/(\d{4})/,
+        // DD/MM (assume ano atual ou próximo)
+        /(\d{1,2})\/(\d{1,2})/,
+        // DD de MMMM de YYYY
+        /(\d{1,2})\s+de\s+(\w+)\s+de\s+(\d{4})/i,
+        // DD de MMMM (assume ano atual ou próximo)
+        /(\d{1,2})\s+de\s+(\w+)/i,
+        // MMMM DD, YYYY
+        /(\w+)\s+(\d{1,2}),\s+(\d{4})/i,
+        // DD MMM YYYY
+        /(\d{1,2})\s+(\w{3})\s+(\d{4})/i,
+        // DD MMM (assume ano atual ou próximo)
+        /(\d{1,2})\s+(\w{3})/i,
+        // YYYY-MM-DD
+        /(\d{4})-(\d{1,2})-(\d{1,2})/,
+        // DD-MM-YYYY
+        /(\d{1,2})-(\d{1,2})-(\d{4})/
       ];
       
       for (const format of dateFormats) {
@@ -438,47 +454,78 @@ class SymplaScraper extends BaseScraper {
    */
   buildDateFromMatch(match, format) {
     try {
+      const currentYear = new Date().getFullYear();
+      const currentMonth = new Date().getMonth() + 1;
+      const currentDay = new Date().getDate();
+      
+      // Ajuste de fuso horário para Brasil (GMT-3)
+      const timezoneOffset = 3 * 60; // 3 horas em minutos
+      
+      const months = {
+        'janeiro': 0, 'fevereiro': 1, 'março': 2, 'abril': 3,
+        'maio': 4, 'junho': 5, 'julho': 6, 'agosto': 7,
+        'setembro': 8, 'outubro': 9, 'novembro': 10, 'dezembro': 11,
+        'jan': 0, 'fev': 1, 'mar': 2, 'abr': 3,
+        'mai': 4, 'jun': 5, 'jul': 6, 'ago': 7,
+        'set': 8, 'out': 9, 'nov': 10, 'dez': 11
+      };
+      
       if (format.source.includes('de')) {
-        // Formato: DD de MMMM de YYYY
+        // Formato: DD de MMMM de YYYY ou DD de MMMM
         const day = parseInt(match[1]);
         const monthName = match[2].toLowerCase();
-        const year = parseInt(match[3]);
-        
-        const months = {
-          'janeiro': 0, 'fevereiro': 1, 'março': 2, 'abril': 3,
-          'maio': 4, 'junho': 5, 'julho': 6, 'agosto': 7,
-          'setembro': 8, 'outubro': 9, 'novembro': 10, 'dezembro': 11,
-          'jan': 0, 'fev': 1, 'mar': 2, 'abr': 3,
-          'mai': 4, 'jun': 5, 'jul': 6, 'ago': 7,
-          'set': 8, 'out': 9, 'nov': 10, 'dez': 11
-        };
+        const year = match[3] ? parseInt(match[3]) : this.determineYear(day, months[monthName], currentYear, currentMonth);
         
         const month = months[monthName];
         if (month !== undefined) {
-          return new Date(year, month, day);
+          const date = new Date(year, month, day);
+          // Ajustar para fuso horário brasileiro (GMT-3)
+          date.setMinutes(date.getMinutes() + timezoneOffset);
+          return date;
         }
       } else if (format.source.includes('/')) {
-        // Formato: DD/MM/YYYY
+        // Formato: DD/MM/YYYY ou DD/MM
         const day = parseInt(match[1]);
         const month = parseInt(match[2]) - 1; // JavaScript months are 0-based
-        const year = parseInt(match[3]);
+        const year = match[3] ? parseInt(match[3]) : this.determineYear(day, month + 1, currentYear, currentMonth);
         
-        return new Date(year, month, day);
+        const date = new Date(year, month, day);
+        // Ajustar para fuso horário brasileiro (GMT-3)
+        date.setMinutes(date.getMinutes() + timezoneOffset);
+        return date;
       } else if (format.source.includes('\\w{3}')) {
-        // Formato: DD MMM YYYY
+        // Formato: DD MMM YYYY ou DD MMM
         const day = parseInt(match[1]);
         const monthAbbr = match[2].toLowerCase();
-        const year = parseInt(match[3]);
-        
-        const months = {
-          'jan': 0, 'fev': 1, 'mar': 2, 'abr': 3,
-          'mai': 4, 'jun': 5, 'jul': 6, 'ago': 7,
-          'set': 8, 'out': 9, 'nov': 10, 'dez': 11
-        };
+        const year = match[3] ? parseInt(match[3]) : this.determineYear(day, months[monthAbbr] + 1, currentYear, currentMonth);
         
         const month = months[monthAbbr];
         if (month !== undefined) {
-          return new Date(year, month, day);
+          const date = new Date(year, month, day);
+          // Ajustar para fuso horário brasileiro (GMT-3)
+          date.setMinutes(date.getMinutes() + timezoneOffset);
+          return date;
+        }
+      } else if (format.source.includes('-')) {
+        // Formato: YYYY-MM-DD ou DD-MM-YYYY
+        if (match[1].length === 4) {
+          // YYYY-MM-DD
+          const year = parseInt(match[1]);
+          const month = parseInt(match[2]) - 1;
+          const day = parseInt(match[3]);
+          const date = new Date(year, month, day);
+          // Ajustar para fuso horário brasileiro (GMT-3)
+          date.setMinutes(date.getMinutes() + timezoneOffset);
+          return date;
+        } else {
+          // DD-MM-YYYY
+          const day = parseInt(match[1]);
+          const month = parseInt(match[2]) - 1;
+          const year = parseInt(match[3]);
+          const date = new Date(year, month, day);
+          // Ajustar para fuso horário brasileiro (GMT-3)
+          date.setMinutes(date.getMinutes() + timezoneOffset);
+          return date;
         }
       }
       
@@ -486,6 +533,17 @@ class SymplaScraper extends BaseScraper {
     } catch (error) {
       return null;
     }
+  }
+
+  /**
+   * Determina o ano correto para datas sem ano
+   */
+  determineYear(day, month, currentYear, currentMonth) {
+    // Se o mês é menor que o atual, ou se é o mesmo mês mas o dia já passou, usar próximo ano
+    if (month < currentMonth || (month === currentMonth && day < new Date().getDate())) {
+      return currentYear + 1;
+    }
+    return currentYear;
   }
 
   /**

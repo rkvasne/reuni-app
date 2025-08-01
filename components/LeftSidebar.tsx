@@ -56,7 +56,7 @@ export default function LeftSidebar({ onCreateEvent }: LeftSidebarProps) {
         )}
 
         {/* Navegação Principal */}
-        <div className="card p-4">
+        <div className="card-no-zoom p-4">
           <nav className="space-y-2">
             {menuItems.map((item, index) => {
               const isActive = item.href !== '/' && (pathname === item.href || (item.href === '/' && pathname === '/'));
@@ -90,7 +90,7 @@ export default function LeftSidebar({ onCreateEvent }: LeftSidebarProps) {
 
         {/* Comunidades - Apenas se autenticado */}
         {isAuthenticated && (
-          <div className="card p-4">
+          <div className="card-no-zoom p-4">
             <h3 className="font-semibold text-neutral-800 mb-3">Suas Comunidades</h3>
             
             {communitiesLoading ? (
