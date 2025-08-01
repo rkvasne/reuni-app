@@ -74,6 +74,15 @@ module.exports = {
       },
       backdropBlur: {
         'xs': '2px',
+      },
+      scale: {
+        '102': '1.02',
+        '103': '1.03',
+        '105': '1.05',
+      },
+      transitionDuration: {
+        '120': '120ms',
+        '150': '150ms',
       }
     },
   },

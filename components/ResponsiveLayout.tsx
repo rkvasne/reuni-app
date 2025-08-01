@@ -54,7 +54,7 @@ export default function ResponsiveLayout({
   }, [leftSidebarOpen, rightSidebarOpen, isMobile]);
 
   return (
-    <div className="min-h-screen bg-neutral-50">
+    <div className="min-h-screen bg-gray-50">
       {/* Mobile Header */}
       {isMobile && (
         <div className="sticky top-0 z-40 bg-white border-b border-neutral-200 px-4 py-3">
@@ -101,8 +101,10 @@ export default function ResponsiveLayout({
             </div>
           )}
           
-          <div className={`${isMobile ? 'p-4' : ''} h-full overflow-y-auto`}>
-            {leftSidebar}
+          <div className={`${isMobile ? 'p-4' : ''} h-full overflow-y-auto sidebar-container`}>
+            <div className="sidebar-content">
+              {leftSidebar}
+            </div>
           </div>
         </div>
 
@@ -140,8 +142,10 @@ export default function ResponsiveLayout({
             </div>
           )}
           
-          <div className={`${isMobile ? 'p-4' : 'p-6'} h-full overflow-y-auto`}>
-            {rightSidebar}
+          <div className={`${isMobile ? 'p-4' : 'p-6'} h-full overflow-y-auto sidebar-container`}>
+            <div className="sidebar-content">
+              {rightSidebar}
+            </div>
           </div>
         </div>
       </div>

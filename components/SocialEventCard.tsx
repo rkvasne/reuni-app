@@ -97,7 +97,7 @@ export default function SocialEventCard({
 
   return (
     <div 
-      className={`card overflow-hidden cursor-pointer hover:shadow-lg transition-all ${
+      className={`card overflow-hidden cursor-pointer transition-transform duration-120 hover:scale-102 ${
         compact ? 'p-3' : 'p-4'
       }`}
       onClick={onClick}

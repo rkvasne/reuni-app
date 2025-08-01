@@ -23,7 +23,7 @@ export default function SocialSection({
   className = ""
 }: SocialSectionProps) {
   return (
-    <section className={`bg-neutral-50 rounded-xl p-6 ${className}`}>
+    <section className={`bg-gray-50 rounded-xl p-6 ${className}`}>
       {/* Header da seção */}
       <div className="flex items-center justify-between mb-4">
         <div>

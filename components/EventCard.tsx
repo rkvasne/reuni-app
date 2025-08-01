@@ -96,7 +96,7 @@ export default function EventCard({ event, priority = false, onEventUpdated }: E
   const dateInfo = formatFullDate(event.data)
 
   return (
-    <div className="event-card overflow-hidden">
+    <div className="event-card event-card-main">
       
       {/* Imagem do Evento - Limpa sem sobreposições */}
       <div className="relative h-48 bg-neutral-100 rounded-t-lg overflow-hidden">
@@ -132,8 +132,11 @@ export default function EventCard({ event, priority = false, onEventUpdated }: E
           <div className="absolute top-3 left-3">
             <div className="relative">
               <button
+                type="button"
                 onClick={() => setShowMenu(!showMenu)}
                 className="p-2 bg-black/20 hover:bg-black/30 backdrop-blur-sm rounded-lg transition-colors"
+                title="Opções do evento"
+                aria-label="Abrir menu de opções do evento"
               >
                 <MoreHorizontal className="w-4 h-4 text-white" />
               </button>
@@ -141,6 +144,7 @@ export default function EventCard({ event, priority = false, onEventUpdated }: E
               {showMenu && (
                 <div className="absolute top-10 left-0 bg-white rounded-lg shadow-lg border border-neutral-200 py-2 w-40 z-10">
                   <button
+                    type="button"
                     onClick={() => {
                       setShowEditModal(true)
                       setShowMenu(false)
@@ -151,6 +155,7 @@ export default function EventCard({ event, priority = false, onEventUpdated }: E
                     Editar
                   </button>
                   <button
+                    type="button"
                     onClick={handleDelete}
                     disabled={deleting}
                     className="w-full text-left px-4 py-2 hover:bg-red-50 flex items-center gap-2 text-red-600 disabled:opacity-50"
@@ -261,15 +266,15 @@ export default function EventCard({ event, priority = false, onEventUpdated }: E
         {/* Ações */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-6">
-            <button className="flex items-center gap-2 text-neutral-600 hover:text-red-500 transition-colors py-2 px-3 rounded-md hover:bg-red-50">
+            <button type="button" className="flex items-center gap-2 text-neutral-600 hover:text-red-500 py-2 px-3 rounded-md hover:bg-red-50 transition-colors duration-120">
               <Heart className="w-4 h-4" />
               <span className="text-sm font-medium">Curtir</span>
             </button>
-            <button className="flex items-center gap-2 text-neutral-600 hover:text-primary-500 transition-colors py-2 px-3 rounded-md hover:bg-primary-50">
+            <button type="button" className="flex items-center gap-2 text-neutral-600 hover:text-primary-500 py-2 px-3 rounded-md hover:bg-primary-50 transition-colors duration-120">
               <MessageCircle className="w-4 h-4" />
               <span className="text-sm font-medium">Comentar</span>
             </button>
-            <button className="flex items-center gap-2 text-neutral-600 hover:text-blue-500 transition-colors py-2 px-3 rounded-md hover:bg-blue-50">
+            <button type="button" className="flex items-center gap-2 text-neutral-600 hover:text-blue-500 py-2 px-3 rounded-md hover:bg-blue-50 transition-colors duration-120">
               <Share2 className="w-4 h-4" />
               <span className="text-sm font-medium">Compartilhar</span>
             </button>
@@ -277,13 +282,14 @@ export default function EventCard({ event, priority = false, onEventUpdated }: E
           
           {!isOrganizer && (
             <button 
+              type="button"
               onClick={handleParticipation}
               disabled={participationLoading}
-              className={`px-5 py-2.5 rounded-lg font-semibold transition-all flex items-center gap-2 text-sm shadow-sm ${
+              className={`px-5 py-2.5 rounded-lg font-semibold flex items-center gap-2 text-sm shadow-sm transition-transform duration-120 ${
                 event.user_participando
                   ? 'bg-green-100 text-green-700 border border-green-200 hover:bg-green-200 hover:shadow-md'
                   : 'bg-primary-500 text-white hover:bg-primary-600 hover:shadow-md'
-              } disabled:opacity-50 disabled:cursor-not-allowed`}
+              } disabled:opacity-50 disabled:cursor-not-allowed hover:scale-102`}
             >
               {participationLoading ? (
                 'Carregando...'

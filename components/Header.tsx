@@ -97,7 +97,7 @@ export default function Header({ onCreateEvent }: HeaderProps) {
                       <button
                         key={item.name}
                         onClick={() => router.push(`/search?q=${item.query}`)}
-                        className="block w-full text-left px-2 py-1 text-sm text-neutral-700 hover:bg-neutral-100 rounded transition-colors"
+                        className="block w-full text-left px-2 py-1 text-sm text-neutral-700 hover:bg-neutral-100 rounded transition-colors duration-120"
                       >
                         🔍 {item.name}
                       </button>

@@ -19,7 +19,7 @@ export default function LandingPage() {
   }
 
   return (
-    <div className="min-h-screen bg-neutral-50">
+    <div className="min-h-screen bg-gray-50">
       
       {/* Header */}
       <header className="w-full px-6 py-4 flex justify-between items-center bg-white shadow-sm fixed top-0 z-50 border-b border-neutral-200">

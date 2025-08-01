@@ -44,7 +44,7 @@ export default function CompactEventCard({
 
   return (
     <div 
-      className="card p-3 cursor-pointer hover:shadow-md transition-all"
+      className="card p-3 cursor-pointer transition-transform duration-120 hover:scale-102"
       onClick={onClick}
     >
       {/* Imagem */}

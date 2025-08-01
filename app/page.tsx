@@ -17,7 +17,7 @@ function AppDashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-neutral-50">
+    <div className="min-h-screen bg-gray-50">
       <Header onCreateEvent={handleCreateEvent} />
 
       <div className="pt-16"> {/* Offset para header fixo */}
@@ -26,7 +26,7 @@ function AppDashboard() {
 
             {/* Sidebar Esquerda */}
             <div className="lg:col-span-3 hidden lg:block">
-              <div className="sticky top-20">
+              <div className="lg:sticky lg:top-20 lg:h-fit">
                 <LeftSidebar onCreateEvent={handleCreateEvent} />
               </div>
             </div>
@@ -42,7 +42,7 @@ function AppDashboard() {
 
             {/* Sidebar Direita */}
             <div className="lg:col-span-3 hidden lg:block">
-              <div className="sticky top-20">
+              <div className="lg:sticky lg:top-20 lg:h-fit">
                 <RightSidebar />
               </div>
             </div>
@@ -57,7 +57,7 @@ function AppDashboard() {
 // Loading component
 function LoadingScreen() {
   return (
-    <div className="min-h-screen bg-neutral-50 flex items-center justify-center">
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center">
       <div className="text-center">
         <div className="w-12 h-12 border-4 border-primary-200 border-t-primary-500 rounded-full animate-spin mx-auto mb-4"></div>
         <h2 className="text-xl font-bold bg-gradient-to-r from-primary-500 to-secondary-500 bg-clip-text text-transparent">

@@ -93,6 +93,7 @@ export default function UserProfile() {
       
       {/* Botão Voltar */}
       <button
+        type="button"
         onClick={() => router.push('/')}
         className="flex items-center gap-2 text-neutral-600 hover:text-neutral-800 mb-6 transition-colors"
       >
@@ -130,8 +131,11 @@ export default function UserProfile() {
               </div>
             )}
             <button 
+              type="button"
               onClick={() => setShowAvatarModal(true)}
               className="absolute bottom-2 right-2 bg-white rounded-full p-2 shadow-reuni-md border border-neutral-200 hover:bg-neutral-50 transition-colors"
+              title="Alterar foto do perfil"
+              aria-label="Alterar foto do perfil"
             >
               <Camera className="w-4 h-4 text-neutral-600" />
             </button>
@@ -158,6 +162,7 @@ export default function UserProfile() {
                 </div>
               </div>
               <button 
+                type="button"
                 onClick={() => setActiveTab('settings')}
                 className="flex items-center gap-2 px-4 py-2 border border-neutral-300 rounded-lg hover:bg-neutral-50 transition-colors"
               >
@@ -180,10 +185,12 @@ export default function UserProfile() {
       </div>
 
       {/* Estatísticas */}
-      <UserStats 
-        userEvents={userEvents} 
-        participatingEvents={participatingEvents} 
-      />
+      <div className="mb-8">
+        <UserStats 
+          userEvents={userEvents} 
+          participatingEvents={participatingEvents} 
+        />
+      </div>
 
       {/* Tabs */}
       <div className="card p-0 mb-8">
@@ -191,6 +198,7 @@ export default function UserProfile() {
           {tabs.map((tab) => (
             <button
               key={tab.id}
+              type="button"
               onClick={() => setActiveTab(tab.id as any)}
               className={`flex-1 px-6 py-4 text-center font-medium transition-colors relative ${
                 activeTab === tab.id
