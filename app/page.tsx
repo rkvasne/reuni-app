@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { useAuth } from '@/hooks/useAuth'
+import { useProfileGuard } from '@/hooks/useProfileGuard'
 import LandingPage from '@/components/LandingPage'
 import Header from '@/components/Header'
 import LeftSidebar from '@/components/LeftSidebar'
@@ -71,9 +72,10 @@ function LoadingScreen() {
 
 export default function Home() {
   const { loading, isAuthenticated } = useAuth()
+  const { isLoading: profileLoading } = useProfileGuard()
 
-  // Mostrar loading enquanto verifica autenticação
-  if (loading) {
+  // Mostrar loading enquanto verifica autenticação e perfil
+  if (loading || profileLoading) {
     return <LoadingScreen />
   }
 

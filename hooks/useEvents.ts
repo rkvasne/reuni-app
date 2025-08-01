@@ -49,73 +49,87 @@ export function useEvents() {
       setLoading(true)
       setError(null)
 
-      // Buscar eventos com contagem de participantes em uma única query
+      // Query ultra-otimizada: buscar apenas eventos básicos sem joins
       const { data: eventsData, error: eventsError } = await supabase
         .from('eventos')
         .select(`
-          *,
-          organizador:usuarios!organizador_id (
-            nome,
-            email,
-            avatar
-          ),
-          participacoes!left (
-            id,
-            status
-          )
+          id,
+          titulo,
+          descricao,
+          data,
+          hora,
+          local,
+          categoria,
+          imagem_url,
+          organizador_id,
+          max_participantes,
+          created_at
         `)
         .order('data', { ascending: true })
+        .limit(20) // Reduzir ainda mais para evitar timeout
 
       if (eventsError) throw eventsError
 
-      // Processar contagem de participantes
-      const eventsWithCounts = (eventsData || []).map(event => ({
-        ...event,
-        participantes_count: event.participacoes?.filter((p: any) => p.status === 'confirmado').length || 0,
-        participacoes: undefined // Remove para não poluir o objeto
-      }))
-
-      // Se usuário logado, buscar eventos com participação do usuário em uma única query
-      let eventsWithParticipation = eventsWithCounts
+      // Buscar dados dos organizadores em query separada
+      const organizadorIds = Array.from(new Set((eventsData || []).map(event => event.organizador_id)))
+      let organizadores: { [key: string]: any } = {}
       
-      if (user) {
-        // Buscar eventos com participação do usuário em uma única query otimizada
-        const { data: eventsWithUserParticipation, error: participationError } = await supabase
-          .from('eventos')
-          .select(`
-            id,
-            participacoes!left (
-              usuario_id,
-              status
-            )
-          `)
-          .eq('participacoes.usuario_id', user.id)
-          .eq('participacoes.status', 'confirmado')
+      if (organizadorIds.length > 0) {
+        const { data: organizadoresData, error: organizadoresError } = await supabase
+          .from('usuarios')
+          .select('id, nome, email, avatar')
+          .in('id', organizadorIds)
 
-        if (!participationError) {
-          const userEventIds = new Set(
-            eventsWithUserParticipation
-              ?.filter(e => e.participacoes && e.participacoes.length > 0)
-              ?.map(e => e.id) || []
-          )
-
-          eventsWithParticipation = eventsWithCounts.map(event => ({
-            ...event,
-            user_participando: userEventIds.has(event.id)
-          }))
-        } else {
-          // Fallback: marcar todos como não participando se houver erro
-          eventsWithParticipation = eventsWithCounts.map(event => ({
-            ...event,
-            user_participando: false
-          }))
+        if (!organizadoresError && organizadoresData) {
+          organizadores = organizadoresData.reduce((acc: any, org: any) => {
+            acc[org.id] = org
+            return acc
+          }, {})
         }
-      } else {
-        eventsWithParticipation = eventsWithCounts.map(event => ({
-          ...event,
-          user_participando: false
-        }))
       }
+
+      // Buscar contagem de participantes em query separada
+      const eventIds = (eventsData || []).map(event => event.id)
+      let participationsCount: { [key: string]: number } = {}
+      
+      if (eventIds.length > 0) {
+        const { data: participationsData, error: participationsError } = await supabase
+          .from('participacoes')
+          .select('evento_id, status')
+          .in('evento_id', eventIds)
+          .eq('status', 'confirmado')
+
+        if (!participationsError && participationsData) {
+          participationsCount = participationsData.reduce((acc: any, p: any) => {
+            acc[p.evento_id] = (acc[p.evento_id] || 0) + 1
+            return acc
+          }, {})
+        }
+      }
+
+      // Buscar participação do usuário em query separada
+      let userParticipations: Set<string> = new Set()
+      
+      if (user && eventIds.length > 0) {
+        const { data: userParticipationsData, error: userParticipationsError } = await supabase
+          .from('participacoes')
+          .select('evento_id')
+          .in('evento_id', eventIds)
+          .eq('usuario_id', user.id)
+          .eq('status', 'confirmado')
+
+        if (!userParticipationsError && userParticipationsData) {
+          userParticipations = new Set(userParticipationsData.map((p: any) => p.evento_id))
+        }
+      }
+
+      // Combinar dados
+      const eventsWithParticipation = (eventsData || []).map(event => ({
+        ...event,
+        organizador: organizadores[event.organizador_id] || null,
+        participantes_count: participationsCount[event.id] || 0,
+        user_participando: userParticipations.has(event.id)
+      }))
 
       setEvents(eventsWithParticipation)
     } catch (err: any) {

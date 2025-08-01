@@ -45,6 +45,11 @@ export function sanitizeImageUrl(url: string): string | null {
   // Remove espaços em branco
   const cleanUrl = url.trim();
   
+  // Aceitar data URLs (base64)
+  if (cleanUrl.startsWith('data:')) {
+    return cleanUrl;
+  }
+  
   // Verifica se é uma URL válida
   if (!isValidImageUrl(cleanUrl)) {
     return null;

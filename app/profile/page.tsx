@@ -1,6 +1,7 @@
 'use client'
 
 import { useAuth } from '@/hooks/useAuth'
+import { useProfileGuard } from '@/hooks/useProfileGuard'
 import { useRouter } from 'next/navigation'
 import { useEffect } from 'react'
 import Header from '@/components/Header'
@@ -8,6 +9,7 @@ import UserProfile from '@/components/UserProfile'
 
 export default function ProfilePage() {
   const { user, isAuthenticated, loading } = useAuth()
+  const { isLoading: profileLoading } = useProfileGuard()
   const router = useRouter()
 
   useEffect(() => {
@@ -16,7 +18,7 @@ export default function ProfilePage() {
     }
   }, [isAuthenticated, loading, router])
 
-  if (loading) {
+  if (loading || profileLoading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">

@@ -89,34 +89,79 @@ export function useOptimizedEvents(options: UseOptimizedEventsOptions = {}) {
       const from = page * pageSize
       const to = from + pageSize - 1
 
-      // Query otimizada: busca eventos com todas as informações necessárias em uma única requisição
-      const query = supabase
+      // Query ultra-otimizada: buscar apenas eventos básicos sem joins
+      const { data: eventsData, error: eventsError } = await supabase
         .from('eventos')
         .select(`
-          *,
-          organizador:usuarios!organizador_id (
-            nome,
-            email,
-            avatar
-          ),
-          participacoes_count:participacoes(count),
-          user_participacao:participacoes!left (
-            usuario_id,
-            status
-          )
+          id,
+          titulo,
+          descricao,
+          data,
+          hora,
+          local,
+          categoria,
+          imagem_url,
+          organizador_id,
+          max_participantes,
+          created_at
         `)
         .order('data', { ascending: true })
         .range(from, to)
 
-      // Se usuário logado, filtrar apenas suas participações
-      if (user) {
-        query.eq('user_participacao.usuario_id', user.id)
-        query.eq('user_participacao.status', 'confirmado')
+      if (eventsError) throw eventsError
+
+      // Buscar dados dos organizadores em query separada
+      const organizadorIds = Array.from(new Set((eventsData || []).map(event => event.organizador_id)))
+      let organizadores: { [key: string]: any } = {}
+      
+      if (organizadorIds.length > 0) {
+        const { data: organizadoresData, error: organizadoresError } = await supabase
+          .from('usuarios')
+          .select('id, nome, email, avatar')
+          .in('id', organizadorIds)
+
+        if (!organizadoresError && organizadoresData) {
+          organizadores = organizadoresData.reduce((acc: any, org: any) => {
+            acc[org.id] = org
+            return acc
+          }, {})
+        }
       }
 
-      const { data: eventsData, error: eventsError } = await query
+      // Buscar contagem de participantes em query separada
+      const eventIds = (eventsData || []).map(event => event.id)
+      let participationsCount: { [key: string]: number } = {}
+      
+      if (eventIds.length > 0) {
+        const { data: participationsData, error: participationsError } = await supabase
+          .from('participacoes')
+          .select('evento_id, status')
+          .in('evento_id', eventIds)
+          .eq('status', 'confirmado')
 
-      if (eventsError) throw eventsError
+        if (!participationsError && participationsData) {
+          participationsCount = participationsData.reduce((acc: any, p: any) => {
+            acc[p.evento_id] = (acc[p.evento_id] || 0) + 1
+            return acc
+          }, {})
+        }
+      }
+
+      // Buscar participação do usuário em query separada
+      let userParticipations: Set<string> = new Set()
+      
+      if (user && eventIds.length > 0) {
+        const { data: userParticipationsData, error: userParticipationsError } = await supabase
+          .from('participacoes')
+          .select('evento_id')
+          .in('evento_id', eventIds)
+          .eq('usuario_id', user.id)
+          .eq('status', 'confirmado')
+
+        if (!userParticipationsError && userParticipationsData) {
+          userParticipations = new Set(userParticipationsData.map((p: any) => p.evento_id))
+        }
+      }
 
       // Processar dados
       const processedEvents: Event[] = (eventsData || []).map(event => ({
@@ -131,9 +176,9 @@ export function useOptimizedEvents(options: UseOptimizedEventsOptions = {}) {
         organizador_id: event.organizador_id,
         max_participantes: event.max_participantes,
         created_at: event.created_at,
-        organizador: event.organizador,
-        participantes_count: event.participacoes_count?.[0]?.count || 0,
-        user_participando: user ? (event.user_participacao && event.user_participacao.length > 0) : false
+        organizador: organizadores[event.organizador_id] || null,
+        participantes_count: participationsCount[event.id] || 0,
+        user_participando: userParticipations.has(event.id)
       }))
 
       // Verificar se há mais páginas

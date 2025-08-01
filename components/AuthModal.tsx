@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { X, Mail, Lock, User, Eye, EyeOff, RefreshCw } from 'lucide-react'
 import { useAuth } from '@/hooks/useAuth'
 import { useEmailResend } from '@/hooks/useEmailResend'
-import Toast, { useToast } from './Toast'
+import { useToast } from '@/hooks/useToast'
 
 interface AuthModalProps {
   isOpen: boolean
@@ -22,8 +22,8 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }: Au
   const [emailSent, setEmailSent] = useState(false)
 
   const { signIn, signUpWithEmail, signInWithGoogle } = useAuth()
-  const { toast, showToast, hideToast } = useToast()
   const { resendEmail, canResend, cooldown, resending } = useEmailResend()
+  const { toast, showToast, hideToast } = useToast()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -324,14 +324,9 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }: Au
           </p>
         </div>
 
-            {/* Toast */}
-            <Toast
-              message={toast.message}
-              type={toast.type}
-              isVisible={toast.isVisible}
-              onClose={hideToast}
-            />
           </>
+
+
         )}
 
       </div>

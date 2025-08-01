@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import './globals.css'
 import '../styles/components.css'
+import ProfileGuard from '@/components/ProfileGuard'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -18,7 +19,9 @@ export default function RootLayout({
   return (
     <html lang="pt-BR">
       <body className={inter.className}>
-        {children}
+        <ProfileGuard>
+          {children}
+        </ProfileGuard>
       </body>
     </html>
   )

@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { User, Settings, Camera, Mail, Clock, ArrowLeft } from 'lucide-react'
 import Image from 'next/image'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { useAuth } from '@/hooks/useAuth'
 import { useEvents } from '@/hooks/useEvents'
 import { useUserProfile } from '@/hooks/useUserProfile'
@@ -22,11 +22,20 @@ export default function UserProfile() {
   const { userProfile, error: profileError, clearError } = useUserProfile()
   const { getUserEvents, events } = useEvents()
   const router = useRouter()
+  const searchParams = useSearchParams()
   const [activeTab, setActiveTab] = useState<'created' | 'participating' | 'settings'>('created')
   const [userEvents, setUserEvents] = useState<any[]>([])
   const [participatingEvents, setParticipatingEvents] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
   const [showAvatarModal, setShowAvatarModal] = useState(false)
+
+  // Detectar tab da URL
+  useEffect(() => {
+    const tabParam = searchParams.get('tab')
+    if (tabParam && ['created', 'participating', 'settings'].includes(tabParam)) {
+      setActiveTab(tabParam as 'created' | 'participating' | 'settings')
+    }
+  }, [searchParams])
 
   useEffect(() => {
     const fetchUserData = async () => {

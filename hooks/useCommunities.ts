@@ -63,14 +63,21 @@ export function useCommunities() {
     try {
       let query = supabase
         .from('comunidades')
-        .select(`
-          *,
-          criador:usuarios!criador_id (
-            nome
-          ),
-          membros_count:membros_comunidade(count),
-          eventos_count:eventos(count)
-        `)
+                 .select(`
+           id,
+           nome,
+           descricao,
+           avatar_url,
+           banner_url,
+           categoria,
+           tipo,
+           criador_id,
+           created_at,
+           updated_at,
+           criador:usuarios!criador_id (
+             nome
+           )
+         `)
         .order('created_at', { ascending: false });
 
       // Aplicar filtros se fornecidos
@@ -91,6 +98,40 @@ export function useCommunities() {
 
       if (error) throw error;
 
+      // Buscar contagens em queries separadas
+      const communityIds = (communitiesData || []).map(community => community.id);
+      let membersCount: { [key: string]: number } = {};
+      let eventsCount: { [key: string]: number } = {};
+
+      if (communityIds.length > 0) {
+        // Buscar contagem de membros
+        const { data: membersData, error: membersError } = await supabase
+          .from('membros_comunidade')
+          .select('comunidade_id, status')
+          .in('comunidade_id', communityIds)
+          .eq('status', 'ativo');
+
+        if (!membersError && membersData) {
+          membersCount = membersData.reduce((acc: any, m: any) => {
+            acc[m.comunidade_id] = (acc[m.comunidade_id] || 0) + 1
+            return acc
+          }, {})
+        }
+
+        // Buscar contagem de eventos
+        const { data: eventsData, error: eventsError } = await supabase
+          .from('eventos')
+          .select('comunidade_id')
+          .in('comunidade_id', communityIds);
+
+        if (!eventsError && eventsData) {
+          eventsCount = eventsData.reduce((acc: any, e: any) => {
+            acc[e.comunidade_id] = (acc[e.comunidade_id] || 0) + 1
+            return acc
+          }, {})
+        }
+      }
+
       if (user) {
         // Buscar informações de participação do usuário
         const { data: userMemberships } = await supabase
@@ -103,9 +144,12 @@ export function useCommunities() {
           userMemberships?.map(membership => [membership.comunidade_id, membership.papel]) || []
         );
 
-        // Enriquecer dados com informações do usuário
+        // Enriquecer dados com informações do usuário e contagens
         const enrichedCommunities = communitiesData.map(community => ({
           ...community,
+          criador: community.criador?.[0] || null,
+          membros_count: membersCount[community.id] || 0,
+          eventos_count: eventsCount[community.id] || 0,
           is_member: userMembershipMap.has(community.id),
           user_role: userMembershipMap.get(community.id)
         }));
@@ -114,6 +158,9 @@ export function useCommunities() {
         // Para dados de exemplo ou quando não há usuário
         const enrichedCommunities = communitiesData.map(community => ({
           ...community,
+          criador: community.criador?.[0] || null,
+          membros_count: membersCount[community.id] || 0,
+          eventos_count: eventsCount[community.id] || 0,
           is_member: false,
           user_role: undefined
         }));

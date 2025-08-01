@@ -3,9 +3,11 @@
 import { Search, Bell, MessageCircle, User, LogOut, Settings, Zap, Filter } from 'lucide-react'
 import { useState, useEffect, useRef } from 'react'
 import { useAuth } from '@/hooks/useAuth'
+import { useUserProfile } from '@/hooks/useUserProfile'
 import { useRouter } from 'next/navigation'
 import QuickActionsBlock from './QuickActionsBlock'
 import VisualFilterBar from './VisualFilterBar'
+import OptimizedImage from './OptimizedImage'
 
 interface HeaderProps {
   onCreateEvent?: () => void;
@@ -13,7 +15,10 @@ interface HeaderProps {
 
 export default function Header({ onCreateEvent }: HeaderProps) {
   const { user, signOut } = useAuth()
+  const { userProfile } = useUserProfile()
   const router = useRouter()
+  
+
   const [showUserMenu, setShowUserMenu] = useState(false)
   const [showQuickActions, setShowQuickActions] = useState(false)
   const [showFilters, setShowFilters] = useState(false)
@@ -188,8 +193,19 @@ export default function Header({ onCreateEvent }: HeaderProps) {
                 onClick={() => setShowUserMenu(!showUserMenu)}
                 className="flex items-center gap-2 p-2 hover:bg-primary-50 rounded-2xl transition-all duration-300 hover:scale-110 group"
               >
-                <div className="w-10 h-10 bg-gradient-primary rounded-2xl flex items-center justify-center shadow-reuni group-hover:shadow-glow transition-all duration-300">
-                  <User className="w-5 h-5 text-white" />
+                <div className="w-10 h-10 bg-gradient-primary rounded-2xl flex items-center justify-center shadow-reuni group-hover:shadow-glow transition-all duration-300 overflow-hidden">
+                  {userProfile?.avatar ? (
+                    <OptimizedImage
+                      src={userProfile.avatar}
+                      alt={userProfile.nome || 'Avatar'}
+                      width={40}
+                      height={40}
+                      className="w-full h-full object-cover"
+                      fallback={<User className="w-5 h-5 text-white" />}
+                    />
+                  ) : (
+                    <User className="w-5 h-5 text-white" />
+                  )}
                 </div>
               </button>
 
@@ -197,7 +213,7 @@ export default function Header({ onCreateEvent }: HeaderProps) {
               {showUserMenu && (
                 <div className="absolute right-0 top-14 bg-gradient-card backdrop-blur-md rounded-2xl shadow-reuni-xl border border-white/20 py-3 w-52 z-50">
                   <div className="px-4 py-2 border-b border-neutral-100">
-                    <p className="font-medium text-neutral-800">{user?.user_metadata?.name || 'Usuário'}</p>
+                    <p className="font-medium text-neutral-800">{userProfile?.nome || user?.user_metadata?.name || 'Usuário'}</p>
                     <p className="text-sm text-neutral-500">{user?.email}</p>
                   </div>
                   <button 
@@ -212,7 +228,7 @@ export default function Header({ onCreateEvent }: HeaderProps) {
                   </button>
                   <button 
                     onClick={() => {
-                      router.push('/profile')
+                      router.push('/profile?tab=settings')
                       setShowUserMenu(false)
                     }}
                     className="w-full text-left px-4 py-2 hover:bg-neutral-50 flex items-center gap-2 text-neutral-700"

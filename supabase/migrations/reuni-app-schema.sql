@@ -722,6 +722,22 @@ $_$;
 ALTER FUNCTION pgbouncer.get_auth(p_usename text) OWNER TO supabase_admin;
 
 --
+-- Name: update_updated_at_column(); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION public.update_updated_at_column() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+    NEW.updated_at = NOW();
+    RETURN NEW;
+END;
+$$;
+
+
+ALTER FUNCTION public.update_updated_at_column() OWNER TO postgres;
+
+--
 -- Name: apply_rls(jsonb, integer); Type: FUNCTION; Schema: realtime; Owner: supabase_admin
 --
 
@@ -2216,6 +2232,7 @@ CREATE TABLE public.comunidades (
     categoria character varying(50) DEFAULT 'Outros'::character varying,
     membros_count integer DEFAULT 0,
     eventos_count integer DEFAULT 0,
+    updated_at timestamp with time zone DEFAULT now(),
     CONSTRAINT comunidades_tipo_check CHECK (((tipo)::text = ANY ((ARRAY['publica'::character varying, 'privada'::character varying, 'restrita'::character varying])::text[])))
 );
 
@@ -2338,69 +2355,6 @@ COMMENT ON COLUMN public.eventos.source IS 'Origem do evento: manual, eventbrite
 --
 
 COMMENT ON COLUMN public.eventos.external_url IS 'URL original do evento (se importado de site externo)';
-
-
---
--- Name: events; Type: TABLE; Schema: public; Owner: postgres
---
-
-CREATE TABLE public.events (
-    id integer NOT NULL,
-    title character varying(200) NOT NULL,
-    description text,
-    date timestamp with time zone,
-    location_venue character varying(200),
-    location_address text,
-    location_city character varying(100),
-    location_state character varying(2),
-    location_coordinates jsonb,
-    image_url text,
-    image_alt character varying(200),
-    price_min numeric(10,2),
-    price_max numeric(10,2),
-    price_currency character varying(3) DEFAULT 'BRL'::character varying,
-    price_is_free boolean DEFAULT false,
-    price_display character varying(100),
-    organizer_name character varying(200),
-    organizer_verified boolean DEFAULT false,
-    url text,
-    source character varying(50) NOT NULL,
-    category character varying(50),
-    category_confidence numeric(3,2),
-    tags text[],
-    is_regional boolean DEFAULT false,
-    search_term character varying(100),
-    popularity_score numeric(3,2),
-    quality_score numeric(3,2),
-    hash character varying(50),
-    scraped_at timestamp with time zone,
-    created_at timestamp with time zone DEFAULT now(),
-    updated_at timestamp with time zone DEFAULT now()
-);
-
-
-ALTER TABLE public.events OWNER TO postgres;
-
---
--- Name: events_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
---
-
-CREATE SEQUENCE public.events_id_seq
-    AS integer
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
-ALTER SEQUENCE public.events_id_seq OWNER TO postgres;
-
---
--- Name: events_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
---
-
-ALTER SEQUENCE public.events_id_seq OWNED BY public.events.id;
 
 
 --
@@ -2885,13 +2839,6 @@ ALTER TABLE ONLY public.event_locations ALTER COLUMN id SET DEFAULT nextval('pub
 
 
 --
--- Name: events id; Type: DEFAULT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY public.events ALTER COLUMN id SET DEFAULT nextval('public.events_id_seq'::regclass);
-
-
---
 -- Name: scraping_logs id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -3120,22 +3067,6 @@ ALTER TABLE ONLY public.event_locations
 
 ALTER TABLE ONLY public.eventos
     ADD CONSTRAINT eventos_pkey PRIMARY KEY (id);
-
-
---
--- Name: events events_hash_key; Type: CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY public.events
-    ADD CONSTRAINT events_hash_key UNIQUE (hash);
-
-
---
--- Name: events events_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY public.events
-    ADD CONSTRAINT events_pkey PRIMARY KEY (id);
 
 
 --
@@ -3682,41 +3613,6 @@ CREATE INDEX idx_eventos_source ON public.eventos USING btree (source);
 
 
 --
--- Name: idx_events_category; Type: INDEX; Schema: public; Owner: postgres
---
-
-CREATE INDEX idx_events_category ON public.events USING btree (category);
-
-
---
--- Name: idx_events_date; Type: INDEX; Schema: public; Owner: postgres
---
-
-CREATE INDEX idx_events_date ON public.events USING btree (date);
-
-
---
--- Name: idx_events_hash; Type: INDEX; Schema: public; Owner: postgres
---
-
-CREATE INDEX idx_events_hash ON public.events USING btree (hash);
-
-
---
--- Name: idx_events_is_regional; Type: INDEX; Schema: public; Owner: postgres
---
-
-CREATE INDEX idx_events_is_regional ON public.events USING btree (is_regional);
-
-
---
--- Name: idx_events_source; Type: INDEX; Schema: public; Owner: postgres
---
-
-CREATE INDEX idx_events_source ON public.events USING btree (source);
-
-
---
 -- Name: idx_membros_comunidade_id; Type: INDEX; Schema: public; Owner: postgres
 --
 
@@ -3896,6 +3792,13 @@ ALTER INDEX realtime.messages_pkey ATTACH PARTITION realtime.messages_2025_07_29
 --
 
 ALTER INDEX realtime.messages_pkey ATTACH PARTITION realtime.messages_2025_07_30_pkey;
+
+
+--
+-- Name: comunidades update_comunidades_updated_at; Type: TRIGGER; Schema: public; Owner: postgres
+--
+
+CREATE TRIGGER update_comunidades_updated_at BEFORE UPDATE ON public.comunidades FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
 
 
 --
@@ -5116,6 +5019,15 @@ GRANT ALL ON FUNCTION pgbouncer.get_auth(p_usename text) TO postgres;
 
 
 --
+-- Name: FUNCTION update_updated_at_column(); Type: ACL; Schema: public; Owner: postgres
+--
+
+GRANT ALL ON FUNCTION public.update_updated_at_column() TO anon;
+GRANT ALL ON FUNCTION public.update_updated_at_column() TO authenticated;
+GRANT ALL ON FUNCTION public.update_updated_at_column() TO service_role;
+
+
+--
 -- Name: FUNCTION apply_rls(wal jsonb, max_record_bytes integer); Type: ACL; Schema: realtime; Owner: supabase_admin
 --
 
@@ -5500,24 +5412,6 @@ GRANT ALL ON SEQUENCE public.event_locations_id_seq TO service_role;
 GRANT ALL ON TABLE public.eventos TO anon;
 GRANT ALL ON TABLE public.eventos TO authenticated;
 GRANT ALL ON TABLE public.eventos TO service_role;
-
-
---
--- Name: TABLE events; Type: ACL; Schema: public; Owner: postgres
---
-
-GRANT ALL ON TABLE public.events TO anon;
-GRANT ALL ON TABLE public.events TO authenticated;
-GRANT ALL ON TABLE public.events TO service_role;
-
-
---
--- Name: SEQUENCE events_id_seq; Type: ACL; Schema: public; Owner: postgres
---
-
-GRANT ALL ON SEQUENCE public.events_id_seq TO anon;
-GRANT ALL ON SEQUENCE public.events_id_seq TO authenticated;
-GRANT ALL ON SEQUENCE public.events_id_seq TO service_role;
 
 
 --
