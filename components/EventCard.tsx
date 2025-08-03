@@ -216,9 +216,20 @@ export default function EventCard({ event, priority = false, onEventUpdated }: E
         
         {/* Categoria e Título */}
         <div className="mb-3">
-          <span className="inline-block px-2 py-1 bg-primary-100 text-primary-700 text-xs font-medium rounded-full mb-2 capitalize">
-            {event.categoria}
-          </span>
+          <div className="flex items-center gap-2 mb-2">
+            <span className="inline-block px-2 py-1 bg-primary-100 text-primary-700 text-xs font-medium rounded-full capitalize">
+              {event.categoria}
+            </span>
+            {event.source && (
+              <span className={`inline-block px-2 py-1 text-xs font-medium rounded-full ${
+                event.source === 'sympla' 
+                  ? 'bg-purple-100 text-purple-700' 
+                  : 'bg-orange-100 text-orange-700'
+              }`}>
+                {event.source === 'sympla' ? 'Sympla' : 'Eventbrite'}
+              </span>
+            )}
+          </div>
           <h3 
             className="font-bold text-xl text-neutral-800 cursor-pointer hover:text-primary-600 transition-colors line-clamp-2"
             onClick={handleOpenViewModal}

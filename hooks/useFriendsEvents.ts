@@ -28,6 +28,7 @@ export interface FriendEvent {
     avatar?: string;
   }[];
   friends_count: number;
+  source?: string; // Fonte do evento (sympla, eventbrite, etc.)
 }
 
 export function useFriendsEvents() {
@@ -90,7 +91,8 @@ export function useFriendsEvents() {
           max_participantes: event.max_participantes,
           user_participando: event.participacoes?.some((p: any) => p.usuario_id === user.id) || false,
           friends_going: friendsGoing,
-          friends_count: friendsGoing.length
+          friends_count: friendsGoing.length,
+          source: event.source
         };
       }).filter(event => event.friends_count > 0); // Só eventos com amigos
 

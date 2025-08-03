@@ -159,10 +159,29 @@ class EventoScraperCompleto {
               date = dateEl.textContent?.trim() || dateEl.getAttribute('datetime');
             }
 
-            // Extrair local
-            const locationEl = el.querySelector('.location, .event-location, .venue, [data-testid="event-location"]');
-            if (locationEl) {
-              location = locationEl.textContent?.trim();
+            // Extrair local com mais seletores
+            const locationSelectors = [
+              '.location', '.event-location', '.venue', 
+              '[data-testid="event-location"]', '[data-testid="venue"]',
+              '.event-venue', '.venue-info', '.location-info',
+              '.event-address', '.address', '.place',
+              '.event-place', '.place-info', '.local-info'
+            ];
+            
+            for (const selector of locationSelectors) {
+              const locationEl = el.querySelector(selector);
+              if (locationEl && locationEl.textContent?.trim()) {
+                location = locationEl.textContent.trim();
+                break;
+              }
+            }
+            
+            // Se não encontrou local específico, tentar extrair da descrição
+            if (!location && description) {
+              const localMatch = description.match(/(?:no|em|no\s+local|no\s+espaço|no\s+teatro|no\s+centro|no\s+shopping|no\s+clube|no\s+bar|no\s+pub|no\s+hotel|no\s+restaurante|no\s+arena|no\s+estádio|no\s+ginásio|no\s+auditório|no\s+complexo|no\s+espaço|no\s+galpão|no\s+rancho|no\s+concha|no\s+academia|no\s+plaza|no\s+mall|no\s+igreja|no\s+cervejaria|no\s+beco|no\s+porão|no\s+largo|no\s+hall)\s+([A-Za-zÀ-ÿ0-9\s\-\.]+?)(?:\s*[-–—]\s*[A-Za-zÀ-ÿ\s]+,\s*[A-Z]{2}|$)/i);
+              if (localMatch && localMatch[1]) {
+                location = localMatch[1].trim();
+              }
             }
 
             if (title && url) {
@@ -291,13 +310,29 @@ class EventoScraperCompleto {
               }
             }
 
-            // Extrair localização
-            const locationSelectors = ['[data-testid*="location"]', '.event-location', '.venue'];
+            // Extrair localização com mais seletores
+            const locationSelectors = [
+              '[data-testid*="location"]', '[data-testid*="venue"]', 
+              '.event-location', '.venue', '.location',
+              '.event-venue', '.venue-info', '.location-info',
+              '.event-address', '.address', '.place',
+              '.event-place', '.place-info', '.local-info',
+              '[data-testid="event-location"]', '[data-testid="venue"]'
+            ];
+            
             for (const selector of locationSelectors) {
               const locationEl = el.querySelector(selector);
               if (locationEl && locationEl.textContent.trim()) {
                 location = locationEl.textContent.trim();
                 break;
+              }
+            }
+            
+            // Se não encontrou local específico, tentar extrair da descrição
+            if (!location && description) {
+              const localMatch = description.match(/(?:no|em|no\s+local|no\s+espaço|no\s+teatro|no\s+centro|no\s+shopping|no\s+clube|no\s+bar|no\s+pub|no\s+hotel|no\s+restaurante|no\s+arena|no\s+estádio|no\s+ginásio|no\s+auditório|no\s+complexo|no\s+espaço|no\s+galpão|no\s+rancho|no\s+concha|no\s+academia|no\s+plaza|no\s+mall|no\s+igreja|no\s+cervejaria|no\s+beco|no\s+porão|no\s+largo|no\s+hall)\s+([A-Za-zÀ-ÿ0-9\s\-\.]+?)(?:\s*[-–—]\s*[A-Za-zÀ-ÿ\s]+,\s*[A-Z]{2}|$)/i);
+              if (localMatch && localMatch[1]) {
+                location = localMatch[1].trim();
               }
             }
             
@@ -446,56 +481,22 @@ class EventoScraperCompleto {
       let horaEvento = infoExtraida.hora || '19:00:00';
       let localEvento = this.construirLocal(infoExtraida.venue, infoExtraida.cidade, evento.location, evento.cidade);
 
-      // Limpar descrição removendo local duplicado
-      let localLimpo = evento.description || `Evento encontrado no ${evento.source}`;
-      if (localLimpo && localEvento) {
-        // Remover cidade/estado da descrição se já está no campo local
-        const cidadeEstado = localEvento.split(',').pop()?.trim();
-        if (cidadeEstado) {
-          localLimpo = localLimpo.replace(new RegExp(cidadeEstado, 'gi'), '').trim();
-        }
-        
-        // Remover padrões de cidade, estado da descrição
-        const padroesCidadeEstado = [
-          /-\s*[A-Za-zÀ-ÿ\s]+,\s*[A-Z]{2}/gi, // Padrão: " - Cidade, Estado"
-          /,\s*[A-Za-zÀ-ÿ\s]+,\s*[A-Z]{2}/gi, // Padrão: ", Cidade, Estado"
-          /\s+[A-Za-zÀ-ÿ\s]+,\s*[A-Z]{2}/gi   // Padrão: " Cidade, Estado"
-        ];
-        
-        padroesCidadeEstado.forEach(padrao => {
-          localLimpo = localLimpo.replace(padrao, '').trim();
-        });
-        
-        // Remover local específico da descrição se detectado
-        const locaisParaRemover = [
-          'Teatro', 'Bar', 'Pub', 'Hotel', 'Restaurante', 'Clube', 'Igreja',
-          'Centro', 'Espaço', 'Arena', 'Estádio', 'Ginásio', 'Cervejaria',
-          'Beco', 'Porão', 'Largo', 'Hall', 'Galpão', 'Rancho', 'Concha',
-          'Academia', 'Shopping', 'Plaza', 'Mall', 'Complexo', 'Auditório'
-        ];
-        
-        locaisParaRemover.forEach(local => {
-          const regex = new RegExp(`${local}\\s+[A-Za-zÀ-ÿ\\s]+`, 'gi');
-          localLimpo = localLimpo.replace(regex, '').trim();
-        });
-        
-        // Limpar espaços duplos, vírgulas soltas e hífens soltos
-        localLimpo = localLimpo
-          .replace(/\s+/g, ' ')
-          .replace(/,\s*,/g, ',')
-          .replace(/-\s*-/g, '-')
-          .replace(/^\s*[-,\s]+\s*/, '') // Remove hífens/vírgulas no início
-          .replace(/\s*[-,\s]+\s*$/, '') // Remove hífens/vírgulas no final
-          .trim();
-      }
+      // Processar local específico e cidade/UF separadamente
+      const { localEspecifico, cidadeUF } = this.extrairLocalECidade(
+        evento.description || `Evento encontrado no ${evento.source}`,
+        infoExtraida.venue,
+        infoExtraida.cidade,
+        evento.location,
+        evento.cidade
+      );
 
       // Preparar dados
       const eventoData = {
         titulo: tituloLimpo,
-        local: localLimpo, // Antigo: descricao - agora é o local do evento
+        local: localEspecifico, // Local específico do evento (sem cidade/UF)
         data: dataEvento,
         hora: horaEvento,
-        cidade: localEvento, // Antigo: local - agora é a cidade/UF
+        cidade: cidadeUF, // Cidade/UF separada
         categoria: this.categorizarEvento(tituloLimpo),
         imagem_url: evento.image || null,
         organizador_id: this.userId,
@@ -1062,14 +1063,38 @@ class EventoScraperCompleto {
 
     // 10. Detectar padrão "em [cidade]"
     if (!cidade) {
-      const matchEm = tituloLimpo.match(/^(.+?)\s+em\s+([A-Za-z\s\/]+)$/i);
+      const matchEm = tituloLimpo.match(/^(.+?)\s+em\s+([A-Za-zÀ-ÿ\s\/]+)$/i);
       if (matchEm) {
         tituloLimpo = matchEm[1].trim();
         cidade = matchEm[2].trim();
       }
     }
 
-    // 11. Detectar "Local a definir" ou similar
+    // 11. Detectar padrões de local específico no título
+    if (!venue) {
+      // Padrão: "Evento - Local"
+      const matchLocalHifen = tituloLimpo.match(/^(.+?)\s*[-–—]\s*([A-Za-zÀ-ÿ0-9\s\-\.]+?)(?:\s*[-–—]\s*[A-Za-zÀ-ÿ\s]+,\s*[A-Z]{2}|$)/i);
+      if (matchLocalHifen) {
+        tituloLimpo = matchLocalHifen[1].trim();
+        venue = matchLocalHifen[2].trim();
+      }
+      
+      // Padrão: "Evento no Local"
+      const matchLocalNo = tituloLimpo.match(/^(.+?)\s+(?:no|na|no\s+local|no\s+espaço|no\s+teatro|no\s+centro|no\s+shopping|no\s+clube|no\s+bar|no\s+pub|no\s+hotel|no\s+restaurante|no\s+arena|no\s+estádio|no\s+ginásio|no\s+auditório|no\s+complexo|no\s+espaço|no\s+galpão|no\s+rancho|no\s+concha|no\s+academia|no\s+plaza|no\s+mall|no\s+igreja|no\s+cervejaria|no\s+beco|no\s+porão|no\s+largo|no\s+hall)\s+([A-Za-zÀ-ÿ0-9\s\-\.]+?)(?:\s*[-–—]\s*[A-Za-zÀ-ÿ\s]+,\s*[A-Z]{2}|$)/i);
+      if (matchLocalNo) {
+        tituloLimpo = matchLocalNo[1].trim();
+        venue = matchLocalNo[2].trim();
+      }
+      
+      // Padrão: "Evento @ Local"
+      const matchLocalArroba = tituloLimpo.match(/^(.+?)\s*@\s*([A-Za-zÀ-ÿ0-9\s\-\.]+?)(?:\s*[-–—]\s*[A-Za-zÀ-ÿ\s]+,\s*[A-Z]{2}|$)/i);
+      if (matchLocalArroba) {
+        tituloLimpo = matchLocalArroba[1].trim();
+        venue = matchLocalArroba[2].trim();
+      }
+    }
+
+    // 12. Detectar "Local a definir" ou similar
     if (!venue) {
       const matchLocal = tituloLimpo.match(/^(.+?)(local\s+.+)$/i);
       if (matchLocal) {
@@ -1078,7 +1103,7 @@ class EventoScraperCompleto {
       }
     }
 
-    // 12. Extrair hora (padrão "às HH:MM")
+    // 13. Extrair hora (padrão "às HH:MM")
     const matchHoraAs = original.match(/às\s*(\d{1,2}):(\d{2})/i);
     if (matchHoraAs) {
       hora = `${matchHoraAs[1].padStart(2, '0')}:${matchHoraAs[2]}:00`;
@@ -1089,7 +1114,7 @@ class EventoScraperCompleto {
       }
     }
 
-    // 13. Extrair data se não foi encontrada
+    // 14. Extrair data se não foi encontrada
     if (!data) {
       const padroesDatas = [
         /(\d{1,2})\s*de\s*(jan|fev|mar|abr|mai|jun|jul|ago|set|out|nov|dez)/gi,
@@ -1105,7 +1130,7 @@ class EventoScraperCompleto {
       }
     }
 
-    // 14. Limpeza final do título
+    // 15. Limpeza final do título
     tituloLimpo = tituloLimpo
       .replace(/(domingo|segunda|terça|quarta|quinta|sexta|sábado)/gi, '')
       .replace(/,?\s*às?\s*/gi, '')
@@ -1114,7 +1139,7 @@ class EventoScraperCompleto {
       .replace(/\s+/g, ' ')
       .trim();
 
-    // 15. Validação final do título
+    // 16. Validação final do título
     if (tituloLimpo.length < 10) {
       return null; // Título muito curto após processamento
     }
@@ -1128,7 +1153,241 @@ class EventoScraperCompleto {
     };
   }
 
-  // Construir local completo
+  // Extrair local específico e cidade/UF separadamente
+  extrairLocalECidade(descricao, venue, cidade, locationOriginal, cidadeOriginal) {
+    let localEspecifico = '';
+    let cidadeUF = '';
+    
+    // 1. Priorizar venue extraído (mais confiável)
+    if (venue && venue.trim()) {
+      localEspecifico = venue.trim();
+    }
+    
+    // 2. Se não tem venue, usar locationOriginal
+    if (!localEspecifico && locationOriginal) {
+      // Verificar se locationOriginal contém cidade/UF
+      const { local, cidade: cidadeExtraida } = this.separarLocalECidade(locationOriginal);
+      if (cidadeExtraida && !cidadeUF) {
+        localEspecifico = local;
+        cidadeUF = cidadeExtraida;
+      } else {
+        localEspecifico = locationOriginal.trim();
+      }
+    }
+    
+    // 3. Se ainda não tem, tentar extrair da descrição
+    if (!localEspecifico && descricao) {
+      localEspecifico = this.extrairLocalDaDescricao(descricao);
+    }
+    
+    // 4. Processar cidade/UF
+    if (cidade && cidade.trim()) {
+      cidadeUF = cidade.trim();
+    } else if (cidadeOriginal) {
+      cidadeUF = this.determinarCidadeUF(cidadeOriginal);
+    } else if (descricao) {
+      cidadeUF = this.extrairCidadeDaDescricao(descricao);
+    }
+    
+    // 5. Se localEspecifico ainda contém cidade/UF, separar
+    if (localEspecifico && (localEspecifico.includes(',') || localEspecifico.includes(' - '))) {
+      const { local, cidade: cidadeExtraida } = this.separarLocalECidade(localEspecifico);
+      if (cidadeExtraida && !cidadeUF) {
+        localEspecifico = local;
+        cidadeUF = cidadeExtraida;
+      }
+    }
+    
+    // 6. Fallbacks mais inteligentes
+    if (!localEspecifico || localEspecifico === 'Local a definir') {
+      // Tentar usar descrição como local se não for muito genérica
+      if (descricao && descricao.length > 10 && descricao.length < 200) {
+        // Usar primeiras palavras da descrição como local
+        const palavras = descricao.split(/\s+/).slice(0, 6).join(' ');
+        localEspecifico = palavras.trim();
+      } else if (locationOriginal && locationOriginal !== 'Local a definir') {
+        // Usar locationOriginal como fallback
+        localEspecifico = locationOriginal.trim();
+      } else {
+        localEspecifico = 'Local a definir';
+      }
+    }
+    
+    if (!cidadeUF || cidadeUF === 'Local não informado') {
+      cidadeUF = 'Local não informado';
+    }
+    
+    return { localEspecifico, cidadeUF };
+  }
+
+  // Separar local e cidade de uma string que contém ambos
+  separarLocalECidade(texto) {
+    if (!texto) return { local: '', cidade: '' };
+    
+    // Padrões para separar local e cidade
+    const padroes = [
+      // "Local - Cidade, UF"
+      /^(.+?)\s*[-–—]\s*([A-Za-zÀ-ÿ\s]+),\s*([A-Z]{2})$/i,
+      // "Local, Cidade, UF"
+      /^(.+?),\s*([A-Za-zÀ-ÿ\s]+),\s*([A-Z]{2})$/i,
+      // "Local em Cidade, UF"
+      /^(.+?)\s+em\s+([A-Za-zÀ-ÿ\s]+),\s*([A-Z]{2})$/i,
+      // "Local @ Cidade, UF"
+      /^(.+?)\s*@\s*([A-Za-zÀ-ÿ\s]+),\s*([A-Z]{2})$/i
+    ];
+    
+    for (const padrao of padroes) {
+      const match = texto.match(padrao);
+      if (match && match[1] && match[2] && match[3]) {
+        return {
+          local: match[1].trim(),
+          cidade: `${match[2].trim()}, ${match[3].trim()}`
+        };
+      }
+    }
+    
+    // Casos especiais que não foram capturados pelos padrões
+    if (texto.includes(' - ') && texto.includes(',')) {
+      const partes = texto.split(' - ');
+      if (partes.length >= 2) {
+        const ultimaParte = partes[partes.length - 1];
+        if (ultimaParte.includes(',')) {
+          const local = partes.slice(0, -1).join(' - ').trim();
+          const cidade = ultimaParte.trim();
+          return { local, cidade };
+        }
+      }
+    }
+    
+    // Verificar se há cidade/UF no final do texto
+    const cidadeMatch = texto.match(/([A-Za-zÀ-ÿ\s]+),\s*([A-Z]{2})$/i);
+    if (cidadeMatch) {
+      const cidade = `${cidadeMatch[1].trim()}, ${cidadeMatch[2].trim()}`;
+      const local = texto.replace(cidadeMatch[0], '').trim();
+      // Limpar hífens ou vírgulas soltas no final
+      const localLimpo = local.replace(/[-–—,\s]+$/, '').trim();
+      return { local: localLimpo, cidade };
+    }
+    
+    // Se não encontrou padrão, retornar o texto como local
+    return { local: texto.trim(), cidade: '' };
+  }
+
+  // Extrair local específico da descrição
+  extrairLocalDaDescricao(descricao) {
+    if (!descricao) return '';
+    
+    // Se a descrição é muito curta, usar como local
+    if (descricao.length < 50) {
+      return descricao.trim();
+    }
+    
+    // Padrões para encontrar local específico (mais simples)
+    const padroesLocal = [
+      // "no Local"
+      /(?:no|em|na)\s+([A-Za-zÀ-ÿ0-9\s\-\.]+?)(?:\s*[-–—]\s*[A-Za-zÀ-ÿ\s]+,\s*[A-Z]{2}|$)/gi,
+      // "Local:"
+      /(?:local|endereço|localização|venue):\s*([A-Za-zÀ-ÿ0-9\s\-\.]+?)(?:\s*[-–—]\s*[A-Za-zÀ-ÿ\s]+,\s*[A-Z]{2}|$)/gi,
+      // "Local - Cidade, UF"
+      /([A-Za-zÀ-ÿ0-9\s\-\.]+?)\s*[-–—]\s*[A-Za-zÀ-ÿ\s]+,\s*[A-Z]{2}/gi
+    ];
+    
+    for (const padrao of padroesLocal) {
+      const match = descricao.match(padrao);
+      if (match && match[1]) {
+        const local = match[1].trim();
+        if (local.length > 3 && local.length < 80) {
+          return local;
+        }
+      }
+    }
+    
+    // Se não encontrou padrão específico, retornar primeiras palavras da descrição
+    const palavras = descricao.split(/\s+/).slice(0, 8).join(' ');
+    if (palavras.length > 10 && palavras.length < 60) {
+      return palavras.trim();
+    }
+    
+    return '';
+  }
+
+  // Extrair cidade da descrição
+  extrairCidadeDaDescricao(descricao) {
+    if (!descricao) return '';
+    
+    // Padrões para encontrar cidade/UF
+    const padroesCidade = [
+      /[-–—]\s*([A-Za-zÀ-ÿ\s]+),\s*([A-Z]{2})/gi,
+      /,\s*([A-Za-zÀ-ÿ\s]+),\s*([A-Z]{2})/gi,
+      /\s+em\s+([A-Za-zÀ-ÿ\s]+),\s*([A-Z]{2})/gi,
+      /([A-Za-zÀ-ÿ\s]+),\s*([A-Z]{2})/gi
+    ];
+    
+    for (const padrao of padroesCidade) {
+      const match = descricao.match(padrao);
+      if (match && match[1] && match[2]) {
+        const cidade = match[1].trim();
+        const uf = match[2].trim();
+        if (cidade.length > 2 && uf.length === 2) {
+          return `${cidade}, ${uf}`;
+        }
+      }
+    }
+    
+    return '';
+  }
+
+  // Remover cidade do local específico (versão simplificada)
+  removerCidadeDoLocal(local, cidadeUF) {
+    if (!local || !cidadeUF) return local;
+    
+    // Extrair cidade da cidadeUF
+    const cidade = cidadeUF.split(',')[0]?.trim();
+    if (!cidade) return local;
+    
+    // Apenas remover se o local termina com a cidade
+    const cidadeRegex = new RegExp(`\\s*[-–—]\\s*${cidade.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}$`, 'gi');
+    let localLimpo = local.replace(cidadeRegex, '').trim();
+    
+    return localLimpo || local;
+  }
+
+  // Determinar cidade/UF baseado no nome da cidade
+  determinarCidadeUF(cidadeNome) {
+    if (!cidadeNome) return '';
+    
+    const cidadeLower = cidadeNome.toLowerCase();
+    
+    // Mapeamento de cidades para UF
+    const cidadesUF = {
+      // Rondônia
+      'ji-paraná': 'RO', 'porto velho': 'RO', 'ariquemes': 'RO', 'cacoal': 'RO',
+      'vilhena': 'RO', 'rolim de moura': 'RO', 'jaru': 'RO', 'ouro preto do oeste': 'RO',
+      'guajará-mirim': 'RO', 'pimenta bueno': 'RO', 'presidente médici': 'RO',
+      'candeias do jamari': 'RO', 'espigão do oeste': 'RO', 'alta floresta do oeste': 'RO',
+      
+      // Outras capitais e cidades importantes
+      'são paulo': 'SP', 'rio de janeiro': 'RJ', 'brasília': 'DF', 'salvador': 'BA',
+      'fortaleza': 'CE', 'belo horizonte': 'MG', 'manaus': 'AM', 'curitiba': 'PR',
+      'recife': 'PE', 'goiânia': 'GO', 'belém': 'PA', 'porto alegre': 'RS',
+      'guarulhos': 'SP', 'campinas': 'SP', 'são luís': 'MA', 'são gonçalo': 'RJ',
+      'maceió': 'AL', 'duque de caxias': 'RJ', 'natal': 'RN', 'teresina': 'PI',
+      'florianópolis': 'SC', 'vitória': 'ES', 'palmas': 'TO', 'macapá': 'AP',
+      'rio branco': 'AC', 'boa vista': 'RR', 'joão pessoa': 'PB', 'aracaju': 'SE',
+      'cuiabá': 'MT', 'campo grande': 'MS'
+    };
+    
+    for (const [cidade, uf] of Object.entries(cidadesUF)) {
+      if (cidadeLower.includes(cidade)) {
+        return `${cidadeNome}, ${uf}`;
+      }
+    }
+    
+    // Se não encontrou, retornar apenas a cidade
+    return cidadeNome;
+  }
+
+  // Construir local completo (método legado - mantido para compatibilidade)
   construirLocal(venue, cidade, locationOriginal, cidadeOriginal) {
     let local = '';
     
@@ -1531,4 +1790,4 @@ if (require.main === module) {
   });
 }
 
-module.exports = scrapeEventosCompleto;
+module.exports = { EventoScraperCompleto, scrapeEventosCompleto };

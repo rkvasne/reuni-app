@@ -16,6 +16,7 @@ export interface Event {
   organizador_id: string
   max_participantes?: number
   created_at: string
+  source?: string // Fonte do evento (sympla, eventbrite, etc.)
 
   organizador?: {
     nome: string
@@ -63,7 +64,8 @@ export function useEvents() {
           imagem_url,
           organizador_id,
           max_participantes,
-          created_at
+          created_at,
+          source
         `)
         .order('data', { ascending: true })
         .limit(20) // Reduzir ainda mais para evitar timeout

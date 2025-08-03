@@ -24,6 +24,7 @@ export interface SuggestedEvent {
   user_participando: boolean;
   suggestion_reason: string;
   similarity_score: number;
+  source?: string; // Fonte do evento (sympla, eventbrite, etc.)
 }
 
 export function useSuggestedEvents() {
@@ -130,7 +131,8 @@ export function useSuggestedEvents() {
             max_participantes: event.max_participantes,
             user_participando: userParticipating || false,
             suggestion_reason: reason,
-            similarity_score: score
+            similarity_score: score,
+            source: event.source
           };
         })
         .filter(event => event.similarity_score > 0) // Só eventos com score > 0

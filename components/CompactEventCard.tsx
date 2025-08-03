@@ -14,6 +14,7 @@ interface CompactEventCardProps {
     categoria: string;
     imagem_url?: string;
     participantes_count: number;
+    source?: string; // Fonte do evento (sympla, eventbrite, etc.)
     friends_going?: {
       id: string;
       nome: string;
@@ -82,11 +83,20 @@ export default function CompactEventCard({
           </div>
         )}
         
-        {/* Badge da categoria */}
-        <div className="absolute top-1 left-1">
+        {/* Badges */}
+        <div className="absolute top-1 left-1 flex flex-col gap-1">
           <span className="bg-primary-500 text-white px-1.5 py-0.5 rounded text-xs font-medium">
             {event.categoria}
           </span>
+          {event.source && (
+            <span className={`px-1.5 py-0.5 rounded text-xs font-medium ${
+              event.source === 'sympla' 
+                ? 'bg-purple-500 text-white' 
+                : 'bg-orange-500 text-white'
+            }`}>
+              {event.source === 'sympla' ? 'Sympla' : 'Eventbrite'}
+            </span>
+          )}
         </div>
       </div>
       

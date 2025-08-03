@@ -29,6 +29,7 @@ interface SocialEventCardProps {
     user_participando: boolean;
     friends_going?: User[];
     suggestion_reason?: string;
+    source?: string; // Fonte do evento (sympla, eventbrite, etc.)
   };
   showSocialInfo?: boolean;
   compact?: boolean;
@@ -159,12 +160,23 @@ export default function SocialEventCard({
       
       {/* Conteúdo */}
       <div className="mt-3">
-        {/* Título */}
-        <h3 className={`font-semibold text-neutral-800 mb-2 line-clamp-2 ${
-          compact ? 'text-sm' : 'text-lg'
-        }`}>
-          {event.titulo}
-        </h3>
+        {/* Título e Badge de Fonte */}
+        <div className="mb-2">
+          <h3 className={`font-semibold text-neutral-800 mb-1 line-clamp-2 ${
+            compact ? 'text-sm' : 'text-lg'
+          }`}>
+            {event.titulo}
+          </h3>
+          {event.source && (
+            <span className={`inline-block px-2 py-1 text-xs font-medium rounded-full ${
+              event.source === 'sympla' 
+                ? 'bg-purple-100 text-purple-700' 
+                : 'bg-orange-100 text-orange-700'
+            }`}>
+              {event.source === 'sympla' ? 'Sympla' : 'Eventbrite'}
+            </span>
+          )}
+        </div>
         
         {/* Informações do evento */}
         <div className={`space-y-1 mb-3 ${compact ? 'text-xs' : 'text-sm'}`}>
