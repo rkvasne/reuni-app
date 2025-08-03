@@ -43,10 +43,10 @@ export default function EventModal({
   // Form state
   const [formData, setFormData] = useState<CreateEventData>({
     titulo: '',
-    descricao: '',
+    local: '',
     data: '',
     hora: '',
-    local: '',
+    cidade: '',
     categoria: '',
     imagem_url: '',
     max_participantes: undefined
@@ -57,10 +57,10 @@ export default function EventModal({
     if (mode === 'edit' && event) {
       setFormData({
         titulo: event.titulo,
-        descricao: event.descricao,
+        local: event.local,
         data: event.data,
         hora: event.hora,
-        local: event.local,
+        cidade: event.cidade,
         categoria: event.categoria,
         imagem_url: event.imagem_url || '',
         max_participantes: event.max_participantes
@@ -69,10 +69,10 @@ export default function EventModal({
       // Reset form for create mode
       setFormData({
         titulo: '',
-        descricao: '',
+        local: '',
         data: '',
         hora: '',
-        local: '',
+        cidade: '',
         categoria: '',
         imagem_url: '',
         max_participantes: undefined
@@ -171,10 +171,10 @@ export default function EventModal({
   const resetForm = () => {
     setFormData({
       titulo: '',
-      descricao: '',
+      local: '',
       data: '',
       hora: '',
-      local: '',
+      cidade: '',
       categoria: '',
       imagem_url: '',
       max_participantes: undefined
@@ -202,21 +202,21 @@ export default function EventModal({
   const getEventLocation = () => {
     if (!event) return '';
     
-    if (event.descricao === 'Evento encontrado no eventbrite') {
-      return event.local;
+    if (event.local === 'Evento encontrado no eventbrite') {
+      return event.cidade;
     }
     
     // Extrair local da descrição (formato: "Local - Cidade, Estado")
-    if (event.descricao && event.descricao.includes(' - ')) {
-      return event.descricao;
+    if (event.local && event.local.includes(' - ')) {
+      return event.local;
     }
     
     return event.local;
   };
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[9999]" onClick={handleBackdropClick}>
-      <div className="bg-white rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[99999]" onClick={handleBackdropClick}>
+      <div className="bg-white rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto relative">
         
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-neutral-200">
@@ -254,10 +254,10 @@ export default function EventModal({
                 </span>
               </div>
 
-              {event.descricao && (
+              {event.local && (
                 <div>
-                  <h3 className="font-semibold text-neutral-800 mb-2">Descrição</h3>
-                  <p className="text-neutral-600 leading-relaxed">{event.descricao}</p>
+                  <h3 className="font-semibold text-neutral-800 mb-2">Local</h3>
+                  <p className="text-neutral-600 leading-relaxed">{event.local}</p>
                 </div>
               )}
 
@@ -342,17 +342,17 @@ export default function EventModal({
             />
           </div>
 
-          {/* Descrição */}
+          {/* Local */}
           <div>
             <label className="block text-sm font-medium text-neutral-700 mb-2">
-              Descrição
+              Local
             </label>
             <textarea
-              value={formData.descricao}
-              onChange={(e) => setFormData(prev => ({ ...prev, descricao: e.target.value }))}
+              value={formData.local}
+              onChange={(e) => setFormData(prev => ({ ...prev, local: e.target.value }))}
               rows={4}
               className="w-full px-4 py-3 border border-neutral-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all resize-none"
-              placeholder="Descreva seu evento..."
+              placeholder="Descreva o local do evento..."
             />
           </div>
 
@@ -386,18 +386,18 @@ export default function EventModal({
             </div>
           </div>
 
-          {/* Local */}
+          {/* Cidade */}
           <div>
             <label className="block text-sm font-medium text-neutral-700 mb-2">
               <MapPin className="w-4 h-4 inline mr-1" />
-              Local *
+              Cidade *
             </label>
             <input
               type="text"
-              value={formData.local}
-              onChange={(e) => setFormData(prev => ({ ...prev, local: e.target.value }))}
+              value={formData.cidade}
+              onChange={(e) => setFormData(prev => ({ ...prev, cidade: e.target.value }))}
               className="w-full px-4 py-3 border border-neutral-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all"
-              placeholder="Ex: Centro de Convenções, São Paulo"
+              placeholder="Ex: São Paulo, SP"
               required
             />
           </div>

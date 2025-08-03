@@ -7,10 +7,10 @@ import { supabase } from '@/lib/supabase';
 export interface SuggestedEvent {
   id: string;
   titulo: string;
-  descricao: string;
+  local: string; // Antigo: descricao - agora é o local do evento
   data: string;
   hora: string;
-  local: string;
+  cidade: string; // Antigo: local - agora é a cidade/UF
   categoria: string;
   imagem_url?: string;
   organizador_id: string;
@@ -118,10 +118,10 @@ export function useSuggestedEvents() {
           return {
             id: event.id,
             titulo: event.titulo,
-            descricao: event.descricao,
+            local: event.local, // Antigo: descricao - agora é o local do evento
             data: event.data,
             hora: event.hora,
-            local: event.local,
+            cidade: event.cidade, // Antigo: local - agora é a cidade/UF
             categoria: event.categoria,
             imagem_url: event.imagem_url,
             organizador_id: event.organizador_id,

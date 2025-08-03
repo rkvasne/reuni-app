@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useRef, useCallback } from 'react'
+import { useEffect, useRef, useCallback, useMemo } from 'react'
 import { useOptimizedEvents } from '@/hooks/useOptimizedEvents'
 import EventCard from './EventCard'
 import { Loader2 } from 'lucide-react'
@@ -30,13 +30,26 @@ export default function OptimizedEventsList({
   const observerRef = useRef<IntersectionObserver>()
   const lastEventElementRef = useRef<HTMLDivElement>()
   const containerRef = useRef<HTMLDivElement>(null)
+  const scrollTimeoutRef = useRef<NodeJS.Timeout>()
 
-  // Salvar posição do scroll
+  // Salvar posição do scroll com debounce
   const saveScrollPosition = useCallback(() => {
     try {
       if (containerRef.current) {
         const scrollTop = containerRef.current.scrollTop
-        sessionStorage.setItem(SCROLL_POSITION_KEY, scrollTop.toString())
+        // Debounce para evitar muitas operações de storage
+        if (scrollTimeoutRef.current) {
+          clearTimeout(scrollTimeoutRef.current)
+        }
+        scrollTimeoutRef.current = setTimeout(() => {
+          if ('requestIdleCallback' in window) {
+            requestIdleCallback(() => {
+              sessionStorage.setItem(SCROLL_POSITION_KEY, scrollTop.toString())
+            })
+          } else {
+            sessionStorage.setItem(SCROLL_POSITION_KEY, scrollTop.toString())
+          }
+        }, 150)
       }
     } catch (error) {
       console.warn('Erro ao salvar posição do scroll:', error)
@@ -49,7 +62,12 @@ export default function OptimizedEventsList({
       const savedPosition = sessionStorage.getItem(SCROLL_POSITION_KEY)
       if (savedPosition && containerRef.current) {
         const scrollTop = parseInt(savedPosition, 10)
-        containerRef.current.scrollTop = scrollTop
+        // Usar requestAnimationFrame para evitar reflows forçados
+        requestAnimationFrame(() => {
+          if (containerRef.current) {
+            containerRef.current.scrollTop = scrollTop
+          }
+        })
       }
     } catch (error) {
       console.warn('Erro ao restaurar posição do scroll:', error)
@@ -72,22 +90,30 @@ export default function OptimizedEventsList({
     
     observerRef.current = new IntersectionObserver(entries => {
       if (entries[0].isIntersecting && hasMore) {
-        loadMore()
+        // Usar requestIdleCallback para carregar mais eventos
+        if ('requestIdleCallback' in window) {
+          requestIdleCallback(() => loadMore())
+        } else {
+          loadMore()
+        }
       }
     }, {
       threshold: 0.1,
-      rootMargin: '100px'
+      rootMargin: '200px' // Aumentar margem para carregar mais cedo
     })
     
     if (node) observerRef.current.observe(node)
     lastEventElementRef.current = node
   }, [loadingMore, hasMore, loadMore])
 
-  // Cleanup observer
+  // Cleanup observer e timeout
   useEffect(() => {
     return () => {
       if (observerRef.current) {
         observerRef.current.disconnect()
+      }
+      if (scrollTimeoutRef.current) {
+        clearTimeout(scrollTimeoutRef.current)
       }
     }
   }, [])
@@ -102,8 +128,10 @@ export default function OptimizedEventsList({
   // Restaurar posição do scroll quando eventos carregam
   useEffect(() => {
     if (!loading && events.length > 0) {
-      // Pequeno delay para garantir que o DOM foi renderizado
-      setTimeout(restoreScrollPosition, 100)
+      // Usar requestAnimationFrame para evitar violações de performance
+      requestAnimationFrame(() => {
+        requestAnimationFrame(restoreScrollPosition)
+      })
     }
   }, [loading, events.length, restoreScrollPosition])
 
@@ -112,6 +140,22 @@ export default function OptimizedEventsList({
     clearScrollPosition()
     refresh()
   }, [clearScrollPosition, refresh])
+
+  // Memoizar a lista de eventos para evitar re-renders desnecessários
+  const eventsList = useMemo(() => {
+    return events.map((event, index) => (
+      <div
+        key={event.id}
+        ref={index === events.length - 1 ? lastEventRef : undefined}
+      >
+        <EventCard
+          event={event}
+          priority={index < 6} // Prioridade para os primeiros 6 eventos
+          onEventUpdated={handleRefresh}
+        />
+      </div>
+    ))
+  }, [events, lastEventRef, handleRefresh])
 
   if (loading) {
     return (
@@ -172,18 +216,7 @@ export default function OptimizedEventsList({
     <div className={`${className}`} ref={containerRef}>
       {/* Lista de eventos em coluna única */}
       <div className="space-y-6">
-        {events.map((event, index) => (
-          <div
-            key={event.id}
-            ref={index === events.length - 1 ? lastEventRef : undefined}
-          >
-            <EventCard
-              event={event}
-              priority={index < 6} // Prioridade para os primeiros 6 eventos
-              onEventUpdated={handleRefresh}
-            />
-          </div>
-        ))}
+        {eventsList}
       </div>
 
       {/* Loading indicator para infinite scroll */}

@@ -61,7 +61,14 @@ export function useOptimizedEvents(options: UseOptimizedEventsOptions = {}) {
         hasMore: more,
         timestamp: Date.now()
       }
-      sessionStorage.setItem(STORAGE_KEY, JSON.stringify(state))
+      // Usar requestIdleCallback para operações não críticas
+      if ('requestIdleCallback' in window) {
+        requestIdleCallback(() => {
+          sessionStorage.setItem(STORAGE_KEY, JSON.stringify(state))
+        })
+      } else {
+        sessionStorage.setItem(STORAGE_KEY, JSON.stringify(state))
+      }
     } catch (error) {
       console.warn('Erro ao salvar estado persistido:', error)
     }
@@ -95,10 +102,10 @@ export function useOptimizedEvents(options: UseOptimizedEventsOptions = {}) {
         .select(`
           id,
           titulo,
-          descricao,
+          local,
           data,
           hora,
-          local,
+          cidade,
           categoria,
           imagem_url,
           organizador_id,
@@ -167,10 +174,10 @@ export function useOptimizedEvents(options: UseOptimizedEventsOptions = {}) {
       const processedEvents: Event[] = (eventsData || []).map(event => ({
         id: event.id,
         titulo: event.titulo,
-        descricao: event.descricao,
+        local: event.local,
         data: event.data,
         hora: event.hora,
-        local: event.local,
+        cidade: event.cidade,
         categoria: event.categoria,
         imagem_url: event.imagem_url,
         organizador_id: event.organizador_id,
@@ -313,8 +320,8 @@ export function useParticipantsCount(eventIds: string[]) {
       }
     }
 
-    // Debounce para evitar muitas requisições
-    const timeoutId = setTimeout(fetchCounts, 100)
+    // Debounce otimizado para evitar muitas requisições
+    const timeoutId = setTimeout(fetchCounts, 200) // Aumentar delay
     return () => clearTimeout(timeoutId)
   }, [eventIds.join(',')])
 

@@ -7,10 +7,10 @@ import OptimizedImage from './OptimizedImage';
 interface FeaturedEvent {
   id: string;
   titulo: string;
-  descricao: string;
+  local: string; // Antigo: descricao - agora é o local do evento
   data: string;
   hora: string;
-  local: string;
+  cidade: string; // Antigo: local - agora é a cidade/UF
   categoria: string;
   imagem_url?: string;
   organizador?: {
@@ -142,9 +142,9 @@ export default function FeaturedBanner({
             {currentEvent.titulo}
           </h2>
           
-          {/* Descrição */}
+          {/* Local */}
           <p className="text-white/90 mb-4 line-clamp-2">
-            {currentEvent.descricao}
+            {currentEvent.local}
           </p>
           
           {/* Informações do evento */}
@@ -155,7 +155,7 @@ export default function FeaturedBanner({
             </div>
             <div className="flex items-center gap-2">
               <MapPin className="w-4 h-4" />
-              <span className="text-sm">{currentEvent.local}</span>
+              <span className="text-sm">{currentEvent.cidade}</span>
             </div>
             <div className="flex items-center gap-2">
               <Users className="w-4 h-4" />

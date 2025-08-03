@@ -7,10 +7,10 @@ import { useAuth } from './useAuth'
 export interface Event {
   id: string
   titulo: string
-  descricao: string
+  local: string // Antigo: descricao - agora é o local do evento
   data: string
   hora: string
-  local: string
+  cidade: string // Antigo: local - agora é a cidade/UF
   categoria: string
   imagem_url?: string
   organizador_id: string
@@ -28,10 +28,10 @@ export interface Event {
 
 export interface CreateEventData {
   titulo: string
-  descricao: string
+  local: string // Antigo: descricao - agora é o local do evento
   data: string
   hora: string
-  local: string
+  cidade: string // Antigo: local - agora é a cidade/UF
   categoria: string
   imagem_url?: string
   max_participantes?: number
@@ -55,10 +55,10 @@ export function useEvents() {
         .select(`
           id,
           titulo,
-          descricao,
+          local,
           data,
           hora,
-          local,
+          cidade,
           categoria,
           imagem_url,
           organizador_id,

@@ -84,6 +84,7 @@ Se quiser o sistema completo de comunidades:
 | `010_disable_rls_temp.sql` | ⚠️ Dev Only | Desabilita RLS |
 | `011_FINAL_fix_events.sql` | ✅ **OBRIGATÓRIO** | Corrige eventos |
 | `012_FINAL_setup_storage.sql` | ✅ Opcional | Upload de imagens |
+| `013_rename_eventos_fields.sql` | 🔄 **NOVO** | Renomeia campos eventos |
 
 ---
 

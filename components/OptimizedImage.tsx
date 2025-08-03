@@ -46,6 +46,17 @@ export default function OptimizedImage({
     );
   }
 
+  // Função para lidar com erro de imagem
+  const handleImageError = () => {
+    console.warn(`Erro ao carregar imagem: ${src}`);
+    setImageError(true);
+    setImageLoading(false);
+  };
+
+  const handleImageLoad = () => {
+    setImageLoading(false);
+  };
+
   // Sanitizar e otimizar a URL da imagem
   const sanitizedSrc = sanitizeImageUrl(src);
   const optimizedSrc = sanitizedSrc ? optimizeImageUrl(sanitizedSrc, width) : null;
@@ -71,6 +82,22 @@ export default function OptimizedImage({
     );
   }
 
+  // Se é uma data URL (base64), usar img normal em vez do Next.js Image
+  if (optimizedSrc.startsWith('data:')) {
+    return (
+      <img
+        src={optimizedSrc}
+        alt={alt}
+        width={width}
+        height={height}
+        className={`${className} ${imageLoading ? 'opacity-0' : 'opacity-100'} transition-opacity duration-300`}
+        onError={handleImageError}
+        onLoad={handleImageLoad}
+        style={fill ? { width: '100%', height: '100%', objectFit: 'cover' } : {}}
+      />
+    );
+  }
+
   // Se houve erro na imagem, mostrar fallback
   if (imageError) {
     if (fallback) {
@@ -83,17 +110,6 @@ export default function OptimizedImage({
       </div>
     );
   }
-
-  // Função para lidar com erro de imagem
-  const handleImageError = () => {
-    console.warn(`Erro ao carregar imagem: ${src}`);
-    setImageError(true);
-    setImageLoading(false);
-  };
-
-  const handleImageLoad = () => {
-    setImageLoading(false);
-  };
 
   // Props base para todas as imagens
   const baseProps = {

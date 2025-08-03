@@ -190,10 +190,10 @@ async function testCompleto() {
       try {
         const eventoData = {
           titulo: eventoTeste.title,
-          descricao: 'Evento de teste com imagem',
+          local: 'Evento de teste com imagem', // Antigo: descricao - agora é o local do evento
           data: new Date().toISOString().split('T')[0],
           hora: '19:00:00',
-          local: 'São Paulo, SP',
+          cidade: 'São Paulo, SP', // Antigo: local - agora é a cidade/UF
           categoria: 'Teste',
           imagem_url: eventoTeste.image || null,
           organizador_id: authData.user.id,

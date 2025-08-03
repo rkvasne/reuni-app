@@ -174,7 +174,8 @@ class EventoScraperCompleto {
                 date,
                 location,
                 cidade: cidade.nome,
-                prioridade: cidade.prioridade
+                prioridade: cidade.prioridade,
+                source: 'sympla' // <- Adicionado para garantir o preenchimento correto
               });
             }
           });
@@ -446,12 +447,12 @@ class EventoScraperCompleto {
       let localEvento = this.construirLocal(infoExtraida.venue, infoExtraida.cidade, evento.location, evento.cidade);
 
       // Limpar descrição removendo local duplicado
-      let descricaoLimpa = evento.description || `Evento encontrado no ${evento.source}`;
-      if (descricaoLimpa && localEvento) {
+      let localLimpo = evento.description || `Evento encontrado no ${evento.source}`;
+      if (localLimpo && localEvento) {
         // Remover cidade/estado da descrição se já está no campo local
         const cidadeEstado = localEvento.split(',').pop()?.trim();
         if (cidadeEstado) {
-          descricaoLimpa = descricaoLimpa.replace(new RegExp(cidadeEstado, 'gi'), '').trim();
+          localLimpo = localLimpo.replace(new RegExp(cidadeEstado, 'gi'), '').trim();
         }
         
         // Remover padrões de cidade, estado da descrição
@@ -462,7 +463,7 @@ class EventoScraperCompleto {
         ];
         
         padroesCidadeEstado.forEach(padrao => {
-          descricaoLimpa = descricaoLimpa.replace(padrao, '').trim();
+          localLimpo = localLimpo.replace(padrao, '').trim();
         });
         
         // Remover local específico da descrição se detectado
@@ -475,11 +476,11 @@ class EventoScraperCompleto {
         
         locaisParaRemover.forEach(local => {
           const regex = new RegExp(`${local}\\s+[A-Za-zÀ-ÿ\\s]+`, 'gi');
-          descricaoLimpa = descricaoLimpa.replace(regex, '').trim();
+          localLimpo = localLimpo.replace(regex, '').trim();
         });
         
         // Limpar espaços duplos, vírgulas soltas e hífens soltos
-        descricaoLimpa = descricaoLimpa
+        localLimpo = localLimpo
           .replace(/\s+/g, ' ')
           .replace(/,\s*,/g, ',')
           .replace(/-\s*-/g, '-')
@@ -491,10 +492,10 @@ class EventoScraperCompleto {
       // Preparar dados
       const eventoData = {
         titulo: tituloLimpo,
-        descricao: descricaoLimpa,
+        local: localLimpo, // Antigo: descricao - agora é o local do evento
         data: dataEvento,
         hora: horaEvento,
-        local: localEvento,
+        cidade: localEvento, // Antigo: local - agora é a cidade/UF
         categoria: this.categorizarEvento(tituloLimpo),
         imagem_url: evento.image || null,
         organizador_id: this.userId,

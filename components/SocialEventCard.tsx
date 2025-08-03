@@ -16,10 +16,10 @@ interface SocialEventCardProps {
   event: {
     id: string;
     titulo: string;
-    descricao: string;
+    local: string; // Antigo: descricao - agora é o local do evento
     data: string;
     hora: string;
-    local: string;
+    cidade: string; // Antigo: local - agora é a cidade/UF
     categoria: string;
     imagem_url?: string;
     organizador_id: string;
@@ -60,13 +60,13 @@ export default function SocialEventCard({
   };
 
   const getEventLocation = () => {
-    if (event.descricao === 'Evento encontrado no eventbrite') {
-      return event.local;
+    if (event.local === 'Evento encontrado no eventbrite') {
+      return event.cidade;
     }
     
     // Extrair local da descrição (formato: "Local - Cidade, Estado")
-    if (event.descricao.includes(' - ')) {
-      return event.descricao;
+    if (event.local.includes(' - ')) {
+      return event.local;
     }
     
     return event.local;

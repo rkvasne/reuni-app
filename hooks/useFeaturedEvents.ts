@@ -48,10 +48,10 @@ export function useFeaturedEvents(limit: number = 3) {
         .map(event => ({
           id: event.id,
           titulo: event.titulo,
-          descricao: event.descricao,
+          local: event.local, // Antigo: descricao - agora é o local do evento
           data: event.data,
           hora: event.hora,
-          local: event.local,
+          cidade: event.cidade, // Antigo: local - agora é a cidade/UF
           categoria: event.categoria,
           imagem_url: event.imagem_url,
           organizador_id: event.organizador_id,

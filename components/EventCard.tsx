@@ -1,7 +1,8 @@
 'use client'
 
-import { useState, useCallback } from 'react'
-import { Calendar, MapPin, Users, Heart, MessageCircle, Share2, Edit, Trash2, MoreHorizontal, Check, Clock } from 'lucide-react'
+import { useState, useCallback, useEffect } from 'react'
+import { createPortal } from 'react-dom'
+import { Calendar, MapPin, Users, Heart, MessageCircle, Share2, Edit, Trash2, MoreHorizontal, Check, Clock, Building2 } from 'lucide-react'
 import OptimizedImage from './OptimizedImage'
 import EventDateBadge from './EventDateBadge'
 import { useAuth } from '@/hooks/useAuth'
@@ -21,6 +22,12 @@ export default function EventCard({ event, priority = false, onEventUpdated }: E
   const [modalState, setModalState] = useState<'closed' | 'view' | 'edit'>('closed')
   const [deleting, setDeleting] = useState(false)
   const [participationLoading, setParticipationLoading] = useState(false)
+  const [isClient, setIsClient] = useState(false)
+
+  // Verificar se está no cliente
+  useEffect(() => {
+    setIsClient(true)
+  }, [])
 
   const isOrganizer = user?.id === event.organizador_id
 
@@ -53,13 +60,13 @@ export default function EventCard({ event, priority = false, onEventUpdated }: E
   }
 
   const getEventLocation = () => {
-    if (event.descricao === 'Evento encontrado no eventbrite') {
-      return event.local;
+    if (event.local === 'Evento encontrado no eventbrite') {
+      return event.cidade;
     }
     
     // Extrair local da descrição (formato: "Local - Cidade, Estado")
-    if (event.descricao.includes(' - ')) {
-      return event.descricao;
+    if (event.local.includes(' - ')) {
+      return event.local;
     }
     
     return event.local;
@@ -267,10 +274,10 @@ export default function EventCard({ event, priority = false, onEventUpdated }: E
             </div>
           </div>
           
-          {/* Local */}
+          {/* Cidade/UF */}
           <div className="flex items-center gap-3 text-neutral-700">
             <MapPin className="w-4 h-4 text-primary-500" />
-            <span className="text-sm">{getEventLocation()}</span>
+            <span className="text-sm">{event.cidade || 'Local não informado'}</span>
           </div>
           
           {/* Participantes */}
@@ -285,14 +292,15 @@ export default function EventCard({ event, priority = false, onEventUpdated }: E
           </div>
         </div>
 
-        {/* Descrição (se houver) */}
-        {event.descricao && (
-          <div className="mb-4">
-            <p className="text-sm text-neutral-600 line-clamp-2">
-              {event.descricao}
-            </p>
+        {/* Local específico do evento */}
+        <div className="mb-4">
+          <div className="flex items-center gap-3 text-neutral-700">
+            <Building2 className="w-4 h-4 text-primary-500" />
+            <span className="text-sm text-neutral-600 line-clamp-2">
+              {event.local || 'Local não informado'}
+            </span>
           </div>
-        )}
+        </div>
         
         {/* Separador sutil */}
         <div className="card-separator my-4"></div>
@@ -347,15 +355,16 @@ export default function EventCard({ event, priority = false, onEventUpdated }: E
         
       </div>
 
-      {/* Modal - apenas um por vez */}
-      {modalState !== 'closed' && (
+      {/* Modal - renderizado via portal para evitar problemas de z-index */}
+      {modalState !== 'closed' && isClient && createPortal(
         <EventModal
-          isOpen={modalState !== 'closed'}
+          isOpen={true}
           onClose={handleCloseModal}
           event={event}
           mode={modalState === 'edit' ? "edit" : "view"}
           onEventUpdated={onEventUpdated}
-        />
+        />,
+        document.body
       )}
     </div>
   )

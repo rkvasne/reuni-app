@@ -71,6 +71,11 @@ export function getPlaceholderImage(width: number = 400, height: number = 300): 
 export function optimizeImageUrl(url: string, width?: number): string {
   if (!url) return url;
 
+  // Se é uma data URL (base64), retornar como está
+  if (url.startsWith('data:')) {
+    return url;
+  }
+
   try {
     const urlObj = new URL(url);
     

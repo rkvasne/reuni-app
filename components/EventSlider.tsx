@@ -6,10 +6,10 @@ import SocialEventCard from './SocialEventCard';
 interface Event {
   id: string;
   titulo: string;
-  descricao: string;
+  local: string; // Antigo: descricao - agora é o local do evento
   data: string;
   hora: string;
-  local: string;
+  cidade: string; // Antigo: local - agora é a cidade/UF
   categoria: string;
   imagem_url?: string;
   organizador_id: string;

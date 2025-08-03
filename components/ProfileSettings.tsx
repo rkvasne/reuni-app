@@ -232,6 +232,7 @@ export default function ProfileSettings() {
               className="w-full px-4 py-3 border border-neutral-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all"
               placeholder="Mínimo 6 caracteres"
               required
+              autoComplete="new-password"
             />
           </div>
 
@@ -246,6 +247,7 @@ export default function ProfileSettings() {
               className="w-full px-4 py-3 border border-neutral-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all"
               placeholder="Digite a senha novamente"
               required
+              autoComplete="new-password"
             />
           </div>
 

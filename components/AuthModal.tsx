@@ -86,7 +86,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }: Au
   if (!isOpen) return null
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[60] p-4">
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[99999] p-4">
       <div className="bg-white rounded-2xl w-full max-w-md p-6 relative">
         
         {/* Botão fechar */}
@@ -237,6 +237,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }: Au
                 className="w-full pl-10 pr-4 py-3 border border-neutral-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all"
                 placeholder="seu@email.com"
                 required
+                autoComplete="email"
               />
             </div>
           </div>
@@ -257,6 +258,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }: Au
                   placeholder="Sua senha"
                   required
                   minLength={6}
+                  autoComplete="current-password"
                 />
                 <button
                   type="button"
