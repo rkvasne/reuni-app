@@ -532,7 +532,7 @@ BEGIN
     IF EXISTS (
       SELECT FROM pg_extension
       WHERE extname = 'pg_net'
-      -- all versions in use on existing projects as of 2025-02-20
+      -- all versions in use on existing projects as of 2025-08-03
       -- version 0.12.0 onwards don't need these applied
       AND extversion IN ('0.2', '0.6', '0.7', '0.7.1', '0.8', '0.10.0', '0.11.0')
     ) THEN
@@ -727,11 +727,16 @@ ALTER FUNCTION pgbouncer.get_auth(p_usename text) OWNER TO supabase_admin;
 
 CREATE FUNCTION public.update_updated_at_column() RETURNS trigger
     LANGUAGE plpgsql
-    AS $$
-BEGIN
-    NEW.updated_at = NOW();
-    RETURN NEW;
-END;
+    AS $$
+
+BEGIN
+
+    NEW.updated_at = NOW();
+
+    RETURN NEW;
+
+END;
+
 $$;
 
 

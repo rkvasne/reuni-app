@@ -1596,7 +1596,7 @@ class EventoScraperCompleto {
       }
     }
 
-    // Padrão: "17/08/2024" ou "17/08"
+    // Padrão: "17/08/2025" ou "17/08"
     const matchNumerico = dataTexto.match(/(\d{1,2})\/(\d{1,2})(?:\/(\d{4}))?/);
     if (matchNumerico) {
       const dia = matchNumerico[1].padStart(2, '0');

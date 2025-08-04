@@ -54,7 +54,7 @@
 - Image upload and management
 - Mobile-responsive design
 
-## [0.0.10] - 2025-01-31
+## [0.0.10] - 2025-08-01
 
 ### 🧹 Limpeza Final de Documentação
 - **Eliminação Total de Redundâncias**: Zero duplicações na documentação
@@ -82,7 +82,7 @@
 
 ---
 
-## [0.0.9] - 2025-01-31
+## [0.0.9] - 2025-07-31
 
 ### ✨ Novos Recursos
 - **Padrões Avançados de Títulos**: Implementado sistema inteligente de limpeza de títulos
@@ -125,7 +125,7 @@
 
 ---
 
-## [0.0.8] - 2025-01-30
+## [0.0.8] - 2025-07-30
 
 ### ✨ Novos Recursos
 - **Scroll Infinito**: Implementado com Intersection Observer
@@ -146,7 +146,7 @@
 
 ---
 
-## [0.0.7] - 2025-01-29
+## [0.0.7] - 2025-07-29
 
 ### ✨ Novos Recursos
 - **Sistema de Scraping Completo**: Múltiplas fontes (Sympla, Eventbrite)

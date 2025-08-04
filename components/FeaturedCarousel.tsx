@@ -8,7 +8,7 @@ const featuredEvents = [
   {
     id: 1,
     title: 'Festival de Música Eletrônica',
-    date: '2025-02-15',
+    date: '2025-08-02',
     location: 'Anhembi, São Paulo',
     image: 'https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?w=800',
     gradient: 'from-purple-600 to-pink-600'
@@ -16,7 +16,7 @@ const featuredEvents = [
   {
     id: 2,
     title: 'Conferência de Inovação',
-    date: '2025-02-08',
+    date: '2025-08-05',
     location: 'Centro de Convenções',
     image: 'https://images.unsplash.com/photo-1505373877841-8d25f7d46678?w=800',
     gradient: 'from-blue-600 to-cyan-600'
@@ -24,7 +24,7 @@ const featuredEvents = [
   {
     id: 3,
     title: 'Maratona de São Paulo',
-    date: '2025-03-12',
+    date: '2025-08-01',
     location: 'Largada: Ibirapuera',
     image: 'https://images.unsplash.com/photo-1544717297-fa95b6ee9643?w=800',
     gradient: 'from-green-600 to-emerald-600'
