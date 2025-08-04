@@ -85,7 +85,7 @@ Selecione **"Confirm signup"** e substitua o template padrão pelo código abaix
   <!-- Footer -->
   <div style="background: #f9fafb; padding: 20px 30px; text-align: center; border-radius: 0 0 12px 12px;">
     <p style="color: #6b7280; font-size: 14px; margin: 0;">
-      © 2024 Reuni - Conectando pessoas através de eventos
+      © 2025 Reuni - Conectando pessoas através de eventos
     </p>
   </div>
   

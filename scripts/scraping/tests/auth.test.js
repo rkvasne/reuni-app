@@ -18,7 +18,7 @@ describe('Authenticator', () => {
 
   describe('validateCredentials', () => {
     test('deve validar credenciais corretas do admin', async () => {
-      const result = await authenticator.validateCredentials('admin', 'scraping2024');
+      const result = await authenticator.validateCredentials('admin', 'scraping2025');
       expect(result).toBe(true);
     });
 

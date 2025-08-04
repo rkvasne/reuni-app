@@ -49,32 +49,23 @@ class EventoScraperCompleto {
     }
   }
 
-  // Scraper do Sympla com imagens e regiões
-  async scrapeSymplaRegional() {
-    console.log(chalk.yellow('\n🎪 Buscando no Sympla (Regional)...'));
-    
-    const page = await this.browser.newPage();
-    await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36');
-
-    const regioes = [
-      // Rondônia - Cobertura completa do estado (prioridade máxima)
+  // Obter regiões baseado na configuração escolhida
+  getRegioesConfig(tipoConfig) {
+    const rondoniaCompleta = [
+      // Rondônia - Principais cidades
       { nome: 'Ji-Paraná', url: 'https://www.sympla.com.br/eventos/ji-parana-ro', prioridade: 1 },
       { nome: 'Porto Velho', url: 'https://www.sympla.com.br/eventos/porto-velho-ro', prioridade: 1 },
       { nome: 'Ariquemes', url: 'https://www.sympla.com.br/eventos/ariquemes-ro', prioridade: 1 },
       { nome: 'Cacoal', url: 'https://www.sympla.com.br/eventos/cacoal-ro', prioridade: 1 },
-      { nome: 'Vilhena', url: 'https://www.sympla.com.br/eventos/vilhena-ro', prioridade: 1 },
+      { nome: 'Vilhena', url: 'https://www.sympla.com.br/eventos/vilhena-ro', prioridade: 1 },      
       { nome: 'Rolim de Moura', url: 'https://www.sympla.com.br/eventos/rolim-de-moura-ro', prioridade: 1 },
       { nome: 'Jaru', url: 'https://www.sympla.com.br/eventos/jaru-ro', prioridade: 1 },
       { nome: 'Ouro Preto do Oeste', url: 'https://www.sympla.com.br/eventos/ouro-preto-do-oeste-ro', prioridade: 1 },
-      { nome: 'Guajará-Mirim', url: 'https://www.sympla.com.br/eventos/guajara-mirim-ro', prioridade: 1 },
       { nome: 'Pimenta Bueno', url: 'https://www.sympla.com.br/eventos/pimenta-bueno-ro', prioridade: 1 },
-      { nome: 'Presidente Médici', url: 'https://www.sympla.com.br/eventos/presidente-medici-ro', prioridade: 2 },
-      { nome: 'Candeias do Jamari', url: 'https://www.sympla.com.br/eventos/candeias-do-jamari-ro', prioridade: 2 },
-      { nome: 'Espigão do Oeste', url: 'https://www.sympla.com.br/eventos/espigao-do-oeste-ro', prioridade: 2 },
-      { nome: 'Alta Floresta do Oeste', url: 'https://www.sympla.com.br/eventos/alta-floresta-do-oeste-ro', prioridade: 2 },
-      { nome: 'Rondônia', url: 'https://www.sympla.com.br/eventos/rondonia', prioridade: 2 },
-      
-      // Capitais brasileiras (prioridade média)
+      { nome: 'Rondônia', url: 'https://www.sympla.com.br/eventos/rondonia', prioridade: 2 }
+    ];
+
+    const todasCapitais = [
       { nome: 'São Paulo', url: 'https://www.sympla.com.br/eventos/sao-paulo-sp', prioridade: 3 },
       { nome: 'Rio de Janeiro', url: 'https://www.sympla.com.br/eventos/rio-de-janeiro-rj', prioridade: 3 },
       { nome: 'Brasília', url: 'https://www.sympla.com.br/eventos/brasilia-df', prioridade: 3 },
@@ -99,9 +90,42 @@ class EventoScraperCompleto {
       { nome: 'Vitória', url: 'https://www.sympla.com.br/eventos/vitoria-es', prioridade: 4 },
       { nome: 'Palmas', url: 'https://www.sympla.com.br/eventos/palmas-to', prioridade: 4 },
       { nome: 'Macapá', url: 'https://www.sympla.com.br/eventos/macapa-ap', prioridade: 4 },
-      { nome: 'Rio Branco', url: 'https://www.sympla.com.br/eventos/rio-branco-ac', prioridade: 4 },
-      { nome: 'Boa Vista', url: 'https://www.sympla.com.br/eventos/boa-vista-rr', prioridade: 4 }
+      { nome: 'Boa Vista', url: 'https://www.sympla.com.br/eventos/boa-vista-rr', prioridade: 4 },
+      { nome: 'Rio Branco', url: 'https://www.sympla.com.br/eventos/rio-branco-ac', prioridade: 4 }
     ];
+
+    const capitaisPrincipais = [
+      { nome: 'São Paulo', url: 'https://www.sympla.com.br/eventos/sao-paulo-sp', prioridade: 3 },
+      { nome: 'Belo Horizonte', url: 'https://www.sympla.com.br/eventos/belo-horizonte-mg', prioridade: 3 },
+      { nome: 'Salvador', url: 'https://www.sympla.com.br/eventos/salvador-ba', prioridade: 3 },
+      { nome: 'Rio de Janeiro', url: 'https://www.sympla.com.br/eventos/rio-de-janeiro-rj', prioridade: 3 },
+      { nome: 'Porto Alegre', url: 'https://www.sympla.com.br/eventos/porto-alegre-rs', prioridade: 3 },
+      { nome: 'Brasília', url: 'https://www.sympla.com.br/eventos/brasilia-df', prioridade: 3 },
+      { nome: 'Curitiba', url: 'https://www.sympla.com.br/eventos/curitiba-pr', prioridade: 3 },
+      { nome: 'Recife', url: 'https://www.sympla.com.br/eventos/recife-pe', prioridade: 3 },
+      { nome: 'Florianópolis', url: 'https://www.sympla.com.br/eventos/florianopolis-sc', prioridade: 3 },
+      { nome: 'Fortaleza', url: 'https://www.sympla.com.br/eventos/fortaleza-ce', prioridade: 3 },
+      { nome: 'Goiânia', url: 'https://www.sympla.com.br/eventos/goiania-go', prioridade: 3 }
+    ];
+
+    switch (tipoConfig) {
+      case 'rondonia_todas_capitais':
+        return [...rondoniaCompleta, ...todasCapitais];
+      case 'rondonia_capitais_principais':
+        return [...rondoniaCompleta, ...capitaisPrincipais];
+      default:
+        return rondoniaCompleta;
+    }
+  }
+
+  // Scraper do Sympla com imagens e regiões
+  async scrapeSymplaRegional(tipoConfig = 'rondonia') {
+    console.log(chalk.yellow('\n🎪 Buscando no Sympla (Regional)...'));
+    
+    const page = await this.browser.newPage();
+    await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36');
+
+    const regioes = this.getRegioesConfig(tipoConfig);
 
     let eventos = [];
 
@@ -215,24 +239,20 @@ class EventoScraperCompleto {
   }
 
   // Scraper do Eventbrite com imagens
-  async scrapeEventbriteRegional() {
-    console.log(chalk.yellow('\n📅 Buscando no Eventbrite (Regional)...'));
-    
-    const page = await this.browser.newPage();
-    await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36');
-
-    const regioes = [
-      // Rondônia - Cobertura expandida
+  // Obter regiões Eventbrite baseado na configuração escolhida
+  getRegioesEventbriteConfig(tipoConfig) {
+    const rondoniaCompleta = [
+      // Rondônia - Principais cidades (removidas as cidades especificadas)
       { nome: 'Ji-Paraná', url: 'https://www.eventbrite.com.br/d/brazil--ji-paran%C3%A1/events/' },
       { nome: 'Porto Velho', url: 'https://www.eventbrite.com.br/d/brazil--porto-velho/events/' },
       { nome: 'Ariquemes', url: 'https://www.eventbrite.com.br/d/brazil--ariquemes/events/' },
       { nome: 'Cacoal', url: 'https://www.eventbrite.com.br/d/brazil--cacoal/events/' },
       { nome: 'Vilhena', url: 'https://www.eventbrite.com.br/d/brazil--vilhena/events/' },
-      { nome: 'Presidente Médici', url: 'https://www.eventbrite.com.br/d/brazil--presidente-m%C3%A9dici/events/' },
       { nome: 'Pimenta Bueno', url: 'https://www.eventbrite.com.br/d/brazil--pimenta-bueno/events/' },
-      { nome: 'Rondônia', url: 'https://www.eventbrite.com.br/d/brazil--rond%C3%B4nia/events/' },
-      
-      // Principais capitais
+      { nome: 'Rondônia', url: 'https://www.eventbrite.com.br/d/brazil--rond%C3%B4nia/events/' }
+    ];
+
+    const todasCapitais = [
       { nome: 'São Paulo', url: 'https://www.eventbrite.com.br/d/brazil--s%C3%A3o-paulo/events/' },
       { nome: 'Rio de Janeiro', url: 'https://www.eventbrite.com.br/d/brazil--rio-de-janeiro/events/' },
       { nome: 'Brasília', url: 'https://www.eventbrite.com.br/d/brazil--bras%C3%ADlia/events/' },
@@ -244,11 +264,40 @@ class EventoScraperCompleto {
       { nome: 'Recife', url: 'https://www.eventbrite.com.br/d/brazil--recife/events/' },
       { nome: 'Goiânia', url: 'https://www.eventbrite.com.br/d/brazil--goi%C3%A2nia/events/' },
       { nome: 'Belém', url: 'https://www.eventbrite.com.br/d/brazil--bel%C3%A9m/events/' },
-      { nome: 'Porto Alegre', url: 'https://www.eventbrite.com.br/d/brazil--porto-alegre/events/' },
-      { nome: 'Cuiabá', url: 'https://www.eventbrite.com.br/d/brazil--cuiab%C3%A1/events/' },
-      { nome: 'Campo Grande', url: 'https://www.eventbrite.com.br/d/brazil--campo-grande/events/' },
-      { nome: 'Florianópolis', url: 'https://www.eventbrite.com.br/d/brazil--florian%C3%B3polis/events/' }
+      { nome: 'Porto Alegre', url: 'https://www.eventbrite.com.br/d/brazil--porto-alegre/events/' }
     ];
+
+    const capitaisPrincipais = [
+      { nome: 'São Paulo', url: 'https://www.eventbrite.com.br/d/brazil--s%C3%A3o-paulo/events/' },
+      { nome: 'Belo Horizonte', url: 'https://www.eventbrite.com.br/d/brazil--belo-horizonte/events/' },
+      { nome: 'Salvador', url: 'https://www.eventbrite.com.br/d/brazil--salvador/events/' },
+      { nome: 'Rio de Janeiro', url: 'https://www.eventbrite.com.br/d/brazil--rio-de-janeiro/events/' },
+      { nome: 'Porto Alegre', url: 'https://www.eventbrite.com.br/d/brazil--porto-alegre/events/' },
+      { nome: 'Brasília', url: 'https://www.eventbrite.com.br/d/brazil--bras%C3%ADlia/events/' },
+      { nome: 'Curitiba', url: 'https://www.eventbrite.com.br/d/brazil--curitiba/events/' },
+      { nome: 'Recife', url: 'https://www.eventbrite.com.br/d/brazil--recife/events/' },
+      { nome: 'Florianópolis', url: 'https://www.eventbrite.com.br/d/brazil--florian%C3%B3polis/events/' },
+      { nome: 'Fortaleza', url: 'https://www.eventbrite.com.br/d/brazil--fortaleza/events/' },
+      { nome: 'Goiânia', url: 'https://www.eventbrite.com.br/d/brazil--goi%C3%A2nia/events/' }
+    ];
+
+    switch (tipoConfig) {
+      case 'rondonia_todas_capitais':
+        return [...rondoniaCompleta, ...todasCapitais];
+      case 'rondonia_capitais_principais':
+        return [...rondoniaCompleta, ...capitaisPrincipais];
+      default:
+        return rondoniaCompleta;
+    }
+  }
+
+  async scrapeEventbriteRegional(tipoConfig = 'rondonia') {
+    console.log(chalk.yellow('\n📅 Buscando no Eventbrite (Regional)...'));
+    
+    const page = await this.browser.newPage();
+    await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36');
+
+    const regioes = this.getRegioesEventbriteConfig(tipoConfig);
 
     let eventos = [];
 
@@ -375,7 +424,7 @@ class EventoScraperCompleto {
     const sitesRegionais = [
       { 
         nome: 'Portal Ji-Paraná', 
-        url: 'https://www.google.com/search?q=eventos+ji-parana+rondonia+2024+2025',
+        url: 'https://www.google.com/search?q=eventos+ji-parana+rondonia+2025+2026',
         tipo: 'google'
       },
       { 
@@ -1698,16 +1747,44 @@ async function scrapeEventosCompleto() {
 
     console.log(chalk.green(`✅ Login realizado! Usuário: ${authData.user.email}`));
 
-    // 2. Inicializar scraper
+    // 2. Menu de opções de scraping
+    console.log(chalk.cyan('\n📍 Escolha a configuração de scraping:'));
+    console.log(chalk.white('1️⃣  Apenas Rondônia (padrão)'));
+    console.log(chalk.white('2️⃣  Rondônia + Todas as capitais brasileiras'));
+    console.log(chalk.white('3️⃣  Rondônia + Capitais principais (SP, MG, BA, RJ, RS, DF, PR, PE, SC, CE, GO)'));
+    
+    const opcao = await question('\nDigite sua opção (1, 2 ou 3): ');
+    
+    let tipoConfig = 'rondonia';
+    let descricaoConfig = 'Apenas Rondônia';
+    
+    switch (opcao.trim()) {
+      case '2':
+        tipoConfig = 'rondonia_todas_capitais';
+        descricaoConfig = 'Rondônia + Todas as capitais';
+        break;
+      case '3':
+        tipoConfig = 'rondonia_capitais_principais';
+        descricaoConfig = 'Rondônia + Capitais principais';
+        break;
+      default:
+        tipoConfig = 'rondonia';
+        descricaoConfig = 'Apenas Rondônia';
+        break;
+    }
+    
+    console.log(chalk.green(`\n✅ Configuração selecionada: ${descricaoConfig}`));
+
+    // 3. Inicializar scraper
     const scraper = new EventoScraperCompleto(supabase, authData.user.id);
     await scraper.initialize();
 
-    // 3. Buscar eventos de múltiplas fontes
+    // 4. Buscar eventos de múltiplas fontes
     console.log(chalk.cyan('\n🔍 Buscando eventos de múltiplas fontes...'));
     
     const [symplaEventos, eventbriteEventos, regionaisEventos] = await Promise.all([
-      scraper.scrapeSymplaRegional(),
-      scraper.scrapeEventbriteRegional(),
+      scraper.scrapeSymplaRegional(tipoConfig),
+      scraper.scrapeEventbriteRegional(tipoConfig),
       scraper.scrapeEventosRegionaisRO()
     ]);
 

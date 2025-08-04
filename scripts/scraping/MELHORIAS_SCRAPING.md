@@ -16,9 +16,9 @@
 
 **Exemplos de datas agora suportadas:**
 ```
-"30 de nov" → 30/11/2024 (ano atual)
-"17/08/2024" → 17/08/2024
-"15 de dezembro de 2024" → 15/12/2024
+"30 de nov" → 30/11/2025 (ano atual)
+"17/08/2025" → 17/08/2025
+"15 de dezembro de 2025" → 15/12/2025
 "25 Jan 2025" → 25/01/2025
 "seg, 15 de jan às 20h" → 15/01/2025
 ```
@@ -170,4 +170,4 @@ Este script testa:
 
 **Status:** ✅ Implementado e testado
 **Versão:** 2.0
-**Data:** Dezembro 2024 
+**Data:** Agosto 2025 

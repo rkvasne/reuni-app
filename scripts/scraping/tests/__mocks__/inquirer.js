@@ -5,7 +5,7 @@
 const inquirer = {
   prompt: jest.fn().mockResolvedValue({
     username: 'admin',
-    password: 'scraping2024'
+    password: 'scraping2025'
   })
 };
 

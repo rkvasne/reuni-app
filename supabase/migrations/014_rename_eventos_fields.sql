@@ -1,5 +1,5 @@
 -- 🔄 MIGRAÇÃO: Renomear campos da tabela eventos
--- Data: 2024-12-20
+-- Data: 2025-08-03
 -- Descrição: Alterar nomes dos campos para melhor semântica
 --   - eventos.descricao → eventos.local
 --   - eventos.local → eventos.cidade

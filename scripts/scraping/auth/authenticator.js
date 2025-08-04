@@ -17,7 +17,7 @@ class Authenticator {
     this.logger = new Logger('auth');
     this.activeSessions = new Map();
     
-    // Hash pré-definido para usuário admin (senha: scraping2024)
+    // Hash pré-definido para usuário admin (senha: scraping2025)
     // Em produção, isso deveria vir de variáveis de ambiente
     this.validCredentials = {
       admin: '$2b$12$8K8mQfMjWqEuVxVxVxVxVOeKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK'
@@ -65,9 +65,9 @@ class Authenticator {
    */
   async validateCredentials(username, password) {
     try {
-      // Para demonstração, aceita admin/scraping2024
+      // Para demonstração, aceita admin/scraping2025
       // Em produção, isso viria do banco de dados
-      if (username === 'admin' && password === 'scraping2024') {
+      if (username === 'admin' && password === 'scraping2025') {
         this.logger.info('Credenciais válidas para usuário admin');
         return true;
       }

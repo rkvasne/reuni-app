@@ -1,6 +1,6 @@
 # Changelog - Reuni App
 
-## [0.0.12] - 2024-12-20
+## [0.0.12] - 2025-08-03
 
 ### Fixed
 - **Supabase Timeout Issues**: Resolved database query timeout problems by optimizing complex JOIN queries
@@ -35,7 +35,7 @@
 - **Code Organization**: Cleaned up redundant code and improved structure
 - **Type Safety**: Enhanced TypeScript types and interfaces
 
-## [0.0.11] - 2024-12-19
+## [0.0.11] - 2025-08-02
 
 ### Added
 - Initial release with core event management functionality
