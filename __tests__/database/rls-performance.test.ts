@@ -71,7 +71,7 @@ describe('Performance das Políticas RLS', () => {
   describe('Performance de Consultas Básicas', () => {
     it('deve executar SELECT em usuarios com RLS em tempo aceitável', async () => {
       const metrics = await measureQueryPerformance(
-        () => supabaseUser
+        async () => await supabaseUser
           .from('usuarios')
           .select('*')
           .eq('id', testUserId),
@@ -86,7 +86,7 @@ describe('Performance das Políticas RLS', () => {
 
     it('deve executar SELECT em eventos com RLS em tempo aceitável', async () => {
       const metrics = await measureQueryPerformance(
-        () => supabaseUser
+        async () => await supabaseUser
           .from('eventos')
           .select('*')
           .limit(20),
@@ -101,19 +101,20 @@ describe('Performance das Políticas RLS', () => {
 
     it('deve executar INSERT com RLS em tempo aceitável', async () => {
       const metrics = await measureQueryPerformance(
-        () => supabaseUser
-          .from('curtidas_evento')
-          .insert({
-            evento_id: testEventIds[0],
-            usuario_id: testUserId
-          })
-          .then(() => 
-            supabaseUser
-              .from('curtidas_evento')
-              .delete()
-              .eq('evento_id', testEventIds[0])
-              .eq('usuario_id', testUserId)
-          ),
+        async () => {
+          await supabaseUser
+            .from('curtidas_evento')
+            .insert({
+              evento_id: testEventIds[0],
+              usuario_id: testUserId
+            })
+          
+          await supabaseUser
+            .from('curtidas_evento')
+            .delete()
+            .eq('evento_id', testEventIds[0])
+            .eq('usuario_id', testUserId)
+        },
         5
       )
 
@@ -126,7 +127,7 @@ describe('Performance das Políticas RLS', () => {
   describe('Performance de Consultas Complexas', () => {
     it('deve executar JOINs com RLS em tempo aceitável', async () => {
       const metrics = await measureQueryPerformance(
-        () => supabaseUser
+        async () => await supabaseUser
           .from('eventos')
           .select(`
             *,
@@ -145,7 +146,7 @@ describe('Performance das Políticas RLS', () => {
 
     it('deve executar consultas com filtros múltiplos em tempo aceitável', async () => {
       const metrics = await measureQueryPerformance(
-        () => supabaseUser
+        async () => await supabaseUser
           .from('eventos')
           .select('*')
           .eq('categoria', 'social')
@@ -162,7 +163,7 @@ describe('Performance das Políticas RLS', () => {
 
     it('deve executar busca full-text com RLS em tempo aceitável', async () => {
       const metrics = await measureQueryPerformance(
-        () => supabaseUser
+        async () => await supabaseUser
           .from('eventos')
           .select('*')
           .textSearch('titulo', 'evento')
@@ -179,7 +180,7 @@ describe('Performance das Políticas RLS', () => {
   describe('Performance de Consultas de Comunidades', () => {
     it('deve executar consultas de membros com RLS em tempo aceitável', async () => {
       const metrics = await measureQueryPerformance(
-        () => supabaseUser
+        async () => await supabaseUser
           .from('membros_comunidade')
           .select(`
             *,
@@ -197,7 +198,7 @@ describe('Performance das Políticas RLS', () => {
 
     it('deve executar consultas de posts com RLS em tempo aceitável', async () => {
       const metrics = await measureQueryPerformance(
-        () => supabaseUser
+        async () => await supabaseUser
           .from('posts_comunidade')
           .select(`
             *,
@@ -219,13 +220,13 @@ describe('Performance das Políticas RLS', () => {
       const startTime = Date.now()
 
       // 20 consultas simultâneas
-      const promises = Array.from({ length: 20 }, (_, i) => 
-        supabaseUser
+      const promises = Array.from({ length: 20 }, async (_, i) => {
+        const result = await supabaseUser
           .from('eventos')
           .select('*')
           .limit(5)
-          .then(result => ({ index: i, time: Date.now() - startTime, result }))
-      )
+        return { index: i, time: Date.now() - startTime, result }
+      })
 
       const results = await Promise.all(promises)
       const endTime = Date.now()
@@ -319,7 +320,7 @@ describe('Performance das Políticas RLS', () => {
         .single()
 
       const metrics = await measureQueryPerformance(
-        () => supabaseUser
+        async () => await supabaseUser
           .from('presencas')
           .update({ status: 'confirmado' })
           .eq('id', presenca.id),
@@ -342,7 +343,7 @@ describe('Performance das Políticas RLS', () => {
     it('deve comparar performance de consultas com e sem RLS', async () => {
       // Consulta com RLS (usuário autenticado)
       const withRLSMetrics = await measureQueryPerformance(
-        () => supabaseUser
+        async () => await supabaseUser
           .from('eventos')
           .select('*')
           .limit(10),
@@ -351,7 +352,7 @@ describe('Performance das Políticas RLS', () => {
 
       // Consulta sem RLS (admin)
       const withoutRLSMetrics = await measureQueryPerformance(
-        () => supabaseAdmin
+        async () => await supabaseAdmin
           .from('eventos')
           .select('*')
           .limit(10),
@@ -374,7 +375,7 @@ describe('Performance das Políticas RLS', () => {
     it('deve usar índices eficientemente com políticas RLS', async () => {
       // Consulta que deve usar índice
       const indexedMetrics = await measureQueryPerformance(
-        () => supabaseUser
+        async () => await supabaseUser
           .from('eventos')
           .select('*')
           .eq('organizador_id', testUserId), // Campo indexado
@@ -383,7 +384,7 @@ describe('Performance das Políticas RLS', () => {
 
       // Consulta que pode não usar índice
       const nonIndexedMetrics = await measureQueryPerformance(
-        () => supabaseUser
+        async () => await supabaseUser
           .from('eventos')
           .select('*')
           .ilike('descricao', '%teste%'), // Campo não indexado
@@ -405,7 +406,7 @@ describe('Performance das Políticas RLS', () => {
  * Função auxiliar para medir performance de consultas
  */
 async function measureQueryPerformance(
-  queryFunction: () => Promise<any>,
+  queryFunction: () => any,
   iterations: number = 5
 ): Promise<PerformanceMetrics> {
   const times: number[] = []
@@ -464,7 +465,7 @@ async function setupPerformanceData() {
   )
 
   const events = await Promise.all(eventPromises)
-  testEventIds = events.map(e => e.data.id)
+  testEventIds = events.map(e => e.data?.id).filter(id => id !== undefined)
 
   // Criar múltiplas comunidades
   const communityPromises = Array.from({ length: 10 }, (_, i) => 
@@ -482,7 +483,7 @@ async function setupPerformanceData() {
   )
 
   const communities = await Promise.all(communityPromises)
-  testCommunityIds = communities.map(c => c.data.id)
+  testCommunityIds = communities.map(c => c.data?.id).filter(id => id !== undefined)
 
   // Adicionar usuário como membro das comunidades
   const memberPromises = testCommunityIds.map(communityId => 
