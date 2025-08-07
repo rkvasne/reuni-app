@@ -1,177 +1,111 @@
-# Implementation Plan - Reuni Social Platform
+# Plano de Implementação - Sistema de Eventos Reuni
 
-## Phase 1: Core Authentication & Infrastructure
+## Fase 1: Infraestrutura de Eventos (Dependente da Spec de Autenticação)
 
-- [ ] 1. Set up Supabase authentication system
-  - Configure Supabase project with authentication enabled
-  - Set up Google OAuth provider in Supabase dashboard
-  - Create user profiles table with RLS policies
-  - Test authentication flow with email/password and Google OAuth
-  - _Requirements: 1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 1.7_
+⚠️ **IMPORTANTE**: As tarefas de autenticação foram **movidas para a spec email-signup-improvements** que deve ser completada primeiro.
 
-- [ ] 2. Implement user session management
-  - Create persistent session handling with Supabase client
-  - Implement automatic token refresh mechanism
-  - Add session validation middleware for protected routes
-  - Create logout functionality with proper cleanup
-  - _Requirements: 1.1, 1.6_
-
-- [ ] 3. Build user profile management system
-  - Create user profile creation form with validation
-  - Implement profile editing functionality
-  - Add avatar upload with Supabase Storage
-  - Create profile viewing component with privacy controls
-  - _Requirements: 6.1, 6.2, 6.3, 6.4, 6.5, 6.6, 6.7_
-
-## Phase 2: Event Management System
-
-- [ ] 4. Create event data models and database schema
-
-
-
-
-  - Design and implement events table with proper relationships
-  - Set up attendances table with unique constraints
-  - Create database indexes for performance optimization
-  - Implement Row Level Security policies for events
+- [ ] 1. Criar modelos de dados e schema do banco para eventos
+  - Projetar e implementar tabela eventos com relacionamentos adequados
+  - Configurar tabela presencas com constraints únicos
+  - Criar índices de banco para otimização de performance
+  - Implementar políticas Row Level Security para eventos
+  - Testar integridade referencial e performance das queries
   - _Requirements: 3.1, 3.2, 3.3, 4.1, 4.2, 4.3_
 
-
-
-- [ ] 5. Build event creation and management interface
-  - Create event creation form with comprehensive validation
-  - Implement image upload functionality for event covers
-  - Build event editing interface for organizers
-  - Add event deletion with confirmation modal
-  - Create event duplication feature for recurring events
+- [ ] 2. Construir interface de criação e gestão de eventos
+  - Criar formulário de criação de evento com validação abrangente
+  - Implementar funcionalidade de upload de imagem para capas de eventos
+  - Construir interface de edição de eventos para organizadores
+  - Adicionar exclusão de evento com modal de confirmação
+  - Criar funcionalidade de duplicação de evento para eventos recorrentes
   - _Requirements: 3.1, 3.2, 3.3, 3.4, 3.5, 3.6, 3.7_
 
-- [ ] 6. Implement event discovery and listing
-  - Create main events feed with pagination
-  - Build event card component with all essential information
-  - Implement featured events carousel with auto-rotation
-  - Add event categories and filtering system
-  - Create event detail view with full information
+- [ ] 3. Implementar descoberta e listagem de eventos
+  - Criar feed principal de eventos com paginação
+  - Construir componente de card de evento com todas as informações essenciais
+  - Implementar carrossel de eventos em destaque com rotação automática
+  - Adicionar categorias de eventos e sistema de filtragem
+  - Criar visualização detalhada de evento com informações completas
   - _Requirements: 2.1, 2.2, 2.3, 2.4, 2.5, 7.1, 7.2, 7.3_
 
-## Phase 3: Participation & Social Features
+## Fase 2: Sistema de Participação
 
-- [ ] 7. Build attendance management system
-  - Implement "Eu Vou" button with state management
-  - Create attendance confirmation with database updates
-  - Build attendance cancellation functionality
-  - Add participant counter with real-time updates
-  - Implement attendance limits and waitlist system
+- [ ] 4. Construir sistema de gestão de presença
+  - Implementar botão "Eu Vou" com gerenciamento de estado
+  - Criar confirmação de presença com atualizações no banco de dados
+  - Construir funcionalidade de cancelamento de presença
+  - Adicionar contador de participantes com atualizações em tempo real
+  - Implementar limites de presença e sistema de lista de espera
   - _Requirements: 4.1, 4.2, 4.3, 4.4, 4.5, 4.6, 4.7_
 
-- [ ] 8. Create social interaction features
-  - Implement event commenting system with real-time updates
-  - Add event liking/favoriting functionality
-  - Create event sharing with social media integration
-  - Build participant list with profile links
-  - Add follow/unfollow system for organizers
+- [ ] 5. Criar funcionalidades de interação social em eventos
+  - Implementar sistema de comentários em eventos com atualizações em tempo real
+  - Adicionar funcionalidade de curtir/favoritar eventos
+  - Criar compartilhamento de eventos com integração de redes sociais
+  - Construir lista de participantes com links para perfis
+  - Adicionar sistema de seguir/deixar de seguir organizadores
   - _Requirements: 9.1, 9.2, 9.3, 9.4, 9.5, 9.6, 9.7_
 
-- [ ] 9. Implement user dashboard and "My Events"
-  - Create "My Events" page showing confirmed attendances
-  - Build organizer dashboard with created events
-  - Add event management tools for organizers
-  - Implement event analytics for organizers
-  - Create calendar view for user's events
+- [ ] 6. Implementar dashboard do usuário e "Meus Eventos"
+  - Criar página "Meus Eventos" mostrando presenças confirmadas
+  - Construir dashboard do organizador com eventos criados
+  - Adicionar ferramentas de gestão de eventos para organizadores
+  - Implementar analytics de eventos para organizadores
+  - Criar visualização em calendário para eventos do usuário
   - _Requirements: 2.1, 2.2, 4.6, 6.4, 6.5_
 
-## Phase 4: Communities & Advanced Features
+## Fase 3: Busca e Descoberta Avançada
 
-- [ ] 10. Build community management system
-  - Create communities database schema with relationships
-  - Implement community creation form with validation
-  - Build community discovery and browsing interface
-  - Add community joining/leaving functionality
-  - Create community admin panel with member management
-  - _Requirements: 5.1, 5.2, 5.3, 5.4, 5.5, 5.6, 5.7_
-
-- [ ] 11. Implement advanced search and filtering
-  - Create comprehensive search functionality across events
-  - Build advanced filtering system (date, location, category)
-  - Implement location-based event discovery
-  - Add search suggestions and autocomplete
-  - Create saved searches and alerts functionality
+- [ ] 7. Implementar sistema de busca e filtragem avançada
+  - Criar funcionalidade de busca abrangente em todos os eventos
+  - Construir sistema de filtragem avançada (data, localização, categoria)
+  - Implementar descoberta de eventos baseada em localização
+  - Adicionar sugestões de busca e autocompletar
+  - Criar funcionalidade de buscas salvas e alertas
   - _Requirements: 7.1, 7.2, 7.3, 7.4, 7.5, 7.6, 7.7_
 
-- [ ] 12. Add notification system
-  - Implement in-app notification system with real-time updates
-  - Create email notification templates and triggers
-  - Build notification preferences management
-  - Add push notification support for PWA
-  - Implement notification history and management
+- [ ] 8. Adicionar sistema de notificações para eventos
+  - Implementar sistema de notificações in-app com atualizações em tempo real
+  - Criar templates de notificação por email e triggers
+  - Construir gerenciamento de preferências de notificação
+  - Adicionar suporte a notificações push para PWA
+  - Implementar histórico e gerenciamento de notificações
   - _Requirements: 8.1, 8.2, 8.3, 8.4, 8.5, 8.6, 8.7_
 
-## Phase 5: PWA & Performance Optimization
+## Fase 4: Testes e Qualidade
 
-- [ ] 13. Implement Progressive Web App features
-  - Add service workers for offline functionality
-  - Create install prompt for "add to home screen"
-  - Implement background sync for offline actions
-  - Add web push notifications system
-  - Create offline fallback pages and caching strategies
-  - _Requirements: 10.1, 10.2, 10.3, 10.4, 10.5, 10.6, 10.7_
+- [ ] 9. Implementar suite de testes abrangente para eventos
+  - Criar testes unitários para todas as funções utilitárias e hooks de eventos
+  - Construir testes de componentes usando React Testing Library
+  - Implementar testes de integração para endpoints de API de eventos
+  - Adicionar testes end-to-end para jornadas críticas do usuário
+  - Configurar testes automatizados no pipeline CI/CD
+  - _Requirements: Validação de todos os requirements_
 
-- [ ] 14. Optimize performance and mobile experience
-  - Implement code splitting and lazy loading for components
-  - Add image optimization and lazy loading
-  - Create loading states and skeleton screens
-  - Optimize layout components for mobile devices
-  - Implement touch-friendly interactions and gestures
-  - _Requirements: 10.1, 10.2, 10.3, 10.4, 10.5, 10.7_
-
-- [ ] 15. Add real-time features
-  - Implement real-time event updates using Supabase subscriptions
-  - Add live participant count updates
-  - Create real-time comment system
-  - Implement live notifications
-  - Add real-time community activity feeds
-  - _Requirements: 4.3, 8.1, 8.2, 8.3, 9.2, 9.3_
-
-## Phase 6: Testing & Quality Assurance
-
-- [ ] 16. Implement comprehensive testing suite
-  - Create unit tests for all utility functions and hooks
-  - Build component tests using React Testing Library
-  - Implement integration tests for API endpoints
-  - Add end-to-end tests for critical user journeys
-  - Set up automated testing in CI/CD pipeline
-  - _Requirements: All requirements validation_
-
-- [ ] 17. Add error handling and monitoring
-  - Implement global error boundary components
-  - Create comprehensive error logging system
-  - Add user-friendly error messages and recovery options
-  - Implement performance monitoring and alerting
-  - Create health check endpoints for system monitoring
+- [ ] 10. Adicionar tratamento de erros e monitoramento
+  - Implementar componentes de error boundary globais
+  - Criar sistema abrangente de logging de erros
+  - Adicionar mensagens de erro amigáveis e opções de recuperação
+  - Implementar monitoramento de performance e alertas
+  - Criar endpoints de health check para monitoramento do sistema
   - _Requirements: 1.7, 10.4, 10.5_
 
-- [ ] 18. Security hardening and compliance
-  - Implement comprehensive input validation and sanitization
-  - Add rate limiting to prevent abuse
-  - Create data export functionality for LGPD compliance
-  - Implement secure file upload with virus scanning
-  - Add audit logging for sensitive operations
-  - _Requirements: 1.7, 6.6, 9.7_
+## Notas Importantes
 
-## Phase 7: Production Launch & Native Mobile Preparation
+### Specs Especializadas Criadas
+Esta spec agora foca **exclusivamente no sistema de eventos**. As seguintes áreas foram movidas para specs especializadas:
 
-- [ ] 19. Prepare for production launch
-  - Set up production environment with proper scaling
-  - Configure monitoring and alerting systems
-  - Create backup and disaster recovery procedures
-  - Implement feature flags for gradual rollouts
-  - Create admin panel and moderation tools
-  - _Requirements: 9.7, 5.5, 10.1, 10.2, 10.3, 10.4, 10.5_
+- 🏘️ **Sistema de Comunidades** → Nova spec `comunidades-sociais`
+- 📱 **PWA e Performance** → Nova spec `pwa-performance`  
+- 🔒 **Segurança e Compliance** → Integrada na spec de autenticação
 
-- [ ] 20. Prepare React Native foundation for future mobile apps
-  - Research and plan React Native architecture
-  - Create shared business logic structure for cross-platform use
-  - Design mobile-specific user flows and wireframes
-  - Set up development environment for future mobile development
-  - Document mobile app requirements and technical specifications
-  - _Requirements: 10.1, 10.7_
+### Dependências
+- ✅ **Spec de Autenticação** deve ser completada primeiro
+- ✅ **Esta spec** deve ser completada antes das specs especializadas
+- ✅ **Comunidades** dependem do sistema de eventos funcionando
+
+### Próximos Passos
+1. **Completar autenticação** (email-signup-improvements)
+2. **Implementar eventos** (esta spec - 10 tarefas focadas)
+3. **Adicionar comunidades** (spec comunidades-sociais)
+4. **Otimizar performance** (spec pwa-performance)

@@ -1,8 +1,8 @@
-# Design Document - Reuni Social Platform
+# Design Document - Sistema de Eventos Reuni
 
 ## Overview
 
-Reuni é uma plataforma social moderna focada em eventos reais, construída com Next.js 14, TypeScript, Tailwind CSS e Supabase. A arquitetura segue padrões modernos de desenvolvimento web com foco em performance, escalabilidade e experiência do usuário.
+O sistema de eventos é o core da plataforma Reuni, permitindo criação, descoberta e participação em eventos diversos. Construído sobre uma base sólida de autenticação e banco de dados, o sistema foca na experiência do usuário para descobrir eventos relevantes, interagir socialmente e gerenciar participações de forma eficiente.
 
 ## Architecture
 

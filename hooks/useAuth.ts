@@ -15,16 +15,24 @@ export function useAuth() {
         const { data: { session }, error } = await supabase.auth.getSession()
         
         if (error) {
-          console.warn('Erro ao obter sessão:', error.message)
-          // Se há erro de refresh token, limpar sessão
-          if (error.message.includes('refresh') || error.message.includes('token')) {
-            await supabase.auth.signOut()
+          // Se há erro de refresh token, limpar sessão silenciosamente
+          if (error.message.includes('refresh') || error.message.includes('token') || error.message.includes('Invalid')) {
+            // Limpar tokens do localStorage também
+            if (typeof window !== 'undefined') {
+              window.localStorage.removeItem('supabase.auth.token')
+              window.localStorage.removeItem('sb-' + process.env.NEXT_PUBLIC_SUPABASE_URL?.split('//')[1]?.split('.')[0] + '-auth-token')
+            }
+            await supabase.auth.signOut({ scope: 'local' })
+            setUser(null)
+          } else {
+            console.warn('Erro ao obter sessão:', error.message)
           }
+        } else {
+          setUser(session?.user ?? null)
         }
-        
-        setUser(session?.user ?? null)
       } catch (error) {
-        console.warn('Erro na autenticação:', error)
+        // Limpar sessão em caso de erro crítico
+        await supabase.auth.signOut({ scope: 'local' })
         setUser(null)
       } finally {
         setLoading(false)
@@ -36,10 +44,19 @@ export function useAuth() {
     // Escutar mudanças de autenticação
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
+        console.log('🔐 Auth State Change:', {
+          event,
+          hasSession: !!session,
+          userId: session?.user?.id,
+          userEmail: session?.user?.email
+        })
+        
         if (event === 'TOKEN_REFRESHED') {
-          console.log('Token refreshed successfully')
+          console.log('✅ Token atualizado com sucesso')
         } else if (event === 'SIGNED_OUT') {
-          console.log('User signed out')
+          console.log('👋 Usuário desconectado')
+        } else if (event === 'SIGNED_IN') {
+          console.log('👤 Usuário conectado')
         }
         
         setUser(session?.user ?? null)
@@ -58,12 +75,13 @@ export function useAuth() {
     return { data, error }
   }
 
-  // Cadastro apenas com email (magic link)
+  // Cadastro com email e confirmação
   const signUpWithEmail = async (email: string) => {
-    const { data, error } = await supabase.auth.signInWithOtp({
+    const { data, error } = await supabase.auth.signUp({
       email,
+      password: 'temp-password-' + Math.random().toString(36), // Senha temporária
       options: {
-        emailRedirectTo: `${window.location.origin}/`
+        emailRedirectTo: `${window.location.origin}/auth/callback`
       }
     })
     return { data, error }
@@ -78,7 +96,7 @@ export function useAuth() {
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: `${window.location.origin}/`
+        redirectTo: `${window.location.origin}/auth/callback`
       }
     })
     return { data, error }

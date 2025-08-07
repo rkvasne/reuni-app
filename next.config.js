@@ -7,7 +7,7 @@ const nextConfig = {
   
   // Otimização de imagens
   images: {
-    domains: ['supabase.co', 'your-domain.com'],
+    domains: ['supabase.co', 'your-domain.com', 'img.evbuc.com', 'images.sympla.com.br', 'discovery-next.svc.sympla.com.br'],
     formats: ['image/webp', 'image/avif'],
     minimumCacheTTL: 60,
   },

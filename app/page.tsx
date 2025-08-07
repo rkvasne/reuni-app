@@ -8,6 +8,7 @@ import Header from '@/components/Header'
 import LeftSidebar from '@/components/LeftSidebar'
 import MainFeed from '@/components/MainFeed'
 import RightSidebar from '@/components/RightSidebar'
+import WelcomeDebug from '@/components/WelcomeDebug'
 
 // Componente do App Principal (para usuários logados)
 function AppDashboard() {
@@ -51,6 +52,9 @@ function AppDashboard() {
           </div>
         </div>
       </div>
+      
+      {/* Componente de debug - remover em produção */}
+      <WelcomeDebug />
     </div>
   )
 }

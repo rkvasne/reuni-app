@@ -12,7 +12,7 @@ interface OptimizedImageProps {
   fill?: boolean;
   className?: string;
   sizes?: string;
-  priority?: boolean;
+  priority?: boolean;  
   placeholder?: 'blur' | 'empty';
   fallback?: React.ReactNode;
 }
@@ -29,8 +29,6 @@ export default function OptimizedImage({
   placeholder = 'empty',
   fallback
 }: OptimizedImageProps) {
-  const [imageError, setImageError] = useState(false);
-  const [imageLoading, setImageLoading] = useState(true);
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -46,38 +44,19 @@ export default function OptimizedImage({
     );
   }
 
-  // Função para lidar com erro de imagem
-  const handleImageError = () => {
-    console.warn(`Erro ao carregar imagem: ${src}`);
-    setImageError(true);
-    setImageLoading(false);
-  };
-
-  const handleImageLoad = () => {
-    setImageLoading(false);
-  };
-
   // Sanitizar e otimizar a URL da imagem
   const sanitizedSrc = sanitizeImageUrl(src);
   const optimizedSrc = sanitizedSrc ? optimizeImageUrl(sanitizedSrc, width) : null;
 
   // Se a URL não é válida, usar placeholder
   if (!optimizedSrc) {
-    const placeholderSrc = getPlaceholderImage(width || 400, height || 300);
-    
     if (fallback) {
       return <>{fallback}</>;
     }
     
     return (
       <div className={`bg-neutral-200 flex items-center justify-center ${className}`}>
-        <Image
-          src={placeholderSrc}
-          alt={alt}
-          width={width || 400}
-          height={height || 300}
-          className="opacity-50"
-        />
+        <span className="text-neutral-500 text-sm">Imagem não disponível</span>
       </div>
     );
   }
@@ -90,24 +69,9 @@ export default function OptimizedImage({
         alt={alt}
         width={width}
         height={height}
-        className={`${className} ${imageLoading ? 'opacity-0' : 'opacity-100'} transition-opacity duration-300`}
-        onError={handleImageError}
-        onLoad={handleImageLoad}
+        className={className}
         style={fill ? { width: '100%', height: '100%', objectFit: 'cover' } : {}}
       />
-    );
-  }
-
-  // Se houve erro na imagem, mostrar fallback
-  if (imageError) {
-    if (fallback) {
-      return <>{fallback}</>;
-    }
-    // Fallback padrão se não foi fornecido
-    return (
-      <div className={`bg-neutral-200 flex items-center justify-center ${className}`}>
-        <span className="text-neutral-500 text-sm">Imagem não disponível</span>
-      </div>
     );
   }
 
@@ -115,12 +79,10 @@ export default function OptimizedImage({
   const baseProps = {
     src: optimizedSrc,
     alt,
-    className: `${className} ${imageLoading ? 'opacity-0' : 'opacity-100'} transition-opacity duration-300`,
-    onError: handleImageError,
-    onLoad: handleImageLoad,
+    className,
     priority,
     placeholder,
-    unoptimized: false // Forçar otimização
+    unoptimized: false
   };
 
   // Se usar fill

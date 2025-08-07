@@ -2,58 +2,118 @@
 
 ## Overview
 
-Este design aborda a melhoria da experiência de cadastro por email no Reuni através de três componentes principais: personalização de emails do Supabase, feedback visual aprimorado na interface, e uma página de boas-vindas para novos usuários. A solução foca em criar uma experiência profissional e acolhedora desde o primeiro contato.
+Este design implementa uma arquitetura de autenticação enterprise-grade para o Reuni, baseada nas melhores práticas observadas no sistema SIGA. A solução aborda problemas fundamentais através de cinco pilares: middleware de autenticação server-side, sincronização robusta de dados, callback confiável, políticas de segurança adequadas, e tratamento robusto de erros. O objetivo é criar um sistema que seja seguro, confiável e ofereça uma experiência de usuário consistente.
 
 ## Architecture
 
-### Email Customization Strategy
-- **Supabase Email Templates**: Personalização através do dashboard do Supabase
-- **Custom SMTP (Opcional)**: Para controle total sobre emails
-- **Fallback Strategy**: Manter funcionalidade mesmo com configuração básica
+### Core Authentication Layer
+- **Middleware de Autenticação**: Verificação server-side em todas as rotas protegidas
+- **Session Management**: Gerenciamento seguro de tokens JWT via cookies
+- **Route Protection**: Proteção automática baseada em configuração de rotas
+- **Fallback Strategy**: Comportamento seguro em caso de falhas
 
-### Frontend Components
-- **Enhanced AuthModal**: Feedback visual melhorado
-- **Welcome Page**: Nova página para usuários confirmados
-- **Resend Email Component**: Funcionalidade de reenvio
+### Data Synchronization Layer  
+- **Dual-Table Strategy**: Sincronização entre auth.users e usuarios
+- **Automatic Profile Creation**: Criação automática de perfis com retry
+- **Consistency Checks**: Verificação e correção de inconsistências
+- **Transaction Safety**: Operações atômicas para integridade de dados
 
-### State Management
-- **Email Status Tracking**: Estados de envio, sucesso, erro
-- **User Onboarding Flow**: Controle do fluxo de boas-vindas
-- **Rate Limiting**: Controle de reenvios de email
+### Security Layer
+- **Row Level Security**: Políticas RLS robustas e testadas
+- **Access Control**: Controle granular de permissões por usuário
+- **Error Isolation**: Isolamento de erros sem exposição de dados sensíveis
+- **Audit Trail**: Logging detalhado para monitoramento e debug
+
+### User Experience Layer
+- **Smart Routing**: Redirecionamento inteligente baseado no estado do usuário
+- **Loop Prevention**: Detecção e prevenção de loops de redirecionamento
+- **Progressive Enhancement**: Funcionalidade básica garantida mesmo com falhas
+- **Graceful Degradation**: Fallbacks que mantêm a aplicação funcional
 
 ## Components and Interfaces
 
-### 1. Email Template Configuration
+### 1. Authentication Middleware
 
-**Supabase Email Templates:**
-```html
-<!-- Template personalizado para confirmação -->
-<div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-  <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 40px; text-align: center;">
-    <h1 style="color: white; margin: 0; font-size: 28px;">Bem-vindo ao Reuni! 🎉</h1>
-  </div>
-  
-  <div style="padding: 40px; background: white;">
-    <h2 style="color: #333; margin-bottom: 20px;">Confirme seu acesso</h2>
-    <p style="color: #666; line-height: 1.6; margin-bottom: 30px;">
-      Você está a um clique de descobrir eventos incríveis na sua região! 
-      O Reuni conecta pessoas através de experiências únicas.
-    </p>
+**Middleware Configuration:**
+```typescript
+// middleware.ts
+import { createServerClient } from '@supabase/ssr'
+import { NextResponse } from 'next/server'
+import type { NextRequest } from 'next/server'
+
+export async function middleware(request: NextRequest) {
+  // Prevent RSC loops
+  if (request.nextUrl.searchParams.has('_rsc')) {
+    return NextResponse.next()
+  }
+
+  let response = NextResponse.next({
+    request: {
+      headers: request.headers,
+    },
+  })
+
+  const supabase = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        get(name: string) {
+          return request.cookies.get(name)?.value
+        },
+        set(name: string, value: string, options: any) {
+          request.cookies.set({ name, value, ...options })
+          response.cookies.set({ name, value, ...options })
+        },
+        remove(name: string, options: any) {
+          request.cookies.set({ name, value: '', ...options })
+          response.cookies.set({ name, value: '', ...options })
+        },
+      },
+    }
+  )
+
+  try {
+    const { data: { session }, error } = await supabase.auth.getSession()
     
-    <div style="text-align: center; margin: 40px 0;">
-      <a href="{{ .ConfirmationURL }}" 
-         style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
-                color: white; padding: 15px 30px; text-decoration: none; 
-                border-radius: 8px; font-weight: bold; display: inline-block;">
-        Confirmar Meu Acesso
-      </a>
-    </div>
+    // Protected routes logic
+    const isProtectedRoute = request.nextUrl.pathname.startsWith('/dashboard') ||
+                           request.nextUrl.pathname.startsWith('/profile') ||
+                           request.nextUrl.pathname.startsWith('/events/create')
     
-    <p style="color: #999; font-size: 14px; text-align: center;">
-      Este link expira em 24 horas por segurança.
-    </p>
-  </div>
-</div>
+    const isAuthRoute = request.nextUrl.pathname === '/login' ||
+                       request.nextUrl.pathname === '/signup'
+    
+    // Redirect unauthenticated users from protected routes
+    if (!session && isProtectedRoute) {
+      const redirectUrl = new URL('/login', request.url)
+      redirectUrl.searchParams.set('redirectedFrom', request.nextUrl.pathname)
+      return NextResponse.redirect(redirectUrl)
+    }
+    
+    // Redirect authenticated users from auth routes
+    if (session && isAuthRoute) {
+      return NextResponse.redirect(new URL('/', request.url))
+    }
+    
+    return response
+    
+  } catch (error) {
+    console.error('Middleware error:', error)
+    // In case of error, allow access to prevent breaking the app
+    return response
+  }
+}
+
+export const config = {
+  matcher: [
+    '/dashboard/:path*',
+    '/profile/:path*', 
+    '/events/create/:path*',
+    '/login',
+    '/signup'
+  ]
+}
 ```
 
 ### 2. Enhanced AuthModal Component

@@ -19,7 +19,7 @@ export function useUserProfile() {
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState<string | null>(null)
 
-    // Buscar perfil completo do usuário
+    // Buscar perfil completo do usuário na tabela usuarios
     const fetchUserProfile = async () => {
         if (!authUser) {
             setUserProfile(null)
@@ -31,66 +31,86 @@ export function useUserProfile() {
             setLoading(true)
             setError(null)
 
-            const { data, error: fetchError } = await supabase
+            console.log('🔍 Buscando perfil do usuário na tabela usuarios...')
+            
+            // Primeiro, tentar buscar o usuário existente
+            const { data: existingUser, error: fetchError } = await supabase
                 .from('usuarios')
                 .select('id, nome, email, avatar, bio, created_at')
                 .eq('id', authUser.id)
-                .single()
+                .maybeSingle()
 
             if (fetchError) {
-                // Se usuário não existe na tabela usuarios, criar
-                if (fetchError.code === 'PGRST116') {
-                    const newUser = {
-                        id: authUser.id,
-                        nome: authUser.user_metadata?.name || authUser.email?.split('@')[0] || 'Usuário',
-                        email: authUser.email || '',
-                        avatar: authUser.user_metadata?.avatar_url || undefined,
-                        bio: undefined
-                    }
+                console.error('Erro ao buscar usuário:', fetchError)
+                setError('Erro ao carregar perfil do usuário')
+                return
+            }
 
-                    const { data: createdUser, error: createError } = await supabase
-                        .from('usuarios')
-                        .insert([newUser])
-                        .select('id, nome, email, avatar, bio, created_at')
-                        .single()
-
-                    if (createError) {
-                        console.error('Erro ao criar usuário:', createError)
-                        // Se falhar por RLS, criar um perfil básico local
-                        const basicProfile: UserProfile = {
-                            id: authUser.id,
-                            nome: authUser.user_metadata?.name || authUser.email?.split('@')[0] || 'Usuário',
-                            email: authUser.email || '',
-                            avatar: authUser.user_metadata?.avatar_url || undefined,
-                            bio: undefined,
-                            created_at: new Date().toISOString()
-                        }
-                        setUserProfile(basicProfile)
-                        setError('Perfil criado localmente. Configure o RLS no Supabase para persistir dados.')
-                    } else {
-                        setUserProfile(createdUser)
-                    }
-                } else {
-                    throw fetchError
-                }
+            if (existingUser) {
+                // Usuário já existe na tabela
+                console.log('✅ Usuário encontrado na tabela:', existingUser)
+                setUserProfile(existingUser)
             } else {
-                setUserProfile(data)
+                // Usuário não existe, criar novo registro
+                console.log('📝 Usuário não encontrado, criando novo registro...')
+                
+                const newUserData = {
+                    id: authUser.id,
+                    nome: authUser.user_metadata?.name || '', // Nome vazio para forçar completar perfil
+                    email: authUser.email || '',
+                    avatar: authUser.user_metadata?.avatar_url || null,
+                    bio: null
+                }
+
+                const { data: createdUser, error: createError } = await supabase
+                    .from('usuarios')
+                    .insert([newUserData])
+                    .select('id, nome, email, avatar, bio, created_at')
+                    .single()
+
+                if (createError) {
+                    console.error('Erro ao criar usuário:', createError)
+                    
+                    // Se for erro de chave duplicada, tentar buscar novamente
+                    if (createError.code === '23505') {
+                        console.log('🔄 Chave duplicada, tentando buscar usuário existente...')
+                        const { data: retryUser, error: retryError } = await supabase
+                            .from('usuarios')
+                            .select('id, nome, email, avatar, bio, created_at')
+                            .eq('id', authUser.id)
+                            .single()
+                        
+                        if (!retryError && retryUser) {
+                            console.log('✅ Usuário encontrado na segunda tentativa:', retryUser)
+                            setUserProfile(retryUser)
+                            return
+                        }
+                    }
+                    
+                    setError('Erro ao criar perfil do usuário')
+                    return
+                } else {
+                    console.log('✅ Usuário criado com sucesso:', createdUser)
+                    setUserProfile(createdUser)
+                }
             }
         } catch (err: any) {
+            console.error('Erro geral ao buscar/criar perfil:', err)
             setError(err.message || 'Erro ao carregar perfil do usuário')
-            console.error('Erro ao buscar perfil:', err)
         } finally {
             setLoading(false)
         }
     }
 
-    // Atualizar perfil
+    // Atualizar perfil na tabela usuarios
     const updateProfile = async (updates: Partial<Pick<UserProfile, 'nome' | 'bio' | 'avatar'>>) => {
         if (!authUser || !userProfile) {
             throw new Error('Usuário não autenticado')
         }
 
         try {
+            console.log('💾 Atualizando perfil na tabela usuarios:', updates)
+            
             const { data, error } = await supabase
                 .from('usuarios')
                 .update(updates)
@@ -98,11 +118,16 @@ export function useUserProfile() {
                 .select('id, nome, email, avatar, bio, created_at')
                 .single()
 
-            if (error) throw error
+            if (error) {
+                console.error('Erro ao atualizar perfil:', error)
+                throw error
+            }
 
+            console.log('✅ Perfil atualizado com sucesso:', data)
             setUserProfile(data)
             return { data, error: null }
         } catch (err: any) {
+            console.error('Erro ao atualizar perfil:', err)
             const errorMessage = err.message || 'Erro ao atualizar perfil'
             return { data: null, error: errorMessage }
         }
@@ -118,12 +143,19 @@ export function useUserProfile() {
         }
     }, [authUser?.id, isAuthenticated])
 
+    // Verificar se o perfil está completo
+    const isProfileComplete = () => {
+        if (!userProfile) return false
+        return !!(userProfile.nome && userProfile.nome.trim() !== '')
+    }
+
     return {
         userProfile,
         loading,
         error,
         updateProfile,
         refetchProfile: fetchUserProfile,
-        clearError: () => setError(null)
+        clearError: () => setError(null),
+        isProfileComplete: isProfileComplete()
     }
 }

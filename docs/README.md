@@ -1,78 +1,89 @@
-# 📚 Documentação - Reuni App
+# Documentação do Projeto Reuni
 
-Documentação completa do sistema de eventos e comunidades com scraping inteligente.
+## 📚 Índice de Documentação
 
-## 📁 Estrutura Reorganizada (v0.0.11)
+### 🎯 **Documentos Ativos**
 
-### 🔧 [Technical](./technical/) - Documentação Técnica
-- **[SISTEMA-EVENTOS-COMPLETO.md](./technical/SISTEMA-EVENTOS-COMPLETO.md)** - Documentação técnica completa
-- **[PADRÕES-AVANÇADOS-IMPLEMENTADOS.md](./technical/PADRÕES-AVANÇADOS-IMPLEMENTADOS.md)** - Algoritmos de limpeza
-- **[CORREÇÕES-FINAIS-IMPLEMENTADAS.md](./technical/CORREÇÕES-FINAIS-IMPLEMENTADAS.md)** - Últimas correções
-- **[OTIMIZAÇÃO-PERFORMANCE.md](./technical/OTIMIZAÇÃO-PERFORMANCE.md)** - Otimizações de performance
+#### 1. **complete-solution-guide.md**
+- **Objetivo**: Guia completo da solução de autenticação
+- **Status**: ✅ Atualizado (referencia migração 016)
+- **Uso**: Entender o fluxo completo de autenticação e cadastro
 
-### 📋 [Project](./project/) - Gestão do Projeto
-- **[PRD.md](./project/PRD.md)** - Documento de requisitos do produto
-- **[ORGANIZACAO-FINAL.md](./project/ORGANIZACAO-FINAL.md)** - Registro da organização
-- **[LIMPEZA-REDUNDANCIAS-FINAL.md](./project/LIMPEZA-REDUNDANCIAS-FINAL.md)** - Registro da limpeza
+#### 2. **supabase-auth-configuration.md**
+- **Objetivo**: Configurações do Supabase para autenticação
+- **Status**: ✅ Útil (pode precisar de atualizações)
+- **Uso**: Configurar URLs de redirecionamento e templates de email
 
-### 🛠️ [Development](./development/) - Desenvolvimento
-- **[Setup](./development/setup/)** - Guias de configuração
-  - [Configuração Inicial](./development/setup/SETUP.md)
-  - [Configuração Supabase](./development/setup/SUPABASE_SETUP.md)
-- **[Features](./development/features/)** - Documentação de funcionalidades
-  - [Sistema de Comunidades](./development/features/COMMUNITIES.md)
-  - [Sistema de Busca](./development/features/SEARCH.md)
-  - [Sistema de Perfil](./development/features/PROFILE.md)
-- **[Fixes](./development/fixes/)** - Correções implementadas
-  - [Problemas RLS](./development/fixes/RLS_ISSUES.md)
-  - [Correções de Layout](./development/fixes/LAYOUT_FIXES.md)
+### 🗂️ **Estrutura de Pastas**
 
-### 📋 [Releases](./releases/) - Histórico de Versões
-- **[v0.0.10](./releases/v0.0.10.md)** - Limpeza final e organização profissional
-- **[v0.0.8](./releases/v0.0.8.md)** - Limpeza de dados e melhorias
-- **[v0.0.7](./releases/v0.0.7.md)** - Sistema social completo
-- **[v0.0.6](./releases/v0.0.6.md)** - Correções e otimizações
-- **[HISTORICO-RELEASES.md](./releases/HISTORICO-RELEASES.md)** - Versões anteriores (v0.0.3-v0.0.5)
+```
+docs/
+├── README.md                           # Este arquivo (índice)
+├── complete-solution-guide.md          # Guia da solução completa
+├── supabase-auth-configuration.md      # Configurações do Supabase
+├── development/                        # Docs de desenvolvimento
+├── migrations/                         # Docs de migrações
+├── project/                           # Docs do projeto
+├── releases/                          # Docs de releases
+└── technical/                         # Docs técnicos
+```
 
-## 🎯 Links Rápidos
+### 🧹 **Limpeza Realizada**
 
-### Para Desenvolvedores
-- [Configuração do Projeto](./development/setup/SETUP.md)
-- [Migrações do Banco](../supabase/migrations/README.md)
-- [Problemas Comuns](./development/fixes/RLS_ISSUES.md)
+#### Arquivos Removidos (Obsoletos):
+- ❌ `callback-simplified-solution.md` - Solução temporária que não usa banco
+- ❌ `debug-callback-test.md` - Debug para problemas já resolvidos
+- ❌ `testing-auth-callback.md` - Testes para código obsoleto
 
-### Para Product Managers
-- [Especificações](./development/features/COMMUNITIES.md)
-- [Releases](./releases/)
-- [Requisitos do Produto](./project/PRD.md)
+#### Motivo da Remoção:
+Estes arquivos descreviam soluções temporárias e workarounds que foram substituídos pela **migração 016** e pelas **specs organizadas**.
 
-### Para QA
-- [Testes](../supabase/migrations/008_test_communities.sql)
-- [Verificações](../supabase/migrations/009_safe_test.sql)
+### 🎯 **Documentação Principal**
 
-## 📊 Status Atual (v0.0.11)
+A documentação principal agora está nas **specs organizadas**:
 
-- ✅ **Sistema de Scraping** - 100% funcional (14/14 tarefas concluídas)
-- ✅ **Padrões Avançados** - Limpeza inteligente de títulos (95% melhoria)
-- ✅ **Interface Profissional** - Cards estilo Facebook + scroll infinito
-- ✅ **Cobertura Nacional** - 40+ cidades (Rondônia completa + capitais)
-- ✅ **Sistema de Comunidades** - Implementado (v0.0.5)
-- ✅ **Sistema de Busca** - Implementado (v0.0.4)  
-- ✅ **Sistema de Perfil** - Implementado (v0.0.3)
-- ✅ **Documentação** - Estrutura profissional reorganizada por categorias
-- ✅ **Scripts** - Organizados por função (monitoring, maintenance, scraping)
+#### 📋 **Specs Ativas**:
+1. **`.kiro/specs/database-schema/`** - Schema de banco consistente
+2. **`.kiro/specs/email-signup-improvements/`** - Autenticação robusta
+3. **`.kiro/specs/reuni-social-platform/`** - Sistema de eventos
+4. **`.kiro/specs/comunidades-sociais/`** - Sistema de comunidades
+5. **`.kiro/specs/pwa-performance/`** - PWA e performance
 
-## 🔄 Changelog
+#### 📖 **Cada spec contém**:
+- `requirements.md` - Requisitos detalhados
+- `design.md` - Arquitetura e design
+- `tasks.md` - Plano de implementação
 
-Veja o [CHANGELOG.md](../CHANGELOG.md) para histórico completo de mudanças.
+### 🚀 **Como Usar Esta Documentação**
 
-## 🆘 Suporte
+#### Para Desenvolvedores:
+1. **Comece com**: `.kiro/specs/README.md` (visão geral)
+2. **Implemente**: Migração 016 (crítica)
+3. **Siga**: Ordem das specs (database → auth → events → communities → pwa)
 
-Para problemas específicos:
-1. Consulte a seção [Fixes](./development/fixes/)
-2. Verifique as [Migrações](../supabase/migrations/README.md)
-3. Execute os [Scripts de Verificação](../supabase/migrations/009_safe_test.sql)
+#### Para Configuração:
+1. **Leia**: `supabase-auth-configuration.md`
+2. **Configure**: URLs e templates no Supabase
+3. **Teste**: Fluxo de autenticação
+
+#### Para Troubleshooting:
+1. **Consulte**: `complete-solution-guide.md`
+2. **Verifique**: Logs e políticas RLS
+3. **Aplique**: Migração 016 se necessário
+
+### ⚠️ **Importante**
+
+- **Migração 016 é CRÍTICA** - deve ser aplicada antes de qualquer implementação
+- **Specs são a fonte da verdade** - docs em `/docs` são complementares
+- **Arquivos obsoletos foram removidos** - não há mais informações conflitantes
+
+### 🔄 **Próximas Atualizações**
+
+- [ ] Revisar `supabase-auth-configuration.md` para compatibilidade com migração 016
+- [ ] Adicionar docs específicos para cada spec quando implementadas
+- [ ] Criar guias de troubleshooting específicos por funcionalidade
 
 ---
 
-**📁 Estrutura organizada por categorias para melhor navegação e manutenção**
+**Última atualização**: 06/08/2025
+**Status**: Documentação limpa e organizada ✅
