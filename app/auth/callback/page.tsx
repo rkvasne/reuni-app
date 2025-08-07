@@ -1,330 +1,438 @@
+/**
+ * Callback de Autenticação Robusto
+ * 
+ * Página de callback que processa autenticação do Supabase com
+ * arquitetura robusta, tratamento de erros e recuperação automática.
+ * 
+ * Requirements: 3.1, 3.2, 3.3, 3.4, 3.5
+ */
+
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
-import { 
-  needsOnboarding,
-  debugOnboardingLogic,
-  updateOnboardingState,
-  cleanupExpiredOnboardingData 
-} from '@/utils/onboardingUtils'
+import { useUserSync } from '@/hooks/useUserSync'
+import { logRLSError } from '@/utils/rlsLogger'
 
-interface AuthError {
-  type: 'expired_link' | 'invalid_link' | 'network_error' | 'unknown_error'
+interface CallbackState {
+  status: 'loading' | 'processing' | 'success' | 'error' | 'expired' | 'recovery'
   message: string
+  error?: string
+  progress: number
+  canRetry: boolean
+  retryCount: number
+  userType?: 'new' | 'existing' | 'unknown'
 }
+
+interface CallbackResult {
+  success: boolean
+  user: any
+  profile: any
+  isNewUser: boolean
+  redirectTo: string
+  error?: string
+}
+
+const MAX_RETRY_ATTEMPTS = 3
+const RETRY_DELAY = 2000
+const CALLBACK_TIMEOUT = 30000
 
 export default function AuthCallback() {
   const router = useRouter()
   const searchParams = useSearchParams()
-  const [error, setError] = useState<AuthError | null>(null)
-  const [isProcessing, setIsProcessing] = useState(true)
+  const { syncUser } = useUserSync({ autoSync: false })
 
-  useEffect(() => {
-    /**
-     * Trata erros de autenticação com mensagens específicas
-     */
-    const handleAuthError = (authError: any) => {
-      let errorType: AuthError['type'] = 'unknown_error'
-      let errorMessage = 'Ocorreu um erro durante a autenticação.'
+  const [state, setState] = useState<CallbackState>({
+    status: 'loading',
+    message: 'Inicializando autenticação...',
+    progress: 0,
+    canRetry: false,
+    retryCount: 0
+  })
 
-      // Analisar diferentes tipos de erro do Supabase
-      const errorMsg = authError.message?.toLowerCase() || ''
+  /**
+   * Determina se é usuário novo ou existente de forma determinística
+   */
+  const determineUserType = useCallback(async (user: any): Promise<'new' | 'existing'> => {
+    try {
+      // Verificar se perfil existe na tabela usuarios
+      const { data: profile, error } = await supabase
+        .from('usuarios')
+        .select('id, created_at')
+        .eq('id', user.id)
+        .single()
+
+      if (error && error.code === 'PGRST116') {
+        // Perfil não existe - usuário novo
+        return 'new'
+      }
+
+      if (error) {
+        // Erro na consulta - assumir existente por segurança
+        console.warn('Erro ao verificar perfil, assumindo usuário existente:', error)
+        return 'existing'
+      }
+
+      // Verificar se foi criado recentemente (últimos 5 minutos)
+      const profileCreated = new Date(profile.created_at)
+      const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000)
       
-      if (errorMsg.includes('expired') || errorMsg.includes('invalid_token') || errorMsg.includes('token_expired')) {
-        errorType = 'expired_link'
-        errorMessage = 'O link de confirmação expirou. Solicite um novo email de confirmação na página de login.'
-      } else if (errorMsg.includes('invalid') || errorMsg.includes('malformed') || errorMsg.includes('bad_jwt')) {
-        errorType = 'invalid_link'
-        errorMessage = 'Link de confirmação inválido. Verifique se o link está correto ou solicite um novo.'
-      } else if (errorMsg.includes('network') || errorMsg.includes('fetch') || errorMsg.includes('timeout')) {
-        errorType = 'network_error'
-        errorMessage = 'Erro de conexão. Verifique sua internet e tente novamente.'
-      } else if (errorMsg.includes('email_not_confirmed')) {
-        errorType = 'invalid_link'
-        errorMessage = 'Email ainda não foi confirmado. Verifique sua caixa de entrada e clique no link de confirmação.'
+      return profileCreated > fiveMinutesAgo ? 'new' : 'existing'
+    } catch (error) {
+      console.warn('Erro ao determinar tipo de usuário:', error)
+      return 'existing' // Fallback seguro
+    }
+  }, [])
+
+  /**
+   * Processa callback com retry automático
+   */
+  const processCallback = useCallback(async (attempt = 1): Promise<CallbackResult> => {
+    try {
+      setState(prev => ({
+        ...prev,
+        status: 'processing',
+        message: `Processando autenticação... (tentativa ${attempt}/${MAX_RETRY_ATTEMPTS})`,
+        progress: 20,
+        retryCount: attempt - 1
+      }))
+
+      // Extrair parâmetros da URL
+      const code = searchParams.get('code')
+      const error = searchParams.get('error')
+      const errorDescription = searchParams.get('error_description')
+
+      // Verificar se há erro na URL
+      if (error) {
+        throw new Error(errorDescription || `Erro de autenticação: ${error}`)
       }
 
-      setError({ type: errorType, message: errorMessage })
-      setIsProcessing(false)
+      // Verificar se há código de autorização
+      if (!code) {
+        throw new Error('Código de autorização não encontrado na URL')
+      }
+
+      setState(prev => ({ ...prev, progress: 40, message: 'Trocando código por sessão...' }))
+
+      // Trocar código por sessão
+      const { data: sessionData, error: sessionError } = await supabase.auth.exchangeCodeForSession(code)
+
+      if (sessionError) {
+        // Verificar se é erro de link expirado
+        if (sessionError.message?.includes('expired') || sessionError.message?.includes('invalid')) {
+          throw new Error('EXPIRED_LINK')
+        }
+        throw sessionError
+      }
+
+      if (!sessionData.user) {
+        throw new Error('Usuário não encontrado na sessão')
+      }
+
+      setState(prev => ({ ...prev, progress: 60, message: 'Determinando tipo de usuário...' }))
+
+      // Determinar tipo de usuário
+      const userType = await determineUserType(sessionData.user)
+
+      setState(prev => ({ 
+        ...prev, 
+        progress: 80, 
+        message: 'Sincronizando dados do perfil...',
+        userType 
+      }))
+
+      // Sincronizar dados do usuário
+      const syncResult = await syncUser(sessionData.user)
+
+      if (!syncResult.success) {
+        console.warn('Falha na sincronização, mas continuando:', syncResult.error)
+      }
+
+      // Determinar redirecionamento baseado no estado do perfil
+      let redirectTo = '/'
+      const returnTo = searchParams.get('returnTo')
+
+      if (userType === 'new') {
+        redirectTo = '/onboarding'
+      } else if (returnTo && returnTo.startsWith('/')) {
+        redirectTo = returnTo
+      } else {
+        redirectTo = '/dashboard'
+      }
+
+      return {
+        success: true,
+        user: sessionData.user,
+        profile: syncResult.profile,
+        isNewUser: userType === 'new',
+        redirectTo,
+        error: undefined
+      }
+
+    } catch (error: any) {
+      const errorMessage = error.message || 'Erro desconhecido no callback'
+
+      // Log do erro para análise
+      logRLSError(error, {
+        operation: 'AUTH_CALLBACK',
+        attempt,
+        searchParams: Object.fromEntries(searchParams.entries()),
+        userAgent: typeof window !== 'undefined' ? window.navigator.userAgent : undefined
+      })
+
+      // Verificar se deve tentar novamente
+      if (attempt < MAX_RETRY_ATTEMPTS && !errorMessage.includes('EXPIRED_LINK')) {
+        console.warn(`Tentativa ${attempt} falhou, tentando novamente:`, errorMessage)
+        await new Promise(resolve => setTimeout(resolve, RETRY_DELAY * attempt))
+        return processCallback(attempt + 1)
+      }
+
+      return {
+        success: false,
+        user: null,
+        profile: null,
+        isNewUser: false,
+        redirectTo: '/auth/error',
+        error: errorMessage
+      }
+    }
+  }, [searchParams, determineUserType, syncUser])
+
+  /**
+   * Processa callback com timeout
+   */
+  const processCallbackWithTimeout = useCallback(async (): Promise<CallbackResult> => {
+    return Promise.race([
+      processCallback(),
+      new Promise<CallbackResult>((_, reject) => 
+        setTimeout(() => reject(new Error('Timeout no processamento do callback')), CALLBACK_TIMEOUT)
+      )
+    ])
+  }, [processCallback])
+
+  /**
+   * Manipula resultado do callback
+   */
+  const handleCallbackResult = useCallback(async (result: CallbackResult) => {
+    if (result.success) {
+      setState(prev => ({
+        ...prev,
+        status: 'success',
+        message: result.isNewUser ? 'Bem-vindo! Redirecionando para onboarding...' : 'Login realizado com sucesso!',
+        progress: 100,
+        userType: result.isNewUser ? 'new' : 'existing'
+      }))
+
+      // Aguardar um momento para mostrar sucesso
+      await new Promise(resolve => setTimeout(resolve, 1500))
+
+      // Redirecionar
+      router.replace(result.redirectTo)
+    } else {
+      const isExpiredLink = result.error?.includes('EXPIRED_LINK')
+      
+      setState(prev => ({
+        ...prev,
+        status: isExpiredLink ? 'expired' : 'error',
+        message: isExpiredLink 
+          ? 'Link de autenticação expirado' 
+          : 'Erro no processamento da autenticação',
+        error: result.error,
+        canRetry: !isExpiredLink,
+        progress: 0
+      }))
+    }
+  }, [router])
+
+  /**
+   * Retry manual
+   */
+  const handleRetry = useCallback(async () => {
+    if (state.retryCount >= MAX_RETRY_ATTEMPTS) {
+      setState(prev => ({
+        ...prev,
+        status: 'recovery',
+        message: 'Muitas tentativas falharam. Iniciando recuperação...',
+        canRetry: false
+      }))
+      
+      // Redirecionar para página de recuperação após delay
+      setTimeout(() => {
+        router.replace('/auth/recovery?reason=callback_failed')
+      }, 2000)
+      return
     }
 
-    /**
-     * Processa callback via parâmetros da URL quando não há sessão ativa
-     */
-    const handleCallbackFromUrl = async () => {
+    const result = await processCallbackWithTimeout()
+    await handleCallbackResult(result)
+  }, [state.retryCount, processCallbackWithTimeout, handleCallbackResult, router])
+
+  /**
+   * Efeito principal - executa callback uma vez
+   */
+  useEffect(() => {
+    let mounted = true
+
+    const executeCallback = async () => {
       try {
-        console.log('🔗 Processando callback via URL')
-        
-        // Usar exchangeCodeForSession para processar o callback de confirmação
-        const { data, error } = await supabase.auth.exchangeCodeForSession(window.location.href)
-        
-        if (error) {
-          console.error('Erro no exchangeCodeForSession:', error)
-          handleAuthError(error)
-          return
+        const result = await processCallbackWithTimeout()
+        if (mounted) {
+          await handleCallbackResult(result)
         }
-
-        if (data.session && data.user) {
-          console.log('✅ Sessão criada com sucesso via callback:', data.user.id)
-          await handleSuccessfulAuth(data.user)
-        } else {
-          console.log('❌ Nenhuma sessão criada no callback')
-          setError({
-            type: 'invalid_link',
-            message: 'Não foi possível confirmar sua conta. O link pode ter expirado ou já foi usado.'
-          })
-          setIsProcessing(false)
-        }
-      } catch (error) {
-        console.error('Erro ao processar callback da URL:', error)
-        setError({
-          type: 'unknown_error',
-          message: 'Erro ao processar confirmação. Tente fazer login novamente.'
-        })
-        setIsProcessing(false)
-      }
-    }
-
-    /**
-     * Processa autenticação bem-sucedida e redireciona adequadamente
-     */
-    const handleSuccessfulAuth = async (user: any) => {
-      try {
-        console.log('Processando autenticação para usuário:', user.id)
-        
-        // Verificar se tem perfil completo no banco
-        let hasCompleteProfile = false
-        let profileCheckError = null
-        
-        try {
-          console.log('🔍 Verificando perfil do usuário no banco...')
-          
-          const { data: existingUser, error } = await supabase
-            .from('usuarios')
-            .select('id, nome')
-            .eq('id', user.id)
-            .maybeSingle()
-
-          if (error) {
-            profileCheckError = error
-            console.log('⚠️ Erro ao verificar perfil:', error.code, error.message)
-            hasCompleteProfile = false
-          } else if (existingUser && existingUser.nome && existingUser.nome.trim() !== '') {
-            hasCompleteProfile = true
-            console.log('✅ Usuário tem perfil completo:', { id: existingUser.id, nome: existingUser.nome })
-          } else {
-            console.log('📝 Usuário não encontrado ou perfil incompleto')
-            hasCompleteProfile = false
-          }
-        } catch (dbError) {
-          profileCheckError = dbError
-          console.error('❌ Erro na consulta do perfil:', dbError)
-          hasCompleteProfile = false
-        }
-
-        // Debug da lógica de onboarding
-        debugOnboardingLogic(user, hasCompleteProfile)
-        
-        // Verificar se precisa de onboarding (combina critérios locais e de perfil)
-        const userNeedsOnboarding = needsOnboarding(user, hasCompleteProfile)
-        
-        if (userNeedsOnboarding || profileCheckError) {
-          console.log('✅ Redirecionando para /welcome - Novo usuário ou perfil incompleto')
-          
-          // Atualizar estado de onboarding
-          updateOnboardingState(user.id, {
-            currentStep: 'welcome',
-            completedSteps: ['email-confirmation']
-          })
-          
-          console.log('📍 Executando router.push("/welcome")')
-          
-          // Tentar router.push primeiro
-          try {
-            router.push('/welcome')
-            
-            // Aguardar um pouco para garantir que o redirecionamento aconteça
-            setTimeout(() => {
-              console.log('⏰ Timeout - verificando se redirecionamento aconteceu')
-              if (window.location.pathname !== '/welcome') {
-                console.warn('⚠️ Router.push falhou, usando window.location.href')
-                window.location.href = '/welcome'
-              }
-            }, 500)
-          } catch (routerError) {
-            console.error('❌ Erro no router.push, usando window.location.href:', routerError)
-            window.location.href = '/welcome'
-          }
-          
-          return
-        }
-
-        // Usuário existente com perfil completo - redirecionar para home
-        console.log('✅ Redirecionando para / - Usuário existente com perfil completo')
-        console.log('📍 Executando router.push("/")')
-        
-        try {
-          router.push('/')
-          
-          setTimeout(() => {
-            if (window.location.pathname !== '/') {
-              console.warn('⚠️ Router.push para / falhou, usando window.location.href')
-              window.location.href = '/'
-            }
-          }, 500)
-        } catch (routerError) {
-          console.error('❌ Erro no router.push para /, usando window.location.href:', routerError)
-          window.location.href = '/'
-        }
-        
-      } catch (error) {
-        console.error('Erro ao processar autenticação bem-sucedida:', error)
-        
-        // Em caso de erro geral, assumir usuário novo por segurança
-        console.log('❌ Erro geral - redirecionando para /welcome por segurança')
-        updateOnboardingState(user.id, {
-          currentStep: 'welcome',
-          completedSteps: ['email-confirmation']
-        })
-        
-        try {
-          router.push('/welcome')
-          setTimeout(() => {
-            if (window.location.pathname !== '/welcome') {
-              window.location.href = '/welcome'
-            }
-          }, 500)
-        } catch (routerError) {
-          console.error('❌ Erro no router.push (fallback), usando window.location.href:', routerError)
-          window.location.href = '/welcome'
+      } catch (error: any) {
+        if (mounted) {
+          setState(prev => ({
+            ...prev,
+            status: 'error',
+            message: 'Erro crítico no callback',
+            error: error.message,
+            canRetry: true,
+            progress: 0
+          }))
         }
       }
     }
 
-    const handleAuthCallback = async () => {
-      try {
-        console.log('🚀 Iniciando callback de autenticação')
-        setIsProcessing(true)
-        
-        // Limpar dados de onboarding expirados
-        cleanupExpiredOnboardingData()
-        
-        // Primeiro, tentar processar o callback via URL (mais confiável para confirmação de email)
-        const urlParams = new URLSearchParams(window.location.search)
-        const hasCallbackParams = urlParams.has('code') || urlParams.has('access_token') || urlParams.has('refresh_token')
-        
-        console.log('URL params:', Object.fromEntries(urlParams))
-        console.log('Has callback params:', hasCallbackParams)
-        
-        if (hasCallbackParams) {
-          console.log('Processando callback via URL params')
-          await handleCallbackFromUrl()
-          return
-        }
-        
-        // Se não há parâmetros de callback, verificar sessão existente
-        console.log('Verificando sessão existente')
-        const { data, error: authError } = await supabase.auth.getSession()
+    executeCallback()
 
-        if (authError) {
-          console.error('Erro na autenticação:', authError)
-          handleAuthError(authError)
-          return
-        }
-
-        if (data.session) {
-          console.log('Sessão encontrada:', data.session.user.id)
-          const user = data.session.user
-          await handleSuccessfulAuth(user)
-        } else {
-          console.log('Nenhuma sessão encontrada')
-          setError({
-            type: 'invalid_link',
-            message: 'Não foi possível confirmar sua conta. Tente fazer login novamente.'
-          })
-          setIsProcessing(false)
-        }
-      } catch (error) {
-        console.error('Erro no callback:', error)
-        setError({
-          type: 'unknown_error',
-          message: 'Ocorreu um erro inesperado. Tente novamente.'
-        })
-        setIsProcessing(false)
-      }
+    return () => {
+      mounted = false
     }
-
-    handleAuthCallback()
-  }, [router, searchParams])
-
-
-
-  const handleRetry = () => {
-    setError(null)
-    setIsProcessing(true)
-    window.location.reload()
-  }
-
-  const handleGoHome = () => {
-    router.push('/')
-  }
-
-  if (error) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-primary-50 to-secondary-50 flex items-center justify-center p-4">
-        <div className="bg-white rounded-xl shadow-lg p-6 md:p-8 max-w-md w-full text-center">
-          <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
-            <span className="text-2xl">⚠️</span>
-          </div>
-          
-          <h2 className="text-xl font-bold text-neutral-800 mb-4">
-            Ops! Algo deu errado
-          </h2>
-          
-          <p className="text-neutral-600 mb-6 leading-relaxed">
-            {error.message}
-          </p>
-          
-          <div className="space-y-3">
-            {error.type === 'network_error' && (
-              <button
-                onClick={handleRetry}
-                className="w-full bg-gradient-to-r from-primary-500 to-secondary-500 text-white font-semibold py-3 px-4 rounded-lg hover:from-primary-600 hover:to-secondary-600 transition-all duration-300"
-              >
-                Tentar Novamente
-              </button>
-            )}
-            
-            <button
-              onClick={handleGoHome}
-              className="w-full bg-neutral-100 text-neutral-700 font-semibold py-3 px-4 rounded-lg hover:bg-neutral-200 transition-all duration-300"
-            >
-              Voltar ao Início
-            </button>
-          </div>
-          
-          {(error.type === 'expired_link' || error.type === 'invalid_link') && (
-            <p className="text-sm text-neutral-500 mt-4">
-              Você pode solicitar um novo email de confirmação na página de login.
-            </p>
-          )}
-        </div>
-      </div>
-    )
-  }
+  }, [processCallbackWithTimeout, handleCallbackResult])
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary-50 to-secondary-50 flex items-center justify-center">
-      <div className="text-center">
-        <div className="w-12 h-12 border-4 border-primary-200 border-t-primary-500 rounded-full animate-spin mx-auto mb-4"></div>
-        <h2 className="text-xl font-bold bg-gradient-to-r from-primary-500 to-secondary-500 bg-clip-text text-transparent">
-          Reuni
-        </h2>
-        <p className="text-neutral-600 mt-2">
-          {isProcessing ? 'Finalizando login...' : 'Redirecionando...'}
-        </p>
+    <div className="min-h-screen bg-gradient-primary flex items-center justify-center p-4">
+      <div className="bg-white rounded-xl shadow-reuni max-w-md w-full p-8">
+        <div className="text-center">
+          {/* Status Icon */}
+          <div className="mb-6">
+            {state.status === 'loading' && (
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-500 mx-auto"></div>
+            )}
+            {state.status === 'processing' && (
+              <div className="animate-pulse text-4xl">🔄</div>
+            )}
+            {state.status === 'success' && (
+              <div className="text-4xl text-green-500">✅</div>
+            )}
+            {state.status === 'error' && (
+              <div className="text-4xl text-red-500">❌</div>
+            )}
+            {state.status === 'expired' && (
+              <div className="text-4xl text-yellow-500">⏰</div>
+            )}
+            {state.status === 'recovery' && (
+              <div className="text-4xl text-blue-500">🛠️</div>
+            )}
+          </div>
+
+          {/* Title */}
+          <h1 className="text-2xl font-bold text-gray-900 mb-2">
+            {state.status === 'loading' && 'Carregando...'}
+            {state.status === 'processing' && 'Processando'}
+            {state.status === 'success' && 'Sucesso!'}
+            {state.status === 'error' && 'Erro'}
+            {state.status === 'expired' && 'Link Expirado'}
+            {state.status === 'recovery' && 'Recuperação'}
+          </h1>
+
+          {/* Message */}
+          <p className="text-gray-600 mb-6">{state.message}</p>
+
+          {/* Progress Bar */}
+          {(state.status === 'loading' || state.status === 'processing') && (
+            <div className="w-full bg-gray-200 rounded-full h-2 mb-6">
+              <div 
+                className="bg-primary-500 h-2 rounded-full transition-all duration-500"
+                style={{ width: `${state.progress}%` }}
+              ></div>
+            </div>
+          )}
+
+          {/* User Type Badge */}
+          {state.userType && (
+            <div className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium mb-4 ${
+              state.userType === 'new' 
+                ? 'bg-green-100 text-green-800' 
+                : 'bg-blue-100 text-blue-800'
+            }`}>
+              {state.userType === 'new' ? '🎉 Novo usuário' : '👋 Usuário existente'}
+            </div>
+          )}
+
+          {/* Error Details */}
+          {state.error && (
+            <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6 text-left">
+              <h3 className="font-medium text-red-900 mb-2">Detalhes do Erro:</h3>
+              <p className="text-sm text-red-700 font-mono">{state.error}</p>
+              {state.retryCount > 0 && (
+                <p className="text-xs text-red-600 mt-2">
+                  Tentativas realizadas: {state.retryCount}/{MAX_RETRY_ATTEMPTS}
+                </p>
+              )}
+            </div>
+          )}
+
+          {/* Action Buttons */}
+          <div className="space-y-3">
+            {state.canRetry && (
+              <button
+                onClick={handleRetry}
+                className="w-full px-4 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors"
+              >
+                🔄 Tentar Novamente
+              </button>
+            )}
+
+            {state.status === 'expired' && (
+              <div className="space-y-3">
+                <button
+                  onClick={() => router.replace('/auth/login')}
+                  className="w-full px-4 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors"
+                >
+                  🔑 Fazer Login Novamente
+                </button>
+                <p className="text-xs text-gray-500">
+                  Links de autenticação expiram após 1 hora por segurança
+                </p>
+              </div>
+            )}
+
+            {(state.status === 'error' && !state.canRetry) && (
+              <div className="space-y-3">
+                <button
+                  onClick={() => router.replace('/auth/recovery?reason=callback_error')}
+                  className="w-full px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+                >
+                  🛠️ Ir para Recuperação
+                </button>
+                <button
+                  onClick={() => router.replace('/')}
+                  className="w-full px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors"
+                >
+                  🏠 Voltar ao Início
+                </button>
+              </div>
+            )}
+          </div>
+
+          {/* Debug Info (apenas em desenvolvimento) */}
+          {process.env.NODE_ENV === 'development' && (
+            <details className="mt-6 text-left">
+              <summary className="cursor-pointer text-sm text-gray-500 hover:text-gray-700">
+                🔍 Debug Info
+              </summary>
+              <div className="mt-2 p-3 bg-gray-100 rounded text-xs font-mono">
+                <div>Status: {state.status}</div>
+                <div>Progress: {state.progress}%</div>
+                <div>Retry Count: {state.retryCount}</div>
+                <div>User Type: {state.userType || 'unknown'}</div>
+                <div>Search Params: {JSON.stringify(Object.fromEntries(searchParams.entries()))}</div>
+              </div>
+            </details>
+          )}
+        </div>
       </div>
     </div>
   )

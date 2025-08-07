@@ -96,3 +96,73 @@ jspm_packages/
 
 # TernJS port file
 .tern-port
+
+# ========================================
+# 🔒 SEGURANÇA & CI/CD
+# ========================================
+
+# Chaves e credenciais sensíveis
+.env.backup
+.env.*.local
+*.pem
+*.key
+.secrets/
+
+# Arquivos temporários de desenvolvimento
+.temp/
+temp/
+tmp/
+*.tmp
+
+# Cache de ferramentas de desenvolvimento
+.cache/
+.webpack/
+.babel_cache/
+.eslintcache
+.stylelintcache
+
+# Arquivos de debugging
+debug.log
+*.debug
+
+# Banco de dados local
+*.db
+*.sqlite
+*.sqlite3
+
+# Scraping logs e dados temporários
+scripts/scraping/logs/
+scripts/scraping/temp/
+scripts/scraping/.cache/
+
+# Coverage e relatórios de teste
+coverage/
+.nyc_output/
+test-results/
+junit.xml
+
+# Build artifacts
+dist/
+build/
+*.tsbuildinfo
+
+# Arquivos específicos do sistema
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# ========================================
+# ✅ PERMITIDOS (importantes para o projeto)
+# ========================================
+
+# NÃO ignorar arquivos de configuração importantes:
+# .github/ (workflows CI/CD)
+# .env.example (template)
+# .gitignore (este arquivo)
+# next.config.js
+# package*.json
+# tsconfig.json

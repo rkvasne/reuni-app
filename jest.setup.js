@@ -1,5 +1,11 @@
 import '@testing-library/jest-dom'
 
+// Polyfills para testes de middleware
+import { TextEncoder, TextDecoder } from 'util'
+
+global.TextEncoder = TextEncoder
+global.TextDecoder = TextDecoder
+
 // Mock do Next.js router
 jest.mock('next/navigation', () => ({
   useRouter() {

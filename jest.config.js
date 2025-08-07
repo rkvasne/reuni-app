@@ -24,6 +24,7 @@ const customJestConfig = {
     'hooks/**/*.{js,jsx,ts,tsx}',
     'utils/**/*.{js,jsx,ts,tsx}',
     'lib/**/*.{js,jsx,ts,tsx}',
+    'middleware.ts',
     '!**/*.d.ts',
     '!**/node_modules/**',
   ],
@@ -39,6 +40,10 @@ const customJestConfig = {
     '**/__tests__/**/*.(test|spec).(js|jsx|ts|tsx)',
     '**/*.(test|spec).(js|jsx|ts|tsx)',
   ],
+  // Configuração específica para testes de middleware
+  testEnvironmentOptions: {
+    customExportConditions: [''],
+  },
 }
 
 module.exports = createJestConfig(customJestConfig)

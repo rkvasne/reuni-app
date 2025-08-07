@@ -1,0 +1,298 @@
+/**
+ * Página de Fallback para Erros Críticos
+ * 
+ * Página global para capturar erros críticos que não foram
+ * tratados pelos error boundaries específicos.
+ * 
+ * Requirements: 6.4, 6.5
+ */
+
+'use client'
+
+import { useEffect, useState } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
+import { getErrorStats, getRecentErrors } from '@/utils/errorHandler'
+
+interface ErrorPageProps {
+  error?: Error
+  reset?: () => void
+}
+
+export default function ErrorPage({ error, reset }: ErrorPageProps) {
+  const router = useRouter()
+  const searchParams = useSearchParams()
+  const [errorStats, setErrorStats] = useState<any>(null)
+  const [recentErrors, setRecentErrors] = useState<any[]>([])
+  const [isLoading, setIsLoading] = useState(true)
+
+  // Parâmetros da URL
+  const errorType = searchParams.get('type') || 'unknown'
+  const errorMessage = searchParams.get('message') || 'Erro desconhecido'
+  const errorId = searchParams.get('errorId')
+  const fromBoundary = searchParams.get('fromBoundary') === 'true'
+
+  useEffect(() => {
+    // Carregar estatísticas de erro
+    try {
+      const stats = getErrorStats()
+      const recent = getRecentErrors(5)
+      
+      setErrorStats(stats)
+      setRecentErrors(recent)
+    } catch (err) {
+      console.error('Erro ao carregar estatísticas:', err)
+    } finally {
+      setIsLoading(false)
+    }
+  }, [])
+
+  const handleGoHome = () => {
+    router.push('/')
+  }
+
+  const handleReload = () => {
+    window.location.reload()
+  }
+
+  const handleGoBack = () => {
+    if (window.history.length > 1) {
+      router.back()
+    } else {
+      router.push('/')
+    }
+  }
+
+  const handleReportError = () => {
+    const reportData = {
+      errorId,
+      errorType,
+      errorMessage,
+      userAgent: navigator.userAgent,
+      url: window.location.href,
+      timestamp: new Date().toISOString(),
+      stats: errorStats
+    }
+
+    // Em produção, isso enviaria para um serviço de monitoramento
+    console.log('Error Report:', reportData)
+    
+    // Simular envio
+    alert('Relatório de erro enviado com sucesso! Obrigado por nos ajudar a melhorar.')
+  }
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-primary flex items-center justify-center p-4">
+        <div className="bg-white rounded-xl shadow-reuni max-w-md w-full p-8 text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-500 mx-auto mb-4"></div>
+          <p className="text-gray-600">Carregando informações do erro...</p>
+        </div>
+      </div>
+    )
+  }
+
+  return (
+    <div className="min-h-screen bg-gradient-primary flex items-center justify-center p-4">
+      <div className="bg-white rounded-xl shadow-reuni max-w-2xl w-full p-8">
+        <div className="text-center mb-8">
+          {/* Ícone de erro crítico */}
+          <div className="text-8xl mb-4">💥</div>
+
+          {/* Título */}
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">
+            Erro Crítico
+          </h1>
+
+          {/* Subtítulo */}
+          <p className="text-lg text-gray-600 mb-4">
+            Algo deu muito errado e não conseguimos recuperar automaticamente
+          </p>
+
+          {/* Badge do tipo de erro */}
+          <div className="inline-flex items-center px-4 py-2 rounded-full text-sm font-medium bg-red-100 text-red-800 mb-6">
+            🚨 {errorType.charAt(0).toUpperCase() + errorType.slice(1)} Error
+          </div>
+        </div>
+
+        {/* Mensagem do erro */}
+        <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
+          <h3 className="font-medium text-red-900 mb-2">Detalhes do Erro:</h3>
+          <p className="text-red-700 text-sm">
+            {error?.message || errorMessage}
+          </p>
+          {errorId && (
+            <p className="text-red-600 text-xs mt-2">
+              ID do Erro: {errorId}
+            </p>
+          )}
+        </div>
+
+        {/* Estatísticas de erro (se disponíveis) */}
+        {errorStats && (
+          <div className="bg-gray-50 rounded-lg p-4 mb-6">
+            <h3 className="font-medium text-gray-900 mb-3">📊 Estatísticas do Sistema:</h3>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+              <div className="text-center">
+                <div className="font-bold text-lg text-gray-900">{errorStats.total}</div>
+                <div className="text-gray-600">Total de Erros</div>
+              </div>
+              <div className="text-center">
+                <div className="font-bold text-lg text-gray-900">{errorStats.recentErrors}</div>
+                <div className="text-gray-600">Última Hora</div>
+              </div>
+              <div className="text-center">
+                <div className="font-bold text-lg text-gray-900">
+                  {errorStats.mostCommonError || 'N/A'}
+                </div>
+                <div className="text-gray-600">Mais Comum</div>
+              </div>
+              <div className="text-center">
+                <div className="font-bold text-lg text-gray-900">
+                  {Object.keys(errorStats.bySeverity).length}
+                </div>
+                <div className="text-gray-600">Tipos</div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Ações disponíveis */}
+        <div className="space-y-4 mb-6">
+          <h3 className="font-medium text-gray-900">🛠️ O que você pode fazer:</h3>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <button
+              onClick={handleReload}
+              className="p-3 border border-gray-200 rounded-lg hover:border-primary-300 hover:bg-primary-50 transition-colors text-left"
+            >
+              <div className="flex items-start">
+                <span className="text-2xl mr-3">🔄</span>
+                <div>
+                  <h4 className="font-medium text-gray-900">Recarregar Página</h4>
+                  <p className="text-sm text-gray-600">Tenta carregar a página novamente</p>
+                </div>
+              </div>
+            </button>
+
+            <button
+              onClick={handleGoBack}
+              className="p-3 border border-gray-200 rounded-lg hover:border-primary-300 hover:bg-primary-50 transition-colors text-left"
+            >
+              <div className="flex items-start">
+                <span className="text-2xl mr-3">⬅️</span>
+                <div>
+                  <h4 className="font-medium text-gray-900">Voltar</h4>
+                  <p className="text-sm text-gray-600">Retorna à página anterior</p>
+                </div>
+              </div>
+            </button>
+
+            <button
+              onClick={handleGoHome}
+              className="p-3 border border-gray-200 rounded-lg hover:border-primary-300 hover:bg-primary-50 transition-colors text-left"
+            >
+              <div className="flex items-start">
+                <span className="text-2xl mr-3">🏠</span>
+                <div>
+                  <h4 className="font-medium text-gray-900">Ir para Início</h4>
+                  <p className="text-sm text-gray-600">Volta para a página principal</p>
+                </div>
+              </div>
+            </button>
+
+            <button
+              onClick={handleReportError}
+              className="p-3 border border-gray-200 rounded-lg hover:border-primary-300 hover:bg-primary-50 transition-colors text-left"
+            >
+              <div className="flex items-start">
+                <span className="text-2xl mr-3">📋</span>
+                <div>
+                  <h4 className="font-medium text-gray-900">Reportar Erro</h4>
+                  <p className="text-sm text-gray-600">Nos ajude a corrigir o problema</p>
+                </div>
+              </div>
+            </button>
+          </div>
+        </div>
+
+        {/* Botão principal */}
+        <div className="flex space-x-3">
+          {reset && (
+            <button
+              onClick={reset}
+              className="flex-1 px-6 py-3 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors font-medium"
+            >
+              🔄 Tentar Novamente
+            </button>
+          )}
+          <button
+            onClick={handleGoHome}
+            className={`px-6 py-3 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors font-medium ${
+              reset ? 'flex-1' : 'w-full'
+            }`}
+          >
+            🏠 Voltar ao Início
+          </button>
+        </div>
+
+        {/* Informações de suporte */}
+        <div className="mt-8 pt-6 border-t border-gray-200 text-center">
+          <p className="text-sm text-gray-600 mb-2">
+            Se o problema persistir, entre em contato conosco:
+          </p>
+          <div className="flex justify-center space-x-4 text-sm">
+            <a 
+              href="mailto:suporte@reuni.app" 
+              className="text-primary-600 hover:text-primary-700"
+            >
+              📧 suporte@reuni.app
+            </a>
+            <span className="text-gray-400">|</span>
+            <a 
+              href="/help" 
+              className="text-primary-600 hover:text-primary-700"
+            >
+              ❓ Central de Ajuda
+            </a>
+          </div>
+        </div>
+
+        {/* Debug info (apenas em desenvolvimento) */}
+        {process.env.NODE_ENV === 'development' && (
+          <details className="mt-6">
+            <summary className="cursor-pointer text-sm text-gray-500 hover:text-gray-700">
+              🔍 Informações de Debug
+            </summary>
+            <div className="mt-3 p-3 bg-gray-100 rounded text-xs">
+              <div className="space-y-2">
+                <div><strong>Error Type:</strong> {errorType}</div>
+                <div><strong>From Boundary:</strong> {fromBoundary.toString()}</div>
+                <div><strong>Error ID:</strong> {errorId || 'N/A'}</div>
+                <div><strong>URL:</strong> {window.location.href}</div>
+                <div><strong>User Agent:</strong> {navigator.userAgent}</div>
+                
+                {error && (
+                  <div>
+                    <strong>Stack Trace:</strong>
+                    <pre className="mt-1 text-xs bg-white p-2 rounded overflow-auto max-h-32">
+                      {error.stack}
+                    </pre>
+                  </div>
+                )}
+
+                {recentErrors.length > 0 && (
+                  <div>
+                    <strong>Recent Errors:</strong>
+                    <pre className="mt-1 text-xs bg-white p-2 rounded overflow-auto max-h-32">
+                      {JSON.stringify(recentErrors, null, 2)}
+                    </pre>
+                  </div>
+                )}
+              </div>
+            </div>
+          </details>
+        )}
+      </div>
+    </div>
+  )
+}

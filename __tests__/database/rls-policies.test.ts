@@ -58,6 +58,20 @@ describe('Políticas RLS - Testes de Segurança', () => {
     testUser1Id = user1.user.id
     testUser2Id = user2.user.id
 
+    // Inserir usuários na tabela usuarios (necessário para foreign keys)
+    await supabaseAdmin.from('usuarios').insert([
+      {
+        id: testUser1Id,
+        email: 'test1@example.com',
+        nome: 'Test User 1'
+      },
+      {
+        id: testUser2Id,
+        email: 'test2@example.com',
+        nome: 'Test User 2'
+      }
+    ])
+
     // Configurar clientes autenticados
     supabaseUser1 = createClient(supabaseUrl, supabaseAnonKey)
     supabaseUser2 = createClient(supabaseUrl, supabaseAnonKey)
@@ -564,11 +578,10 @@ async function setupTestData() {
     .from('eventos')
     .insert({
       titulo: 'Evento de Teste RLS',
-      descricao: 'Evento para testar políticas RLS',
-      local: 'Local de Teste',
+      local: 'Local de Teste', // Este era 'descricao' antes da migração
       cidade: 'São Paulo',
-      data: '2025-12-31',
-      hora: '20:00',
+      data: '2025-12-31', // Campo DATE separado
+      hora: '20:00:00', // Campo TIME separado
       categoria: 'social',
       organizador_id: testUser1Id
     })
@@ -583,6 +596,7 @@ async function setupTestData() {
     .insert({
       nome: 'Comunidade RLS Test',
       descricao: 'Comunidade para testar RLS',
+      tipo: 'publica', // Campo obrigatório: 'publica', 'privada', 'restrita'
       categoria: 'tecnologia',
       criador_id: testUser1Id,
       privada: false

@@ -4,7 +4,15 @@
     "allow": [
       "Bash(npm run build:*)",
       "Bash(npm run dev:*)",
-      "mcp__ide__getDiagnostics"
+      "mcp__ide__getDiagnostics",
+      "Bash(NEXT_PUBLIC_SUPABASE_URL=https://sihrwhrnswbodpxkrinz.supabase.co SUPABASE_SERVICE_ROLE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNpaHJ3aHJuc3dib2RweGtyaW56Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1MzExNzM0NCwiZXhwIjoyMDY4NjkzMzQ0fQ.7BgWSVTv42NVmYtsLDPHQmtzgJAivCSDD8JLEVAj45E npx jest __tests__/database/rls-debug.test.js --verbose --testNamePattern=\"deve conseguir criar dados de teste simples\")",
+      "Bash(NEXT_PUBLIC_SUPABASE_URL=https://sihrwhrnswbodpxkrinz.supabase.co NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNpaHJ3aHJuc3dib2RweGtyaW56Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMxMTczNDQsImV4cCI6MjA2ODY5MzM0NH0.nQhkwZerM7x7TrPQb2SlxCcfKGtuuipryPvTCUYPXcQ SUPABASE_SERVICE_ROLE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNpaHJ3aHJuc3dib2RweGtyaW56Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1MzExNzM0NCwiZXhwIjoyMDY4NjkzMzQ0fQ.7BgWSVTv42NVmYtsLDPHQmtzgJAivCSDD8JLEVAj45E npm run test:rls:basic)",
+      "Bash(mkdir:*)",
+      "Bash(touch:*)",
+      "Bash(npm run check:ci:*)",
+      "Bash(mv:*)",
+      "Bash(rm:*)",
+      "Bash(node:*)"
     ],
     "deny": []
   }
