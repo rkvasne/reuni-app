@@ -74,7 +74,7 @@ describe('Middleware de Autenticação - Lógica de Negócio', () => {
       
       mockIsAuthRoute.mockReturnValue(true)
       
-      const shouldRedirect = !!session && isAuthRoute(pathname) && pathname !== '/auth/callback'
+      const shouldRedirect = !!session && isAuthRoute(pathname) && !pathname.includes('/auth/callback')
       expect(shouldRedirect).toBe(true)
       expect(mockIsAuthRoute).toHaveBeenCalledWith(pathname)
     })

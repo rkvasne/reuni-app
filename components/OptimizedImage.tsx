@@ -61,19 +61,8 @@ export default function OptimizedImage({
     );
   }
 
-  // Se é uma data URL (base64), usar img normal em vez do Next.js Image
-  if (optimizedSrc.startsWith('data:')) {
-    return (
-      <img
-        src={optimizedSrc}
-        alt={alt}
-        width={width}
-        height={height}
-        className={className}
-        style={fill ? { width: '100%', height: '100%', objectFit: 'cover' } : {}}
-      />
-    );
-  }
+  // Se é uma data URL (base64), ainda usar Next/Image com unoptimized
+  const isDataUrl = optimizedSrc.startsWith('data:')
 
   // Props base para todas as imagens
   const baseProps = {
@@ -82,7 +71,7 @@ export default function OptimizedImage({
     className,
     priority,
     placeholder,
-    unoptimized: false
+    unoptimized: isDataUrl
   };
 
   // Se usar fill
@@ -90,6 +79,7 @@ export default function OptimizedImage({
     return (
       <Image
         {...baseProps}
+        alt={alt}
         fill
         sizes={sizes || '100vw'}
       />
@@ -101,6 +91,7 @@ export default function OptimizedImage({
     return (
       <Image
         {...baseProps}
+        alt={alt}
         width={width}
         height={height}
       />
@@ -111,6 +102,7 @@ export default function OptimizedImage({
   return (
     <Image
       {...baseProps}
+      alt={alt}
       width={400}
       height={300}
       sizes={sizes || '(max-width: 768px) 100vw, 50vw'}

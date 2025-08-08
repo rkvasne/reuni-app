@@ -15,7 +15,7 @@ interface FeaturedEvent {
   imagem_url?: string;
   organizador?: {
     nome: string;
-    avatar?: string;
+    avatar_url?: string;
   };
   participantes_count: number;
   destaque_motivo?: string;

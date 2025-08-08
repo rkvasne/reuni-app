@@ -27,6 +27,8 @@ import {
   invalidateUserCache,
   configureAuthCache
 } from '@/utils/authCache'
+import { recordAuthMetric } from '@/utils/authMonitoring'
+import { clearAuthData } from '@/utils/authCleanup'
 
 interface AuthEventListener {
   id: string
@@ -88,7 +90,7 @@ export function useAuth(options: Partial<AuthHookOptions> = {}) {
     event: AuthEvent | 'ALL',
     callback: (data: AuthEventData) => void
   ): string => {
-    const id = `listener_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+    const id = `listener_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`
     listenersRef.current.push({ id, event, callback })
     return id
   }, [])
@@ -141,34 +143,44 @@ export function useAuth(options: Partial<AuthHookOptions> = {}) {
   ) => {
     const isAuthenticated = !!user
     
-    setState(prev => ({
-      ...prev,
-      user,
-      isAuthenticated,
-      error,
-      sessionStatus,
-      isLoading: sessionStatus === 'loading'
-    }))
+    setState(prev => {
+      // Evitar updates desnecessários
+      if (prev.user?.id === user?.id && 
+          prev.isAuthenticated === isAuthenticated && 
+          prev.sessionStatus === sessionStatus &&
+          prev.error === error) {
+        return prev
+      }
 
-    // Cache da sessão
-    if (opts.enableCache && user) {
-      cacheSession(user.id, user, opts.cacheTimeout)
-    }
+      // Cache da sessão
+      if (opts.enableCache && user) {
+        cacheSession(user.id, user, opts.cacheTimeout)
+      }
 
-    // Emitir evento
-    if (user && !prev.user) {
-      emitEvent({
-        event: 'SIGNED_IN',
+      // Emitir evento baseado na mudança de estado (usando prev para evitar loops)
+      if (user && !prev.user) {
+        emitEvent({
+          event: 'SIGNED_IN',
+          user,
+          timestamp: new Date()
+        })
+      } else if (!user && prev.user) {
+        emitEvent({
+          event: 'SIGNED_OUT',
+          user: null,
+          timestamp: new Date()
+        })
+      }
+
+      return {
+        ...prev,
         user,
-        timestamp: new Date()
-      })
-    } else if (!user && prev.user) {
-      emitEvent({
-        event: 'SIGNED_OUT',
-        user: null,
-        timestamp: new Date()
-      })
-    }
+        isAuthenticated,
+        error,
+        sessionStatus,
+        isLoading: sessionStatus === 'loading'
+      }
+    })
   }, [opts.enableCache, opts.cacheTimeout, emitEvent])
 
   /**
@@ -194,14 +206,13 @@ export function useAuth(options: Partial<AuthHookOptions> = {}) {
         if (error.message.includes('refresh') || 
             error.message.includes('token') || 
             error.message.includes('Invalid') ||
-            error.message.includes('expired')) {
+            error.message.includes('expired') ||
+            error.message.includes('Refresh Token Not Found')) {
           
-          if (opts.enableLogging) {
-            console.warn('🔄 Auth: Token corrompido detectado, limpando sessão')
-          }
+          console.warn('🧹 Auth: Token corrompido detectado, limpando completamente...')
           
-          clearCorruptedTokens()
-          await supabase.auth.signOut({ scope: 'local' })
+          // Usar nossa função de limpeza completa
+          await clearAuthData()
           return { user: null, error: null }
         }
         
@@ -238,7 +249,7 @@ export function useAuth(options: Partial<AuthHookOptions> = {}) {
     if (error) {
       updateAuthState(null, error, 'error')
       setLastError(error)
-      setRetryCount(prev => prev + 1)
+      setRetryCount(prevCount => prevCount + 1)
       
       emitEvent({
         event: 'SYNC_ERROR',
@@ -256,11 +267,11 @@ export function useAuth(options: Partial<AuthHookOptions> = {}) {
    * Configura listener de mudanças de auth
    */
   const setupAuthListener = useCallback(() => {
-    if (subscriptionRef.current) {
+    if (subscriptionRef.current && typeof subscriptionRef.current.unsubscribe === 'function') {
       subscriptionRef.current.unsubscribe()
     }
 
-    subscriptionRef.current = supabase.auth.onAuthStateChange(
+    const { data } = supabase.auth.onAuthStateChange(
       async (event, session) => {
         if (opts.enableLogging) {
           console.log('🔐 Auth State Change:', {
@@ -278,25 +289,25 @@ export function useAuth(options: Partial<AuthHookOptions> = {}) {
           invalidateUserCache(state.user.id)
         }
         
-        // Atualizar estado baseado no evento
+        // Atualizar estado baseado no evento (emitEvent já é chamado dentro de updateAuthState)
         switch (event) {
           case 'SIGNED_IN':
             updateAuthState(user, null, 'authenticated')
-            emitEvent({ event: 'SIGNED_IN', user, timestamp: new Date() })
             break
             
           case 'SIGNED_OUT':
             updateAuthState(null, null, 'unauthenticated')
-            emitEvent({ event: 'SIGNED_OUT', user: null, timestamp: new Date() })
             break
             
           case 'TOKEN_REFRESHED':
             updateAuthState(user, null, 'authenticated')
+            // Emitir evento específico para refresh de token
             emitEvent({ event: 'TOKEN_REFRESHED', user, timestamp: new Date() })
             break
             
           case 'USER_UPDATED':
             updateAuthState(user, null, 'authenticated')
+            // Emitir evento específico para atualização de usuário
             emitEvent({ event: 'USER_UPDATED', user, timestamp: new Date() })
             break
             
@@ -305,12 +316,17 @@ export function useAuth(options: Partial<AuthHookOptions> = {}) {
         }
       }
     )
+
+    // Guardar apenas a subscription retornada pela API do Supabase
+    subscriptionRef.current = data.subscription
   }, [opts.enableLogging, state.user, updateAuthState, emitEvent])
 
   /**
    * Login com email e senha
    */
   const signIn = useCallback(async (email: string, password: string): Promise<AuthResult> => {
+    const startTime = Date.now()
+    
     try {
       setState(prev => ({ ...prev, isLoading: true, error: null }))
       
@@ -321,14 +337,64 @@ export function useAuth(options: Partial<AuthHookOptions> = {}) {
       
       if (error) {
         setState(prev => ({ ...prev, isLoading: false, error: error.message }))
+        
+        // Registrar métrica de erro
+        recordAuthMetric('login', {
+          duration: Date.now() - startTime,
+          success: false,
+          error: error.message
+        })
+        
         return { success: false, user: null, error: error.message }
       }
+      
+      // Registrar métrica de sucesso
+      recordAuthMetric('login', {
+        userId: data.user?.id,
+        duration: Date.now() - startTime,
+        success: true
+      })
       
       return { success: true, user: data.user, error: null }
     } catch (error: any) {
       const errorMessage = error.message || 'Erro no login'
       setState(prev => ({ ...prev, isLoading: false, error: errorMessage }))
+      
+      // Registrar métrica de erro
+      recordAuthMetric('login', {
+        duration: Date.now() - startTime,
+        success: false,
+        error: errorMessage
+      })
+      
       return { success: false, user: null, error: errorMessage }
+    }
+  }, [])
+
+  /**
+   * Cadastro com email e senha
+   */
+  const signUp = useCallback(async (email: string, password: string): Promise<AuthResult> => {
+    try {
+      setState(prev => ({ ...prev, isLoading: true, error: null }))
+      
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          emailRedirectTo: `${window.location.origin}/auth/callback`
+        }
+      })
+
+      if (error) throw error
+
+      return { success: true, user: data.user, error: null }
+    } catch (error: any) {
+      const authError = error?.message || 'Erro no cadastro'
+      setState(prev => ({ ...prev, error: authError, isLoading: false }))
+      return { success: false, user: null, error: authError }
+    } finally {
+      setState(prev => ({ ...prev, isLoading: false }))
     }
   }, [])
 
@@ -373,7 +439,7 @@ export function useAuth(options: Partial<AuthHookOptions> = {}) {
     try {
       setState(prev => ({ ...prev, isLoading: true, error: null }))
       
-      const { data, error } = await supabase.auth.signInWithOAuth({
+      const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
           redirectTo: `${window.location.origin}/auth/callback`
@@ -450,7 +516,7 @@ export function useAuth(options: Partial<AuthHookOptions> = {}) {
     setupAuthListener()
     
     return () => {
-      if (subscriptionRef.current) {
+      if (subscriptionRef.current && typeof subscriptionRef.current.unsubscribe === 'function') {
         subscriptionRef.current.unsubscribe()
       }
       if (retryTimeoutRef.current) {
@@ -473,6 +539,7 @@ export function useAuth(options: Partial<AuthHookOptions> = {}) {
     
     // Funções de autenticação
     signIn,
+    signUp,
     signUpWithEmail,
     signInWithGoogle,
     signOut,

@@ -14,7 +14,9 @@ Este documento consolida todos os resumos de implementação das diferentes task
 ## Email Signup Improvements
 
 ### 📊 Status Geral
-**Progresso: 5/13 tasks concluídas (38.5%)**
+**Progresso: 13/13 tasks concluídas (100%) ✅**
+
+### 🎉 **SPEC FINALIZADA - v0.0.15**
 
 ### ✅ Tasks Concluídas
 
@@ -174,7 +176,7 @@ Este documento consolida todos os resumos de implementação das diferentes task
 - `__tests__/database/README.md` - Guia de execução dos testes
 
 ### 🔧 Scripts e Configuração
-- `scripts/test-rls-policies.js` - Script automatizado
+- `scripts/016-test-rls-policies.js` - Script automatizado
 - Comandos npm para execução individual e em conjunto
 
 ### 📊 Cobertura de Testes
@@ -240,8 +242,8 @@ Este documento consolida todos os resumos de implementação das diferentes task
 ### Scripts Disponíveis
 ```bash
 # Testes RLS
-node scripts/run-rls-tests-direct.js
-node scripts/apply-and-validate-rls-migration.js
+node scripts/017-run-rls-tests-direct.js
+node scripts/018-apply-and-validate-rls-migration.js
 
 # Testes de Middleware
 npm test -- middleware

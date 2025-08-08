@@ -3,6 +3,8 @@
 import { useState, useRef } from 'react';
 import { Upload, X, Image as ImageIcon, Loader2 } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
+import OptimizedImage from './OptimizedImage';
+import { compressImage, validateImageFile, generateImageFileName } from '@/utils/imageUtils';
 
 interface ImageUploadProps {
   value?: string;
@@ -37,25 +39,30 @@ export default function ImageUpload({
       setUploading(true);
       setError(null);
 
-      // Validar tamanho do arquivo
-      if (file.size > maxSize * 1024 * 1024) {
-        throw new Error(`Arquivo muito grande. Máximo ${maxSize}MB.`);
+      // Validar arquivo
+      const validation = validateImageFile(file);
+      if (!validation.valid) {
+        throw new Error(validation.error);
       }
 
-      // Validar tipo do arquivo
-      if (!file.type.startsWith('image/')) {
-        throw new Error('Apenas imagens são permitidas.');
+      // Comprimir imagem se necessário
+      let processedFile = file;
+      if (file.size > 1024 * 1024) { // Se maior que 1MB, comprimir
+        processedFile = await compressImage(file, {
+          maxWidth: 1920,
+          maxHeight: 1920,
+          quality: 0.8
+        });
       }
 
       // Gerar nome único para o arquivo
-      const fileExt = file.name.split('.').pop();
-      const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
+      const fileName = generateImageFileName(file.name, folder);
       const filePath = `${folder}/${fileName}`;
 
       // Upload para Supabase Storage
       const { data, error: uploadError } = await supabase.storage
         .from(bucket)
-        .upload(filePath, file, {
+        .upload(filePath, processedFile, {
           cacheControl: '3600',
           upsert: false
         });
@@ -117,10 +124,13 @@ export default function ImageUpload({
       {/* Preview da imagem atual */}
       {value && !uploading && (
         <div className="relative inline-block">
-          <img
+          <OptimizedImage
             src={value}
             alt="Preview"
+            width={160}
+            height={160}
             className="max-h-40 rounded-lg object-cover border border-neutral-200"
+            placeholder="empty"
           />
           <button
             type="button"

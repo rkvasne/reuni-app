@@ -30,7 +30,7 @@ export default function AvatarUpload({ currentAvatar, userName, onClose }: Avata
 
     setLoading(true)
     try {
-      const result = await updateProfile({ avatar: avatarUrl.trim() })
+      const result = await updateProfile({ avatar_url: avatarUrl.trim() })
       if (result.error) {
         throw new Error(result.error)
       }
@@ -43,31 +43,31 @@ export default function AvatarUpload({ currentAvatar, userName, onClose }: Avata
     }
   }
 
-  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-    if (!file) return
-
-    // Verificar tipo de arquivo
-    if (!file.type.startsWith('image/')) {
-      showMessage('error', 'Por favor, selecione apenas arquivos de imagem')
-      return
+  const handleImageUpload = async (url: string) => {
+    setLoading(true)
+    try {
+      const result = await updateProfile({ avatar_url: url })
+      if (result.error) {
+        throw new Error(result.error)
+      }
+      setAvatarUrl(url)
+      showMessage('success', 'Avatar atualizado com sucesso!')
+      setTimeout(() => onClose?.(), 1500)
+    } catch (error: any) {
+      showMessage('error', error.message || 'Erro ao atualizar avatar')
+    } finally {
+      setLoading(false)
     }
+  }
 
-    // Verificar tamanho (máximo 5MB)
-    if (file.size > 5 * 1024 * 1024) {
-      showMessage('error', 'A imagem deve ter no máximo 5MB')
-      return
-    }
-
-    // Para demonstração, vamos usar um serviço de upload fictício
-    // Em produção, você integraria com Supabase Storage ou outro serviço
-    showMessage('error', 'Upload de arquivos ainda não implementado. Use uma URL por enquanto.')
+  const handleImageRemove = () => {
+    setAvatarUrl('')
   }
 
   const handleRemoveAvatar = async () => {
     setLoading(true)
     try {
-      const result = await updateProfile({ avatar: '' })
+      const result = await updateProfile({ avatar_url: '' })
       if (result.error) {
         throw new Error(result.error)
       }
@@ -165,28 +165,20 @@ export default function AvatarUpload({ currentAvatar, userName, onClose }: Avata
               </div>
             </form>
 
-            {/* Upload de Arquivo */}
+            {/* Upload de Arquivo com ImageUpload */}
             <div>
               <label className="block text-sm font-medium text-neutral-700 mb-2">
                 Ou faça upload de uma imagem
               </label>
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept="image/*"
-                onChange={handleFileUpload}
-                className="hidden"
+              <ImageUpload
+                value={avatarUrl}
+                onChange={handleImageUpload}
+                onRemove={handleImageRemove}
+                bucket="avatars"
+                folder="user-avatars"
+                maxSize={5}
+                placeholder="Clique para fazer upload ou arraste uma imagem"
               />
-              <button
-                onClick={() => fileInputRef.current?.click()}
-                className="w-full px-4 py-3 border-2 border-dashed border-neutral-300 rounded-lg hover:border-primary-300 hover:bg-primary-50 transition-colors flex items-center justify-center gap-2 text-neutral-600"
-              >
-                <Upload className="w-5 h-5" />
-                Selecionar arquivo (máx. 5MB)
-              </button>
-              <p className="text-xs text-neutral-500 mt-1">
-                Formatos aceitos: JPG, PNG, GIF
-              </p>
             </div>
           </div>
 

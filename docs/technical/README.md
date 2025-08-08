@@ -27,7 +27,7 @@ Docs: Completa e atualizada ✅
 ```
 
 ### 🔧 Ferramentas de Desenvolvimento
-- **Verificação CI/CD:** `node scripts/check-ci-setup.js` (97% success rate)
+- **Verificação CI/CD:** `node scripts/002-check-ci-setup.js` (97% success rate)
 - **Testes RLS:** `npm run test:rls:basic` 
 - **Build:** `npm run build` (otimizado para produção)
 

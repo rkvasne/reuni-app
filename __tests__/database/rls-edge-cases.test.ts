@@ -176,7 +176,7 @@ describe('RLS Edge Cases - Cenários de Segurança Avançados', () => {
       // Deve retornar eventos mas não dados do organizador
       if (data && data.length > 0) {
         data.forEach(evento => {
-          expect(evento.organizador).toBeNull()
+          expect(evento && evento.organizador).toBeNull()
         })
       }
     })
@@ -261,7 +261,7 @@ describe('RLS Edge Cases - Cenários de Segurança Avançados', () => {
         .select('*', { count: 'exact' })
         .eq('evento_id', testEventId)
 
-      expect(evento.likes_count).toBe(count)
+      expect((evento as any)?.likes_count).toBe(count)
     })
   })
 

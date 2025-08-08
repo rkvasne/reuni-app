@@ -57,7 +57,7 @@ export function useFeaturedEvents(limit: number = 3) {
           organizador_id: event.organizador_id,
           max_participantes: event.max_participantes,
           created_at: event.created_at,
-          organizador: event.organizador,
+          organizador: event.organizador ? { ...event.organizador, avatar_url: event.organizador.avatar } : null,
           participantes_count: event.participacoes_count?.[0]?.count || 0,
           user_participando: false // Não relevante para banner
         }))

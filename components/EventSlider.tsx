@@ -16,7 +16,7 @@ interface Event {
   organizador?: {
     id: string;
     nome: string;
-    avatar?: string;
+    avatar_url?: string;
   };
   participantes_count: number;
   max_participantes?: number;
@@ -24,7 +24,7 @@ interface Event {
   friends_going?: {
     id: string;
     nome: string;
-    avatar?: string;
+    avatar_url?: string;
   }[];
   suggestion_reason?: string;
 }

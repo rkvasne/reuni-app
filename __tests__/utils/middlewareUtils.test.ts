@@ -140,7 +140,7 @@ describe('Utilitários do Middleware', () => {
 
     it('deve logar em ambiente de desenvolvimento', () => {
       const originalEnv = process.env.NODE_ENV
-      process.env.NODE_ENV = 'development'
+      ;(process as any).env.NODE_ENV = 'development'
 
       logMiddlewareAction({
         method: 'GET',
@@ -160,12 +160,12 @@ describe('Utilitários do Middleware', () => {
         })
       )
 
-      process.env.NODE_ENV = originalEnv
+      ;(process as any).env.NODE_ENV = originalEnv
     })
 
     it('não deve logar em ambiente de produção', () => {
       const originalEnv = process.env.NODE_ENV
-      process.env.NODE_ENV = 'production'
+      ;(process as any).env.NODE_ENV = 'production'
 
       logMiddlewareAction({
         method: 'GET',
@@ -177,12 +177,12 @@ describe('Utilitários do Middleware', () => {
 
       expect(consoleSpy).not.toHaveBeenCalled()
 
-      process.env.NODE_ENV = originalEnv
+      ;(process as any).env.NODE_ENV = originalEnv
     })
 
     it('deve incluir informações de redirecionamento quando aplicável', () => {
       const originalEnv = process.env.NODE_ENV
-      process.env.NODE_ENV = 'development'
+      ;(process as any).env.NODE_ENV = 'development'
 
       logMiddlewareAction({
         method: 'GET',
@@ -199,12 +199,12 @@ describe('Utilitários do Middleware', () => {
         })
       )
 
-      process.env.NODE_ENV = originalEnv
+      ;(process as any).env.NODE_ENV = originalEnv
     })
 
     it('deve incluir informações de erro quando aplicável', () => {
       const originalEnv = process.env.NODE_ENV
-      process.env.NODE_ENV = 'development'
+      ;(process as any).env.NODE_ENV = 'development'
 
       logMiddlewareAction({
         method: 'GET',
@@ -221,7 +221,7 @@ describe('Utilitários do Middleware', () => {
         })
       )
 
-      process.env.NODE_ENV = originalEnv
+      ;(process as any).env.NODE_ENV = originalEnv
     })
   })
 })

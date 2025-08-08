@@ -91,11 +91,11 @@ export class LoopProtectionManager {
     this.visitHistory = this.visitHistory.filter(entry => entry.timestamp > cutoff)
 
     // Limpar guards inativos
-    for (const [guardId, guard] of this.guards.entries()) {
+    this.guards.forEach((guard, guardId) => {
       if (now - guard.lastCheck > this.config.sessionTimeout) {
         this.guards.delete(guardId)
       }
-    }
+    })
   }
 
   /**
@@ -238,30 +238,30 @@ export class LoopProtectionManager {
     const pathGroups = new Map<string, GuardState[]>()
 
     // Agrupar guards por caminho
-    for (const guard of activeGuards) {
+    activeGuards.forEach((guard) => {
       if (!pathGroups.has(guard.path)) {
         pathGroups.set(guard.path, [])
       }
       pathGroups.get(guard.path)!.push(guard)
-    }
+    })
 
     // Verificar conflitos (múltiplos guards no mesmo caminho)
     const conflictingGuards: string[] = []
     let hasConflict = false
 
-    for (const [path, guards] of pathGroups.entries()) {
+    pathGroups.forEach((guards, path) => {
       if (guards.length > 1) {
         hasConflict = true
-        conflictingGuards.push(...guards.map(g => g.id))
+        conflictingGuards.push(...guards.map((g: GuardState) => g.id))
         
         if (this.config.enableLogging) {
           console.warn('Loop Protection - Guard conflict detected:', {
             path,
-            conflictingGuards: guards.map(g => g.id)
+            conflictingGuards: guards.map((g: GuardState) => g.id)
           })
         }
       }
-    }
+    })
 
     return { hasConflict, conflictingGuards }
   }
@@ -278,9 +278,7 @@ export class LoopProtectionManager {
     this.visitHistory = this.visitHistory.filter(entry => entry.sessionId !== this.sessionId)
 
     // Desativar guards conflitantes
-    for (const guard of this.guards.values()) {
-      guard.isActive = false
-    }
+    this.guards.forEach((guard) => { guard.isActive = false })
 
     // Gerar nova sessão
     this.sessionId = this.generateSessionId()
@@ -320,9 +318,9 @@ export class LoopProtectionManager {
     }
 
     const averageTimePerPath: Record<string, number> = {}
-    for (const [path, times] of pathTimes.entries()) {
-      averageTimePerPath[path] = times.reduce((a, b) => a + b, 0) / times.length
-    }
+    pathTimes.forEach((times, path) => {
+      averageTimePerPath[path] = times.reduce((a: number, b: number) => a + b, 0) / times.length
+    })
 
     return {
       totalVisits: this.visitHistory.length,
@@ -341,11 +339,11 @@ export class LoopProtectionManager {
     const recentCutoff = now - this.config.timeWindow
     const pathCounts = new Map<string, number>()
 
-    for (const entry of this.visitHistory) {
+    this.visitHistory.forEach((entry) => {
       if (entry.timestamp >= recentCutoff) {
         pathCounts.set(entry.path, (pathCounts.get(entry.path) || 0) + 1)
       }
-    }
+    })
 
     return Array.from(pathCounts.values()).filter(count => count >= this.config.maxVisits).length
   }

@@ -15,6 +15,16 @@ export function isProtectedRoute(pathname: string): boolean {
     '/settings'
   ]
   
+  // Exceções: páginas que precisam ser acessíveis para usuários autenticados com perfil incompleto
+  const exceptions = [
+    '/profile/complete'
+  ]
+  
+  // Se é uma exceção, não é considerada protegida
+  if (exceptions.some(exception => pathname.startsWith(exception))) {
+    return false
+  }
+  
   return protectedPaths.some(path => pathname.startsWith(path))
 }
 

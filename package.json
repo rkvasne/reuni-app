@@ -1,6 +1,6 @@
 {
   "name": "reuni",
-  "version": "0.0.13",
+  "version": "0.0.16",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -10,15 +10,15 @@
     "test": "jest",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
-    "test:rls": "node scripts/test-rls-policies.js",
-    "test:rls:direct": "node scripts/run-rls-tests-direct.js",
+    "test:rls": "node scripts/016-test-rls-policies.js",
+    "test:rls:direct": "node scripts/017-run-rls-tests-direct.js",
     "test:rls:basic": "jest __tests__/database/rls-policies.test.ts --verbose",
     "test:rls:edge": "jest __tests__/database/rls-edge-cases.test.ts --verbose",
     "test:rls:performance": "jest __tests__/database/rls-performance.test.ts --verbose",
     "test:rls:coverage": "jest __tests__/database/ --coverage --coverageDirectory=coverage/rls",
     "scraping": "node scripts/scraping/index.js",
     "scraping:dev": "NODE_ENV=development node scripts/scraping/index.js",
-    "check:ci": "node scripts/check-ci-setup.js",
+    "check:ci": "node scripts/002-check-ci-setup.js",
     "setup:env": "cp .env.example .env.local && echo 'Configure .env.local com suas credenciais'"
   },
   "dependencies": {

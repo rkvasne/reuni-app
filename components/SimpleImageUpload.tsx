@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useRef } from 'react'
+import OptimizedImage from './OptimizedImage'
 import { Upload, X, Image as ImageIcon, Loader2 } from 'lucide-react'
 
 interface SimpleImageUploadProps {
@@ -102,21 +103,14 @@ export default function SimpleImageUpload({
       {/* Preview da imagem atual */}
       {value && !uploading && (
         <div className="relative inline-block">
-          {value.startsWith('data:') ? (
-            // Para data URLs, usar img normal (evita warning do Next.js)
-            <img
-              src={value}
-              alt="Preview"
-              className="max-h-40 rounded-lg object-cover border border-neutral-200"
-            />
-          ) : (
-            // Para URLs externas, usar img normal também para consistência
-            <img
-              src={value}
-              alt="Preview"
-              className="max-h-40 rounded-lg object-cover border border-neutral-200"
-            />
-          )}
+          <OptimizedImage
+            src={value}
+            alt="Preview"
+            width={160}
+            height={160}
+            className="max-h-40 rounded-lg object-cover border border-neutral-200"
+            placeholder="empty"
+          />
           <button
             type="button"
             onClick={handleRemove}

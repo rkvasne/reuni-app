@@ -16,7 +16,7 @@ interface Participant {
   usuario: {
     nome: string
     email: string
-    avatar?: string
+    avatar_url?: string
   }
 }
 
@@ -80,9 +80,9 @@ export default function ParticipantsList({
                 key={participant.id}
                 className="flex items-center gap-2 bg-neutral-50 rounded-lg px-3 py-2"
               >
-                {participant.usuario.avatar ? (
+                {participant.usuario.avatar_url ? (
                   <Image
-                    src={participant.usuario.avatar}
+                    src={participant.usuario.avatar_url}
                     alt={participant.usuario.nome}
                     width={24}
                     height={24}

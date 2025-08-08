@@ -2,7 +2,8 @@ import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import './globals.css'
 import '../styles/components.css'
-import ProfileGuard from '@/components/ProfileGuard'
+import AuthCleanupProvider from '@/components/AuthCleanupProvider'
+// Removido guard global para evitar redirecionar landing/login
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -19,9 +20,9 @@ export default function RootLayout({
   return (
     <html lang="pt-BR">
       <body className={inter.className}>
-        <ProfileGuard>
+        <AuthCleanupProvider>
           {children}
-        </ProfileGuard>
+        </AuthCleanupProvider>
       </body>
     </html>
   )

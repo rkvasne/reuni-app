@@ -16,7 +16,7 @@ export interface User {
   id: string
   nome: string
   email: string
-  avatar?: string
+  avatar_url?: string
   bio?: string
   created_at: string
 }

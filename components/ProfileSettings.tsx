@@ -8,7 +8,7 @@ import { supabase } from '@/lib/supabase'
 
 export default function ProfileSettings() {
   const { user, signOut } = useAuth()
-  const { userProfile, updateProfile } = useUserProfile()
+  const { profile: userProfile, updateProfile } = useUserProfile()
   const [loading, setLoading] = useState(false)
   const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null)
   
@@ -16,7 +16,7 @@ export default function ProfileSettings() {
   const [profileData, setProfileData] = useState({
     nome: '',
     bio: '',
-    avatar: ''
+    avatar_url: ''
   })
 
   // Atualizar form quando userProfile carrega
@@ -25,7 +25,7 @@ export default function ProfileSettings() {
       setProfileData({
         nome: userProfile.nome || '',
         bio: userProfile.bio || '',
-        avatar: userProfile.avatar || ''
+        avatar_url: userProfile.avatar_url || ''
       })
     }
   }, [userProfile])
@@ -50,7 +50,7 @@ export default function ProfileSettings() {
       const result = await updateProfile({
         nome: profileData.nome,
         bio: profileData.bio,
-        avatar: profileData.avatar
+        avatar_url: profileData.avatar_url
       })
 
       if (result.error) {
@@ -193,8 +193,8 @@ export default function ProfileSettings() {
             </label>
             <input
               type="url"
-              value={profileData.avatar}
-              onChange={(e) => setProfileData(prev => ({ ...prev, avatar: e.target.value }))}
+              value={profileData.avatar_url}
+              onChange={(e) => setProfileData(prev => ({ ...prev, avatar_url: e.target.value }))}
               className="w-full px-4 py-3 border border-neutral-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all"
               placeholder="https://exemplo.com/sua-foto.jpg"
             />

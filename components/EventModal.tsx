@@ -1,7 +1,8 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
-import { X, Calendar, Clock, MapPin, Users, Image, Tag } from 'lucide-react'
+import { X, Calendar, Clock, MapPin, Users, Image as ImageIcon, Tag } from 'lucide-react'
+import Image from 'next/image'
 import { useEvents, type Event, type CreateEventData } from '@/hooks/useEvents'
 import ParticipantsList from './ParticipantsList'
 import ImageUpload from './ImageUpload'
@@ -78,7 +79,7 @@ export default function EventModal({
         max_participantes: undefined
       })
     }
-  }, [mode, event?.id]) // Removido isOpen e event, usando apenas event?.id
+  }, [mode, event]) // depender do objeto para refletir mudanças de campos
 
   const handleClose = useCallback(() => {
     onClose()
@@ -236,15 +237,17 @@ export default function EventModal({
           /* Modo de Visualização */
           <div className="p-6 space-y-6">
             {/* Imagem do evento */}
-            {event.imagem_url && (
-              <div className="relative h-48 bg-neutral-200 rounded-xl overflow-hidden">
-                <img
-                  src={event.imagem_url}
-                  alt={event.titulo}
-                  className="w-full h-full object-cover"
-                />
-              </div>
-            )}
+              {event.imagem_url && (
+                <div className="relative h-48 bg-neutral-200 rounded-xl overflow-hidden">
+                  <Image
+                    src={event.imagem_url}
+                    alt={event.titulo}
+                    fill
+                    sizes="100vw"
+                    className="object-cover"
+                  />
+                </div>
+              )}
 
             {/* Informações básicas */}
             <div className="space-y-4">
@@ -281,11 +284,13 @@ export default function EventModal({
 
               {/* Organizador */}
               <div className="flex items-center gap-3 p-3 bg-neutral-50 rounded-lg">
-                {event.organizador?.avatar ? (
-                  <img
-                    src={event.organizador.avatar}
+                {event.organizador?.avatar_url ? (
+                  <Image
+                    src={event.organizador.avatar_url}
                     alt={event.organizador.nome}
-                    className="w-10 h-10 rounded-full"
+                    width={40}
+                    height={40}
+                    className="rounded-full"
                   />
                 ) : (
                   <div className="w-10 h-10 bg-primary-500 rounded-full flex items-center justify-center">
@@ -426,7 +431,7 @@ export default function EventModal({
           {/* Upload de Imagem */}
           <div>
             <label className="block text-sm font-medium text-neutral-700 mb-2">
-              <Image className="w-4 h-4 inline mr-1" />
+              <ImageIcon className="w-4 h-4 inline mr-1" />
               Imagem do Evento
             </label>
             <ImageUpload

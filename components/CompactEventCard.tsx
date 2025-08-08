@@ -18,7 +18,7 @@ interface CompactEventCardProps {
     friends_going?: {
       id: string;
       nome: string;
-      avatar?: string;
+      avatar_url?: string;
     }[];
   };
   onClick?: () => void;
@@ -131,9 +131,9 @@ export default function CompactEventCard({
             <div className="flex -space-x-1">
               {friendsGoing.slice(0, 2).map(friend => (
                 <div key={friend.id} className="relative">
-                  {friend.avatar ? (
+                  {friend.avatar_url ? (
                     <OptimizedImage
-                      src={friend.avatar}
+                      src={friend.avatar_url}
                       alt={friend.nome}
                       width={16}
                       height={16}

@@ -154,7 +154,7 @@ export class ErrorHandler {
           retryCount,
           totalTime: Date.now() - startTime
         }
-      } catch (error) {
+      } catch (error: any) {
         lastError = error
         retryCount = attempt
 
@@ -183,8 +183,11 @@ export class ErrorHandler {
     // Processar erro final
     const processedError = this.processError(lastError, {
       ...context,
-      retryCount,
-      totalAttempts: config.maxAttempts
+      metadata: {
+        ...(context.metadata || {}),
+        retryCount,
+        totalAttempts: config.maxAttempts
+      }
     })
 
     return {

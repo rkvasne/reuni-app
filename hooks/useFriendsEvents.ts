@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from './useAuth';
 import { supabase } from '@/lib/supabase';
 
@@ -17,7 +17,7 @@ export interface FriendEvent {
   organizador?: {
     id: string;
     nome: string;
-    avatar?: string;
+    avatar_url?: string;
   };
   participantes_count: number;
   max_participantes?: number;
@@ -25,7 +25,7 @@ export interface FriendEvent {
   friends_going: {
     id: string;
     nome: string;
-    avatar?: string;
+    avatar_url?: string;
   }[];
   friends_count: number;
   source?: string; // Fonte do evento (sympla, eventbrite, etc.)
@@ -37,7 +37,7 @@ export function useFriendsEvents() {
   const [error, setError] = useState<string | null>(null);
   const { user } = useAuth();
 
-  const fetchFriendsEvents = async () => {
+  const fetchFriendsEvents = useCallback(async () => {
     if (!user) {
       setLoading(false);
       return;
@@ -103,11 +103,11 @@ export function useFriendsEvents() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [user]); // CORREÇÃO: usar user completo conforme ESLint
 
   useEffect(() => {
     fetchFriendsEvents();
-  }, [user]);
+  }, [fetchFriendsEvents]); // CORREÇÃO: usar apenas fetchFriendsEvents
 
   return {
     events,

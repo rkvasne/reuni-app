@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { Users, Calendar, Crown, Shield, MapPin } from 'lucide-react';
+import Image from 'next/image';
 import { Community } from '@/hooks/useCommunities';
 import { useCommunities } from '@/hooks/useCommunities';
 
@@ -76,11 +77,15 @@ export default function CommunityCard({ community, onJoin, onLeave }: CommunityC
       {/* Header com Avatar/Banner */}
       <div className="relative h-32 bg-gradient-to-r from-primary-500 to-secondary-500">
         {community.banner_url && (
-          <img
-            src={community.banner_url}
-            alt={`Banner da ${community.nome}`}
-            className="w-full h-full object-cover"
-          />
+          <div className="absolute inset-0">
+            <Image
+              src={community.banner_url}
+              alt={`Banner da ${community.nome}`}
+              fill
+              sizes="100vw"
+              className="object-cover"
+            />
+          </div>
         )}
         
         {/* Avatar da Comunidade */}

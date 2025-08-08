@@ -19,7 +19,7 @@ class AuthCacheManager {
   private cache: Map<string, CacheEntry<any>> = new Map()
   private defaultTTL = 5 * 60 * 1000 // 5 minutos
   private maxCacheSize = 100
-  private enableLogging = true
+  private enableLogging = false
 
   /**
    * Cria uma entrada de cache

@@ -16,7 +16,7 @@ interface HeaderProps {
 
 export default function Header({ onCreateEvent }: HeaderProps) {
   const { user, signOut } = useAuth()
-  const { userProfile } = useUserProfile()
+  const { profile: userProfile } = useUserProfile()
   const router = useRouter()
   
 
@@ -204,9 +204,9 @@ export default function Header({ onCreateEvent }: HeaderProps) {
                 className="flex items-center gap-2 p-2 hover:bg-primary-50 rounded-2xl transition-all duration-300 hover:scale-110 group"
               >
                 <div className="w-10 h-10 bg-gradient-primary rounded-2xl flex items-center justify-center shadow-reuni group-hover:shadow-glow transition-all duration-300 overflow-hidden">
-                  {userProfile?.avatar ? (
+                  {userProfile?.avatar_url ? (
                     <OptimizedImage
-                      src={userProfile.avatar}
+                      src={userProfile.avatar_url}
                       alt={userProfile.nome || 'Avatar'}
                       width={40}
                       height={40}

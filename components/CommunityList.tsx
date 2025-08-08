@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Search, Filter, Plus, Users } from 'lucide-react';
 import { useCommunities } from '@/hooks/useCommunities';
 import CommunityCard from './CommunityCard';
@@ -29,22 +29,26 @@ export default function CommunityList({
   const [selectedCategory, setSelectedCategory] = useState('');
   const [showFilters, setShowFilters] = useState(false);
 
+  const runFetch = useCallback(() => {
+    if (userCommunitiesOnly) {
+      fetchUserCommunities();
+    } else {
+      fetchCommunities({
+        search: searchTerm || undefined,
+        categoria: selectedCategory || undefined,
+        limit
+      });
+    }
+  }, [userCommunitiesOnly, fetchUserCommunities, fetchCommunities, searchTerm, selectedCategory, limit]);
+
   // Aplicar filtros
   useEffect(() => {
     const delayedSearch = setTimeout(() => {
-      if (userCommunitiesOnly) {
-        fetchUserCommunities();
-      } else {
-        fetchCommunities({
-          search: searchTerm || undefined,
-          categoria: selectedCategory || undefined,
-          limit
-        });
-      }
+      runFetch();
     }, 300);
 
     return () => clearTimeout(delayedSearch);
-  }, [searchTerm, selectedCategory, userCommunitiesOnly, limit]);
+  }, [searchTerm, selectedCategory, userCommunitiesOnly, limit, runFetch]);
 
   const handleCreateCommunity = () => {
     // Redirecionar para modal ou página de criação

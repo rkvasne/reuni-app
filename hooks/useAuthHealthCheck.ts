@@ -77,8 +77,9 @@ export function useAuthHealthCheck(options: Partial<AuthHookOptions> = {}) {
     try {
       // 1. Verificar autenticação
       try {
-        const { data: session, error: authError } = await supabase.auth.getSession()
-        checks.auth = !authError && (session?.user ? true : !isAuthenticated)
+        const { data: sessionData, error: authError } = await supabase.auth.getSession()
+        const hasUser = !!sessionData?.session?.user
+        checks.auth = !authError && (hasUser ? true : !isAuthenticated)
         
         if (authError) {
           errors.push(`Auth: ${authError.message}`)

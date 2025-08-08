@@ -138,7 +138,7 @@ describe('Validação RLS - Tabela usuarios', () => {
           attemptedUserId: testUser2Id,
           authenticatedUserId: testUser1Id
         })
-        expect(logId).toBeTruthy()
+        expect(!!logId).toBe(true)
       }
     })
 
@@ -173,7 +173,7 @@ describe('Validação RLS - Tabela usuarios', () => {
       expect(error).toBeNull()
       // Deve retornar apenas o próprio usuário
       expect(data).toHaveLength(1)
-      expect(data[0].id).toBe(testUser1Id)
+      expect(data?.[0]?.id).toBe(testUser1Id)
     })
   })
 
@@ -439,12 +439,12 @@ describe('Validação RLS - Tabela usuarios', () => {
       // Verificar que cada usuário vê apenas seus dados
       if (results[0].status === 'fulfilled') {
         expect(results[0].value.data).toHaveLength(1)
-        expect(results[0].value.data[0].id).toBe(testUser1Id)
+        expect(results[0]?.value?.data?.[0]?.id).toBe(testUser1Id)
       }
 
       if (results[1].status === 'fulfilled') {
         expect(results[1].value.data).toHaveLength(1)
-        expect(results[1].value.data[0].id).toBe(testUser2Id)
+        expect(results[1]?.value?.data?.[0]?.id).toBe(testUser2Id)
       }
     })
   })

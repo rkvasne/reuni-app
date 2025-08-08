@@ -9,7 +9,7 @@
 
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
 import { useAuth } from '@/hooks/useAuth'
@@ -49,7 +49,7 @@ export default function AuthRecovery() {
   /**
    * Determina opções de recuperação baseadas no motivo
    */
-  const getRecoveryOptions = (reason: string): RecoveryOption[] => {
+  const getRecoveryOptions = useCallback((reason: string): RecoveryOption[] => {
     const baseOptions: RecoveryOption[] = [
       {
         id: 'force_sync',
@@ -141,7 +141,7 @@ export default function AuthRecovery() {
       default:
         return baseOptions
     }
-  }
+  }, [user, router, forceSync])
 
   /**
    * Obtém mensagem explicativa baseada no motivo
@@ -197,7 +197,7 @@ export default function AuthRecovery() {
       reason,
       availableOptions: options.filter(opt => opt.available)
     }))
-  }, [searchParams, user])
+  }, [searchParams, user, getRecoveryOptions])
 
   /**
    * Auto-redirecionamento se usuário já está autenticado e sincronizado

@@ -147,7 +147,7 @@ export const DEFAULT_AUTH_OPTIONS: Required<AuthHookOptions> = {
   cacheTimeout: 5 * 60 * 1000, // 5 minutos
   retryAttempts: 3,
   retryDelay: 1000,
-  enableLogging: true,
+  enableLogging: false,
   healthCheckInterval: 30 * 1000 // 30 segundos
 }
 
@@ -155,5 +155,5 @@ export const DEFAULT_PROFILE_GUARD_OPTIONS: Required<ProfileGuardOptions> = {
   requiredFields: ['nome'],
   redirectTo: '/profile/complete',
   allowIncomplete: false,
-  enableLogging: true
+  enableLogging: false
 }

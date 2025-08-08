@@ -45,6 +45,54 @@ https://seu-dominio.com/
 - **Enable secure email change**: ✅ Habilitado
 - **Double confirm email changes**: ✅ Habilitado
 
+## Configuração do Google OAuth
+
+### 1. Configurar no Google Cloud Console
+
+1. **Criar/Selecionar Projeto**
+   - Acesse [Google Cloud Console](https://console.cloud.google.com)
+   - Crie um novo projeto ou selecione um existente
+   - Ative a API "Google Identity" ou "Google+ API"
+
+2. **Configurar OAuth 2.0**
+   - Vá em "APIs & Services" > "Credentials"
+   - Clique em "Create Credentials" > "OAuth 2.0 Client IDs"
+   - Tipo de aplicação: "Web application"
+   - Nome: "Reuni App"
+   - **Authorized redirect URIs**:
+     ```
+     https://seu-projeto.supabase.co/auth/v1/callback
+     ```
+
+3. **Obter Credenciais**
+   - Copie o "Client ID" e "Client Secret" gerados
+
+### 2. Configurar no Supabase Dashboard
+
+1. **Habilitar Provider**
+   - Vá em "Authentication" > "Providers"
+   - Encontre "Google" e clique para habilitar
+   - Cole o "Client ID" e "Client Secret" do Google
+   - Salve as configurações
+
+2. **Configurar Scopes (Opcional)**
+   - Scopes padrão: `openid email profile`
+   - Para informações adicionais, adicione scopes específicos
+
+### 3. Implementação no Frontend
+
+O sistema já possui implementação completa:
+
+```typescript
+// Hook useAuth já implementado
+const { signInWithGoogle } = useAuth()
+
+// Componente AuthModal já implementado
+<button onClick={handleGoogleSignIn}>
+  Continuar com Google
+</button>
+```
+
 ### 4. Fluxo de Redirecionamento
 O sistema implementa a seguinte lógica de redirecionamento:
 

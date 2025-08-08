@@ -9,7 +9,7 @@ import { useEvents } from '@/hooks/useEvents';
 interface User {
   id: string;
   nome: string;
-  avatar?: string;
+  avatar_url?: string;
 }
 
 interface SocialEventCardProps {
@@ -203,9 +203,9 @@ export default function SocialEventCard({
                 <div className="flex -space-x-2">
                   {friendsGoing.slice(0, 3).map(friend => (
                     <div key={friend.id} className="relative">
-                      {friend.avatar ? (
+                  {friend.avatar_url ? (
                         <OptimizedImage
-                          src={friend.avatar}
+                      src={friend.avatar_url}
                           alt={friend.nome}
                           width={24}
                           height={24}

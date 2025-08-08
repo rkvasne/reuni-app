@@ -1,22 +1,50 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 import { useAuth } from '@/hooks/useAuth'
-import { useProfileGuard } from '@/hooks/useProfileGuard'
+import { supabase } from '@/lib/supabase'
 import LandingPage from '@/components/LandingPage'
 import Header from '@/components/Header'
 import LeftSidebar from '@/components/LeftSidebar'
 import MainFeed from '@/components/MainFeed'
 import RightSidebar from '@/components/RightSidebar'
-import WelcomeDebug from '@/components/WelcomeDebug'
 
 // Componente do App Principal (para usuários logados)
 function AppDashboard() {
   const [showCreateModal, setShowCreateModal] = useState(false)
+  const { user } = useAuth()
+  const router = useRouter()
 
   const handleCreateEvent = () => {
     setShowCreateModal(true)
   }
+
+  // Verificar se perfil está completo após login
+  useEffect(() => {
+    const checkProfile = async () => {
+      if (!user?.id) return
+
+      try {
+        const { data: profile } = await supabase
+          .from('usuarios')
+          .select('nome, avatar')
+          .eq('id', user.id)
+          .single()
+
+        // Se perfil incompleto (falta nome ou avatar), redirecionar
+        const isIncomplete = !profile?.nome || !profile?.avatar
+        
+        if (isIncomplete) {
+          router.push('/profile/complete')
+        }
+      } catch (error) {
+        console.error('Erro ao verificar perfil:', error)
+      }
+    }
+
+    checkProfile()
+  }, [user?.id, router])
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -52,9 +80,6 @@ function AppDashboard() {
           </div>
         </div>
       </div>
-      
-      {/* Componente de debug - remover em produção */}
-      <WelcomeDebug />
     </div>
   )
 }
@@ -75,11 +100,10 @@ function LoadingScreen() {
 }
 
 export default function Home() {
-  const { loading, isAuthenticated } = useAuth()
-  const { isLoading: profileLoading } = useProfileGuard()
+  const { loading, isAuthenticated, user } = useAuth()
 
   // Mostrar loading enquanto verifica autenticação e perfil
-  if (loading || profileLoading) {
+  if (loading) {
     return <LoadingScreen />
   }
 

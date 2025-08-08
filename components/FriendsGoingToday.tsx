@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Calendar, MapPin, Clock } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/lib/supabase';
@@ -29,11 +29,7 @@ export default function FriendsGoingToday() {
   const [loading, setLoading] = useState(true);
   const { user } = useAuth();
 
-  useEffect(() => {
-    fetchFriendsGoingToday();
-  }, [user]);
-
-  const fetchFriendsGoingToday = async () => {
+  const fetchFriendsGoingToday = useCallback(async () => {
     if (!user) {
       setLoading(false);
       return;
@@ -41,13 +37,7 @@ export default function FriendsGoingToday() {
 
     try {
       setLoading(true);
-      
-      // Por enquanto, vamos simular dados já que não temos sistema de amizades
-      // TODO: Implementar sistema de amizades real
-      
-      // Buscar eventos de hoje com participações
       const today = new Date().toISOString().split('T')[0];
-      
       const { data: eventsData, error } = await supabase
         .from('eventos')
         .select(`
@@ -64,18 +54,14 @@ export default function FriendsGoingToday() {
           )
         `)
         .eq('data', today)
-        .neq('organizador_id', user.id) // Não incluir próprios eventos
+        .neq('organizador_id', user.id)
         .limit(10);
 
       if (error) throw error;
 
-      // Simular amigos (por enquanto, pegar alguns participantes aleatórios)
       const mockActivities: FriendActivity[] = [];
-      
       eventsData?.forEach(event => {
-        // Pegar até 2 "amigos" por evento
         const participants = event.participacoes?.slice(0, 2) || [];
-        
         participants.forEach((participation: any) => {
           if (participation.usuarios && participation.usuario_id !== user.id) {
             mockActivities.push({
@@ -98,7 +84,6 @@ export default function FriendsGoingToday() {
         });
       });
 
-      // Limitar a 5 atividades e remover duplicatas por amigo
       const uniqueActivities = mockActivities
         .filter((activity, index, self) => 
           index === self.findIndex(a => a.friend.id === activity.friend.id)
@@ -111,7 +96,12 @@ export default function FriendsGoingToday() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [user]); // CORREÇÃO: usar user completo conforme ESLint
+
+  useEffect(() => {
+    fetchFriendsGoingToday();
+  }, [fetchFriendsGoingToday]); // CORREÇÃO: remover user das dependências
+
 
   const formatTime = (timeString: string) => {
     return timeString.slice(0, 5);

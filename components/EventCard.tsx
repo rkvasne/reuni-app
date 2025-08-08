@@ -240,9 +240,9 @@ export default function EventCard({ event, priority = false, onEventUpdated }: E
 
         {/* Informações do Organizador */}
         <div className="flex items-center gap-2 mb-4">
-          {event.organizador?.avatar ? (
+          {event.organizador?.avatar_url ? (
             <OptimizedImage
-              src={event.organizador.avatar}
+              src={event.organizador.avatar_url}
               alt={event.organizador.nome}
               width={24}
               height={24}

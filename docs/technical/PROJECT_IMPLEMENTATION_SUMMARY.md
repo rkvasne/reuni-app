@@ -231,7 +231,7 @@ npm run start        # Servidor de produção
 ```
 
 ### Verificação Automática
-- **Script:** `scripts/check-ci-setup.js`
+- **Script:** `scripts/002-check-ci-setup.js`
 - **Taxa de Sucesso:** 97%
 - **Cobertura:** 28 verificações automatizadas
 

@@ -306,7 +306,7 @@ export default function SearchPage() {
                   <div className="card p-4 bg-gradient-to-br from-blue-50 to-purple-50">
                     <h4 className="font-semibold text-neutral-800 mb-3">💡 Dicas de Busca</h4>
                     <ul className="text-sm text-neutral-600 space-y-2">
-                      <li>• Use aspas para busca exata: "React Native"</li>
+                      <li>• Use aspas para busca exata: &quot;React Native&quot;</li>
                       <li>• Combine filtros para resultados precisos</li>
                       <li>• Busque por local para eventos próximos</li>
                       <li>• Salve buscas frequentes nos favoritos</li>

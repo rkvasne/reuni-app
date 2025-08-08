@@ -122,7 +122,7 @@ export function useOptimizedEvents(options: UseOptimizedEventsOptions = {}) {
       let organizadores: { [key: string]: any } = {}
       
       if (organizadorIds.length > 0) {
-        const { data: organizadoresData, error: organizadoresError } = await supabase
+      const { data: organizadoresData, error: organizadoresError } = await supabase
           .from('usuarios')
           .select('id, nome, email, avatar')
           .in('id', organizadorIds)
@@ -183,7 +183,7 @@ export function useOptimizedEvents(options: UseOptimizedEventsOptions = {}) {
         organizador_id: event.organizador_id,
         max_participantes: event.max_participantes,
         created_at: event.created_at,
-        organizador: organizadores[event.organizador_id] || null,
+        organizador: organizadores[event.organizador_id] ? { ...organizadores[event.organizador_id], avatar_url: organizadores[event.organizador_id].avatar } : null,
         participantes_count: participationsCount[event.id] || 0,
         user_participando: userParticipations.has(event.id)
       }))

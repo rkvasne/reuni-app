@@ -319,7 +319,7 @@ function StatusTab({
               <p className="text-red-700 text-sm mt-1">{syncStatus.error}</p>
               {syncStatus.needsRecovery && (
                 <p className="text-red-600 text-xs mt-2">
-                  ⚠️ Este erro requer recuperação manual. Vá para a aba "Recuperação".
+                  ⚠️ Este erro requer recuperação manual. Vá para a aba &quot;Recuperação&quot;.
                 </p>
               )}
             </div>
@@ -403,7 +403,7 @@ function DiagnosticsTab({
         <div className="text-center py-8">
           <div className="text-gray-400 text-4xl mb-2">🔍</div>
           <p className="text-gray-600">Nenhum diagnóstico executado</p>
-          <p className="text-sm text-gray-500 mt-1">Clique em "Executar Diagnósticos" para analisar</p>
+          <p className="text-sm text-gray-500 mt-1">Clique em &quot;Executar Diagnósticos&quot; para analisar</p>
         </div>
       )}
     </div>

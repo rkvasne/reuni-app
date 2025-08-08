@@ -1,6 +1,7 @@
 'use client';
 
 import { useFriendsEvents } from '@/hooks/useFriendsEvents';
+import Image from 'next/image';
 import CompactEventCard from './CompactEventCard';
 import { Calendar } from 'lucide-react';
 
@@ -63,11 +64,13 @@ export default function FriendsEventsBlock({ maxEvents = 3 }: FriendsEventsBlock
             <div className="flex -space-x-1">
               {event.friends_going.slice(0, 3).map(friend => (
                 <div key={friend.id} className="relative">
-                  {friend.avatar ? (
-                    <img
-                      src={friend.avatar}
+                  {friend.avatar_url ? (
+                    <Image
+                      src={friend.avatar_url}
                       alt={friend.nome}
-                      className="w-5 h-5 rounded-full border border-white object-cover"
+                      width={20}
+                      height={20}
+                      className="rounded-full border border-white object-cover"
                     />
                   ) : (
                     <div className="w-5 h-5 bg-primary-500 rounded-full border border-white flex items-center justify-center">

@@ -46,7 +46,7 @@ interface LoopProtectionState {
 const DEFAULT_OPTIONS: UseLoopProtectionOptions = {
   enabled: true,
   autoBreak: true,
-  enableLogging: true,
+  enableLogging: false,
   maxVisits: 5,
   timeWindow: 30000
 }
@@ -265,7 +265,7 @@ export function usePageGuard(guardId: string, metadata?: Record<string, any>) {
     enabled: true,
     guardId,
     autoBreak: true,
-    enableLogging: true,
+    enableLogging: false,
     metadata
   })
 }
@@ -276,7 +276,7 @@ export function usePageGuard(guardId: string, metadata?: Record<string, any>) {
 export function useAdvancedLoopProtection(options: UseLoopProtectionOptions = {}) {
   const protection = useLoopProtection({
     ...options,
-    enableLogging: true
+    enableLogging: false
   })
 
   const [alerts, setAlerts] = useState<Array<{

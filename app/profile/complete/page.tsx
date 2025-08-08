@@ -11,7 +11,7 @@ import Toast from '@/components/Toast'
 
 export default function CompleteProfilePage() {
   const { user, isAuthenticated, loading: authLoading } = useAuth()
-  const { userProfile, loading: profileLoading, updateProfile } = useUserProfile()
+  const { profile: userProfile, isLoading: profileLoading, updateProfile } = useUserProfile()
   const router = useRouter()
   
   const [formData, setFormData] = useState({
@@ -26,11 +26,11 @@ export default function CompleteProfilePage() {
   const isProfileComplete = userProfile && 
     userProfile.nome && 
     userProfile.nome.trim() !== '' && 
-    userProfile.avatar && 
-    userProfile.avatar.trim() !== ''
+    userProfile.avatar_url && 
+    userProfile.avatar_url.trim() !== ''
 
   useEffect(() => {
-    // Se não estiver autenticado, redirecionar para login
+    // Se não estiver autenticado, redirecionar para home (não login para evitar loop)
     if (!authLoading && !isAuthenticated) {
       router.push('/')
       return
@@ -46,7 +46,7 @@ export default function CompleteProfilePage() {
     if (userProfile) {
       setFormData({
         nome: userProfile.nome || '',
-        avatar: userProfile.avatar || ''
+        avatar: userProfile.avatar_url || ''
       })
     }
   }, [authLoading, isAuthenticated, profileLoading, userProfile, isProfileComplete, router])
@@ -81,12 +81,12 @@ export default function CompleteProfilePage() {
     setError('')
 
     try {
-      const updates: { nome: string; avatar?: string } = {
+      const updates: { nome: string; avatar_url?: string } = {
         nome: formData.nome.trim()
       }
       
       if (formData.avatar.trim()) {
-        updates.avatar = formData.avatar.trim()
+        updates.avatar_url = formData.avatar.trim()
       }
 
       const { error: updateError } = await updateProfile(updates)
@@ -95,7 +95,6 @@ export default function CompleteProfilePage() {
         setError(updateError)
       } else {
         setSuccess(true)
-        // Redirecionar após 1.5 segundos para mostrar o toast de sucesso
         setTimeout(() => {
           router.push('/')
         }, 1500)

@@ -154,7 +154,7 @@ function runRLSTests() {
     
     try {
       // Fallback: executar teste direto
-      execSync('node scripts/run-rls-tests-direct.js', { 
+      execSync('node scripts/017-run-rls-tests-direct.js', { 
         stdio: 'inherit',
         env: { ...process.env, NODE_ENV: 'test' }
       })

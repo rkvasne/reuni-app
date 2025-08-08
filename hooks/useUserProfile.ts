@@ -36,10 +36,16 @@ interface ProfileValidation {
 
 export function useUserProfile(options: Partial<AuthHookOptions> = {}) {
   const opts = { ...DEFAULT_AUTH_OPTIONS, ...options }
-  const { user: authUser, isAuthenticated, addEventListener } = useAuth()
-  const { profile: syncedProfile, syncUser, isLoading: syncLoading } = useUserSync({
-    autoSync: opts.autoSync,
-    enableLogging: opts.enableLogging
+  const { user: authUser, addEventListener, removeEventListener } = useAuth()
+  const { 
+    profile: syncProfile, 
+    isSyncing: syncLoading, 
+    error: syncError,
+    lastSync: syncLastSync,
+    isError: syncIsError,
+    syncUser
+  } = useUserSync({
+    autoSync: opts.autoSync
   })
   
   const [state, setState] = useState<ProfileState>({
@@ -138,15 +144,8 @@ export function useUserProfile(options: Partial<AuthHookOptions> = {}) {
       if (useCache && opts.enableCache) {
         const cached = getCachedProfile(authUser.id)
         if (cached) {
-          if (opts.enableLogging) {
-            console.log('🎯 Profile: Usando perfil em cache')
-          }
           return cached
         }
-      }
-
-      if (opts.enableLogging) {
-        console.log('🔍 Profile: Buscando perfil no banco de dados')
       }
 
       const { data, error } = await supabase
@@ -163,19 +162,22 @@ export function useUserProfile(options: Partial<AuthHookOptions> = {}) {
         throw error
       }
 
-      // Cache do resultado
-      if (opts.enableCache) {
-        cacheProfile(authUser.id, data, opts.cacheTimeout)
+      // Mapear campos do banco para o modelo da aplicação
+      const mapped: UserProfile = {
+        ...(data as any),
+        avatar_url: (data as any).avatar ?? (data as any).avatar_url ?? null
       }
 
-      return data
-    } catch (error: any) {
-      if (opts.enableLogging) {
-        console.error('Erro ao buscar perfil:', error)
+      // Cache do resultado
+      if (opts.enableCache) {
+        cacheProfile(authUser.id, mapped, opts.cacheTimeout)
       }
+
+      return mapped
+    } catch (error: any) {
       throw error
     }
-  }, [authUser, opts.enableCache, opts.enableLogging, opts.cacheTimeout])
+  }, [authUser, opts.enableCache, opts.cacheTimeout])
 
   /**
    * Atualiza perfil com validação e cache
@@ -206,13 +208,16 @@ export function useUserProfile(options: Partial<AuthHookOptions> = {}) {
         }
       }
 
-      if (opts.enableLogging) {
-        console.log('💾 Profile: Atualizando perfil', updates)
+      // Mapear updates para colunas do banco
+      const dbUpdates: any = { ...updates }
+      if (Object.prototype.hasOwnProperty.call(dbUpdates, 'avatar_url')) {
+        dbUpdates.avatar = dbUpdates.avatar_url
+        delete dbUpdates.avatar_url
       }
 
       const { data, error } = await supabase
         .from('usuarios')
-        .update(updates)
+        .update(dbUpdates)
         .eq('id', authUser.id)
         .select('*')
         .single()
@@ -221,27 +226,30 @@ export function useUserProfile(options: Partial<AuthHookOptions> = {}) {
         throw error
       }
 
-      // Atualizar estado e cache
+      // Mapear resposta do banco
+      const updated: UserProfile = {
+        ...(data as any),
+        avatar_url: (data as any).avatar ?? (data as any).avatar_url ?? null
+      }
+
+      // Atualizar cache
+      if (opts.enableCache) {
+        cacheProfile(authUser.id, updated, opts.cacheTimeout)
+      }
+
+      // Atualizar estado
       setState(prev => ({
         ...prev,
-        profile: data,
+        profile: updated,
         isLoading: false,
         lastSync: new Date()
       }))
 
-      if (opts.enableCache) {
-        cacheProfile(authUser.id, data, opts.cacheTimeout)
-      }
-
       lastUpdateRef.current = new Date()
-
-      if (opts.enableLogging) {
-        console.log('✅ Profile: Perfil atualizado com sucesso')
-      }
 
       return {
         success: true,
-        profile: data,
+        profile: updated,
         error: null
       }
     } catch (error: any) {
@@ -253,20 +261,16 @@ export function useUserProfile(options: Partial<AuthHookOptions> = {}) {
         error: errorMessage
       }))
 
-      if (opts.enableLogging) {
-        console.error('❌ Profile: Erro ao atualizar perfil:', error)
-      }
-
       return {
         success: false,
         profile: state.profile,
         error: errorMessage
       }
     }
-  }, [authUser, state.profile, opts.enableCache, opts.enableLogging, opts.cacheTimeout, validateProfile])
+  }, [authUser, state.profile, opts.enableCache, opts.cacheTimeout, validateProfile])
 
   /**
-   * Força refresh do perfil
+   * Recarrega perfil do banco
    */
   const refreshProfile = useCallback(async (): Promise<ProfileUpdateResult> => {
     if (!authUser) {
@@ -281,7 +285,9 @@ export function useUserProfile(options: Partial<AuthHookOptions> = {}) {
       setState(prev => ({ ...prev, isLoading: true, error: null }))
 
       // Invalidar cache
-      invalidateProfile(authUser.id)
+      if (opts.enableCache) {
+        invalidateProfile(authUser.id)
+      }
 
       // Buscar perfil atualizado
       const profile = await fetchProfile(false)
@@ -352,18 +358,36 @@ export function useUserProfile(options: Partial<AuthHookOptions> = {}) {
   }, [])
 
   /**
-   * Sincroniza com dados do auth quando necessário
+   * Carrega perfil inicial quando usuário está autenticado
    */
   useEffect(() => {
-    if (syncedProfile && (!state.profile || syncedProfile.updated_at !== state.profile.updated_at)) {
+    if (authUser && !state.profile) {
+      setState(prev => ({ ...prev, isLoading: true, error: null }))
+      
+      fetchProfile().then(profile => {
+        setState(prev => ({
+          ...prev,
+          profile,
+          isLoading: false,
+          lastSync: new Date()
+        }))
+      }).catch(error => {
+        setState(prev => ({
+          ...prev,
+          error: error.message,
+          isLoading: false
+        }))
+      })
+    } else if (!authUser) {
+      // Se não há usuário autenticado, limpar estado
       setState(prev => ({
         ...prev,
-        profile: syncedProfile,
+        profile: null,
         isLoading: false,
-        lastSync: new Date()
+        error: null
       }))
     }
-  }, [syncedProfile, state.profile])
+  }, [authUser, fetchProfile])
 
   /**
    * Atualiza validação quando perfil muda
@@ -390,10 +414,6 @@ export function useUserProfile(options: Partial<AuthHookOptions> = {}) {
           eventData.user.user_metadata?.avatar_url !== state.profile.avatar_url
 
         if (needsUpdate) {
-          if (opts.enableLogging) {
-            console.log('🔄 Profile: Dados do auth mudaram, sincronizando...')
-          }
-          
           // Debounce para evitar múltiplas atualizações
           if (updateTimeoutRef.current) {
             clearTimeout(updateTimeoutRef.current)
@@ -412,7 +432,7 @@ export function useUserProfile(options: Partial<AuthHookOptions> = {}) {
         clearTimeout(updateTimeoutRef.current)
       }
     }
-  }, [addEventListener, state.profile, opts.enableLogging, refreshProfile])
+  }, [addEventListener, state.profile, refreshProfile])
 
   /**
    * Cleanup
@@ -427,9 +447,9 @@ export function useUserProfile(options: Partial<AuthHookOptions> = {}) {
 
   return {
     // Estado principal
-    profile: state.profile,
+    profile: state.profile || syncProfile, // Usar syncProfile como fallback
     isLoading: state.isLoading || syncLoading,
-    error: state.error,
+    error: state.error || syncError,
     isComplete: state.isComplete,
     lastSync: state.lastSync,
     

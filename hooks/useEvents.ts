@@ -21,7 +21,7 @@ export interface Event {
   organizador?: {
     nome: string
     email: string
-    avatar?: string
+    avatar_url?: string
   }
   participantes_count?: number
   user_participando?: boolean
@@ -128,7 +128,7 @@ export function useEvents() {
       // Combinar dados
       const eventsWithParticipation = (eventsData || []).map(event => ({
         ...event,
-        organizador: organizadores[event.organizador_id] || null,
+        organizador: organizadores[event.organizador_id] ? { ...organizadores[event.organizador_id], avatar_url: organizadores[event.organizador_id].avatar } : null,
         participantes_count: participationsCount[event.id] || 0,
         user_participando: userParticipations.has(event.id)
       }))

@@ -72,7 +72,7 @@ Acesse: http://localhost:3000
 ### ⚡ Setup Instantâneo
 ```bash
 # Verificar todos os sistemas (28 checks)
-node scripts/check-ci-setup.js
+node scripts/002-check-ci-setup.js
 
 # Status esperado: 97% SUCCESS ✅
 ```

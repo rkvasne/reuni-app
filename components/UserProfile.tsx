@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { User, Settings, Camera, Mail, Clock, ArrowLeft } from 'lucide-react'
 import Image from 'next/image'
 import { useRouter, useSearchParams } from 'next/navigation'
@@ -19,7 +19,7 @@ import RLSWarning from './RLSWarning'
 
 export default function UserProfile() {
   const { user } = useAuth()
-  const { userProfile, error: profileError, clearError } = useUserProfile()
+  const { profile: userProfile, error: profileError, clearError } = useUserProfile()
   const { getUserEvents, events } = useEvents()
   const router = useRouter()
   const searchParams = useSearchParams()
@@ -37,49 +37,47 @@ export default function UserProfile() {
     }
   }, [searchParams])
 
-  useEffect(() => {
-    const fetchUserData = async () => {
-      if (!user) return
+  const fetchUserData = useCallback(async () => {
+    if (!user) return
 
-      setLoading(true)
-      try {
-        // Buscar eventos criados pelo usuário diretamente
-        const { data, error } = await supabase
-          .from('eventos')
-          .select(`
-            *,
-            organizador:usuarios!organizador_id (
-              nome,
-              email,
-              avatar
-            )
-          `)
-          .eq('organizador_id', user.id)
-          .order('created_at', { ascending: false })
+    setLoading(true)
+    try {
+      const { data, error } = await supabase
+        .from('eventos')
+        .select(`
+          *,
+          organizador:usuarios!organizador_id (
+            nome,
+            email,
+            avatar
+          )
+        `)
+        .eq('organizador_id', user.id)
+        .order('created_at', { ascending: false })
 
-        console.log('📊 Eventos do usuário encontrados:', { data, error, count: data?.length })
+      console.log('📊 Eventos do usuário encontrados:', { data, error, count: data?.length })
 
-        if (error) {
-          console.error('❌ Erro ao buscar eventos:', error)
-        } else {
-          setUserEvents(data || [])
-        }
-
-        // Filtrar eventos que o usuário está participando
-        const participating = events.filter(event => 
-          event.user_participando && event.organizador_id !== user.id
-        )
-        setParticipatingEvents(participating)
-
-      } catch (error) {
-        console.error('❌ Erro ao carregar dados:', error)
-      } finally {
-        setLoading(false)
+      if (error) {
+        console.error('❌ Erro ao buscar eventos:', error)
+      } else {
+        setUserEvents(data || [])
       }
-    }
 
+      const participating = events.filter(event => 
+        event.user_participando && event.organizador_id !== user.id
+      )
+      setParticipatingEvents(participating)
+
+    } catch (error) {
+      console.error('❌ Erro ao carregar dados:', error)
+    } finally {
+      setLoading(false)
+    }
+  }, [user, events])
+
+  useEffect(() => {
     fetchUserData()
-  }, [user?.id])
+  }, [fetchUserData])
 
   if (!user || !userProfile) return null
 
@@ -126,10 +124,10 @@ export default function UserProfile() {
           
           {/* Avatar */}
           <div className="relative">
-            {userProfile.avatar ? (
+            {userProfile.avatar_url ? (
               <Image
-                src={userProfile.avatar}
-                alt={userProfile.nome}
+                src={userProfile.avatar_url}
+                alt={userProfile.nome || 'Avatar'}
                 width={120}
                 height={120}
                 className="rounded-full"
@@ -157,7 +155,7 @@ export default function UserProfile() {
                 <div className="mb-2">
                   <QuickProfileEdit
                     field="nome"
-                    value={userProfile.nome}
+                    value={userProfile.nome || ''}
                     placeholder="Seu nome"
                   />
                 </div>
@@ -274,8 +272,8 @@ export default function UserProfile() {
       {/* Modal de Avatar */}
       {showAvatarModal && (
         <AvatarUpload
-          currentAvatar={userProfile.avatar}
-          userName={userProfile.nome}
+          currentAvatar={userProfile.avatar_url || undefined}
+          userName={userProfile.nome || 'Usuário'}
           onClose={() => setShowAvatarModal(false)}
         />
       )}

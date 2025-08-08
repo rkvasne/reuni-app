@@ -21,7 +21,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }: Au
   const [error, setError] = useState('')
   const [emailSent, setEmailSent] = useState(false)
 
-  const { signIn, signUpWithEmail, signInWithGoogle } = useAuth()
+  const { signIn, signUp, signUpWithEmail, signInWithGoogle } = useAuth()
   const { resendEmail, canResend, cooldown, resending } = useEmailResend()
   const { toast, showToast, hideToast } = useToast()
 
@@ -38,8 +38,8 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }: Au
         onClose()
         resetForm()
       } else {
-        // Cadastro apenas com email usando magic link
-        const { error } = await signUpWithEmail(email)
+        // Cadastro com email e senha (mais direto)
+        const { error } = await signUp(email, password)
         if (error) throw error
         
         // Mostrar tela de sucesso
@@ -133,7 +133,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }: Au
                 </li>
                 <li className="flex items-start gap-2">
                   <span className="text-blue-500 mt-0.5">•</span>
-                  <span>Clique no link "Confirmar Meu Acesso" para entrar no Reuni</span>
+                  <span>Clique no link &quot;Confirmar Meu Acesso&quot; para entrar no Reuni</span>
                 </li>
                 <li className="flex items-start gap-2">
                   <span className="text-blue-500 mt-0.5">•</span>

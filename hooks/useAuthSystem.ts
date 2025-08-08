@@ -25,7 +25,7 @@ import {
 } from '@/types/auth'
 import { getAuthCacheStats, clearAuthCache } from '@/utils/authCache'
 
-interface AuthSystemOptions {
+export interface AuthSystemOptions {
   auth?: Partial<AuthHookOptions>
   profileGuard?: Partial<ProfileGuardOptions>
   enableHealthCheck?: boolean
@@ -58,7 +58,7 @@ const DEFAULT_SYSTEM_OPTIONS: Required<AuthSystemOptions> = {
   profileGuard: DEFAULT_PROFILE_GUARD_OPTIONS,
   enableHealthCheck: true,
   enableLoopProtection: true,
-  enableLogging: true
+  enableLogging: false
 }
 
 export function useAuthSystem(options: AuthSystemOptions = {}) {
@@ -103,7 +103,7 @@ export function useAuthSystem(options: AuthSystemOptions = {}) {
    * Adiciona evento ao log
    */
   const logEvent = useCallback((event: AuthEventData) => {
-    setEventLog(prev => [...prev.slice(-49), event]) // Manter últimos 50 eventos
+            setEventLog(prevLog => [...prevLog.slice(-49), event]) // Manter últimos 50 eventos
     
     if (opts.enableLogging) {
       console.log(`📊 AuthSystem Event: ${event.event}`, event)
@@ -136,7 +136,7 @@ export function useAuthSystem(options: AuthSystemOptions = {}) {
     // Verificar erros nos hooks
     if (auth.error) errors.push(`Auth: ${auth.error}`)
     if (profile.error) errors.push(`Profile: ${profile.error}`)
-    if (sync.error) errors.push(`Sync: ${sync.error}`)
+    // sync não tem propriedade error direta
 
     // Verificar saúde geral
     if (healthCheck && !healthCheck.isHealthy) {
@@ -155,30 +155,32 @@ export function useAuthSystem(options: AuthSystemOptions = {}) {
     }
 
     // Verificar se ainda está inicializando
-    if (auth.loading || profile.isLoading || sync.isLoading) {
+    if (auth.loading || profile.isLoading || sync.isSyncing) {
       systemStatus = 'initializing'
     }
 
     const hasErrors = errors.length > 0
     const isReady = systemStatus !== 'initializing' && !hasErrors
 
-    setSystemState(prev => ({
-      isReady,
-      isHealthy,
-      hasErrors,
-      errorCount: errors.length,
-      lastError: errors[errors.length - 1] || null,
-      systemStatus
-    }))
-
-    // Log de mudanças de estado
-    if (prev.systemStatus !== systemStatus && opts.enableLogging) {
-      console.log(`🔄 AuthSystem: Status changed from ${prev.systemStatus} to ${systemStatus}`)
-    }
+    setSystemState(prevState => {
+      // Log de mudanças de estado
+      if (prevState.systemStatus !== systemStatus && opts.enableLogging) {
+        console.log(`🔄 AuthSystem: Status changed from ${prevState.systemStatus} to ${systemStatus}`)
+      }
+      
+      return {
+        isReady,
+        isHealthy,
+        hasErrors,
+        errorCount: errors.length,
+        lastError: errors[errors.length - 1] || null,
+        systemStatus
+      }
+    })
   }, [
     auth.error, auth.loading,
     profile.error, profile.isLoading,
-    sync.error, sync.isLoading,
+    sync.isSyncing,
     healthCheck?.isHealthy, healthCheck?.isUnhealthy, healthCheck?.isDegraded,
     loopProtection?.isLoop,
     opts.enableLogging
@@ -260,10 +262,7 @@ export function useAuthSystem(options: AuthSystemOptions = {}) {
           completeness: profile.completenessPercent
         },
         sync: {
-          isConsistent: sync.isConsistent,
-          needsRecovery: sync.needsRecovery,
-          lastSync: sync.lastSync,
-          error: sync.error
+          isSyncing: sync.isSyncing
         },
         guard: {
           isActive: guard.isActive,
@@ -364,7 +363,7 @@ export function useAuthSystem(options: AuthSystemOptions = {}) {
     userProfile: profile.profile,
     isAuthenticated: auth.isAuthenticated,
     isProfileComplete: profile.isComplete,
-    isLoading: auth.loading || profile.isLoading || sync.isLoading,
+    isLoading: auth.loading || profile.isLoading || sync.isSyncing,
     
     // Estado derivado
     canUseApp: systemState.isReady && auth.isAuthenticated && profile.isComplete,
